@@ -1,0 +1,912 @@
+[
+  {
+    "ingredient_id": "I0012",
+    "name_mm": "ရေနွေး",
+    "name_en": "Hot water",
+    "category": "liquid",
+    "reason": "Household tap water heated on home stove; domestic municipal utility, not sold as a discrete retail food commodity.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Set recipe cost basis to 0.0 MMK or link to municipal residential water utility rate."
+  },
+  {
+    "ingredient_id": "I0017",
+    "name_mm": "ရေ",
+    "name_en": "Water",
+    "category": "liquid",
+    "reason": "Potable tap water for cooking; domestic utility.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Default to 0.0 MMK or utility water tariff allocation."
+  },
+  {
+    "ingredient_id": "I0015",
+    "name_mm": "ပဲသီး",
+    "name_en": "Green beans",
+    "category": "vegetable",
+    "reason": "Fresh green snap beans (Phaseolus vulgaris) are seasonal; absent from CSO 25-bulletin and current supermarket inventory.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Conduct targeted wet market price survey at Thiri Mingalar or Danyingone markets."
+  },
+  {
+    "ingredient_id": "I0016",
+    "name_mm": "ပဲစိမ်းလုံး",
+    "name_en": "Green peas",
+    "category": "vegetable",
+    "reason": "Fresh green peas are seasonal winter produce; supermarkets currently list dried split peas or pea leaves.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey seasonal winter produce stalls or frozen food section."
+  },
+  {
+    "ingredient_id": "I0019",
+    "name_mm": "ထမင်း",
+    "name_en": "Cooked rice",
+    "category": "grain",
+    "reason": "Cooked rice is a prepared domestic staple output cooked at home from raw rice (I0001).",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Compute derived cost dynamically using raw rice (I0001) yield expansion formula (1g raw rice -> ~2.5g cooked rice)."
+  },
+  {
+    "ingredient_id": "I0034",
+    "name_mm": "ဂုံမန်",
+    "name_en": "Saffron",
+    "category": "spice",
+    "reason": "Culinary saffron (Crocus sativus) is an imported luxury spice rarely stocked in mainstream retail supermarkets.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey specialized Indian culinary spice merchants in Chinatown / Downtown Yangon."
+  },
+  {
+    "ingredient_id": "I0035",
+    "name_mm": "နှင်းရည်",
+    "name_en": "Rose water",
+    "category": "liquid",
+    "reason": "Rose water essence (distillate) is an occasional baking aromatic not tracked in government retail index.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey wholesale baking supply shops."
+  },
+  {
+    "ingredient_id": "I0047",
+    "name_mm": "အရိုးပြုတ်ရည်",
+    "name_en": "Bone broth",
+    "category": "liquid",
+    "reason": "Bone broth / stock is prepared in the kitchen from soup bones (I0221) and chicken/pork trimmings.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Derive recipe cost from soup bones and aromatic base ingredients."
+  },
+  {
+    "ingredient_id": "I0060",
+    "name_mm": "ရှယ်ရီအရက်",
+    "name_en": "Cooking wine",
+    "category": "liquid",
+    "reason": "Culinary sherry cooking wine is an imported specialty beverage subject to selective import availability.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey specialized wine & spirits distributors."
+  },
+  {
+    "ingredient_id": "I0064",
+    "name_mm": "ဘဲမြစ်",
+    "name_en": "Duck gizzard",
+    "category": "meat",
+    "reason": "Duck gizzards are butcher organ meats sold as mixed poultry offal in local wet markets.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey poultry stalls in local wet markets."
+  },
+  {
+    "ingredient_id": "I0066",
+    "name_mm": "ကြက်ဆီ",
+    "name_en": "Chicken fat",
+    "category": "oil",
+    "reason": "Chicken fat is trimmed and rendered in the home from whole chickens (I0020).",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Allocate cost from chicken meat purchase."
+  },
+  {
+    "ingredient_id": "I0073",
+    "name_mm": "ဆိတ်ကလီစာ",
+    "name_en": "Mutton offal",
+    "category": "meat",
+    "reason": "Mutton offal is sold on butcher slaughter days in specialized halal meat stalls.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey specialized downtown Yangon mutton butchers."
+  },
+  {
+    "ingredient_id": "I0089",
+    "name_mm": "ဆန်အရက်",
+    "name_en": "Rice wine",
+    "category": "condiment",
+    "reason": "Traditional rice wine is a home-brewed or specialty product; commercial retail varies by regional regulation.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey regional specialty food vendors."
+  },
+  {
+    "ingredient_id": "I0092",
+    "name_mm": "ဝက်အဆီ",
+    "name_en": "Pork fat / Lard",
+    "category": "meat_poultry",
+    "reason": "Pork lard is rendered at home from pork belly or fat trimmings.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Derive cost from fresh pork cuts."
+  },
+  {
+    "ingredient_id": "I0095",
+    "name_mm": "ကဏန်း",
+    "name_en": "Crab",
+    "category": "fish_seafood",
+    "reason": "Live mud crab prices fluctuate daily by tide and shell size in coastal fishery markets.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Conduct coastal fishery landing / San Pya fish market price survey."
+  },
+  {
+    "ingredient_id": "I0096",
+    "name_mm": "ဂျင်းဝိုင်",
+    "name_en": "Ginger wine",
+    "category": "condiment",
+    "reason": "Ginger cooking wine is an imported Chinese culinary specialty condiment.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey Chinatown import grocery shops."
+  },
+  {
+    "ingredient_id": "I0099",
+    "name_mm": "ရေဂျူ",
+    "name_en": "Jellyfish",
+    "category": "fish_seafood",
+    "reason": "Preserved edible jellyfish is a specialty banquet delicacy sold to commercial caterers.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey seafood import wholesalers."
+  },
+  {
+    "ingredient_id": "I0117",
+    "name_mm": "ပုစွန်ချဉ်",
+    "name_en": "Fermented pickled shrimp",
+    "category": "seafood",
+    "reason": "Pickled sour shrimp (Pazun-gyin) is an artisanal cottage-industry fermented delicacy.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey traditional wet market fermented food stalls."
+  },
+  {
+    "ingredient_id": "I0125",
+    "name_mm": "ကျောက်ဖရုံသီး",
+    "name_en": "Ash gourd",
+    "category": "produce",
+    "reason": "Ash gourd / Wax gourd is a seasonal backyard garden vine vegetable.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey traditional neighborhood wet markets."
+  },
+  {
+    "ingredient_id": "I0127",
+    "name_mm": "မန်ကျည်းရွက်",
+    "name_en": "Tamarind leaves",
+    "category": "produce",
+    "reason": "Tamarind young tender leaves are seasonal tree shoots gathered from wild trees in Central Myanmar.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey seasonal morning wet markets."
+  },
+  {
+    "ingredient_id": "I0131",
+    "name_mm": "မယ်ဇလီဖူး",
+    "name_en": "Cassia flower buds",
+    "category": "produce",
+    "reason": "Cassia flower buds (Mezali-hpu) are seasonal medicinal buds harvested exclusively around Tazaungdaing full moon festival.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey seasonal November festival wet markets."
+  },
+  {
+    "ingredient_id": "I0132",
+    "name_mm": "ခရမ်းကစော့သီး",
+    "name_en": "Pea eggplant",
+    "category": "produce",
+    "reason": "Pea eggplants (Hkayan-kasaw) are wild tropical berries picked from backyard shrubs or small village growers.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey smallholder ethnic produce stalls."
+  },
+  {
+    "ingredient_id": "I0138",
+    "name_mm": "ပဲရွက်",
+    "name_en": "Pea tendril / Bean leaves",
+    "category": "produce",
+    "reason": "Tender pea tendrils / bean leaves are short-shelf-life greens sold in local morning wet markets.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey fresh morning vegetable markets."
+  },
+  {
+    "ingredient_id": "I0142",
+    "name_mm": "ငါးတန်ခေါင်း",
+    "name_en": "Pangasius fish head",
+    "category": "seafood",
+    "reason": "Fish heads with collar meat are sold as soup cuts at wet market fish mongers.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey San Pya and Central fish markets."
+  },
+  {
+    "ingredient_id": "I0145",
+    "name_mm": "မျှစ်ချဉ်",
+    "name_en": "Sour bamboo shoots",
+    "category": "produce",
+    "reason": "Sour fermented bamboo shoots are traditional artisanal fermented wet market goods.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey traditional fermented food stalls."
+  },
+  {
+    "ingredient_id": "I0151",
+    "name_mm": "သစ်ခွဖျော်ရည်",
+    "name_en": "Orchid nectar syrup",
+    "category": "condiment",
+    "reason": "Floral orchid nectar syrup is a heritage confectionery essence.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey traditional heritage sweet ingredient suppliers."
+  },
+  {
+    "ingredient_id": "I0152",
+    "name_mm": "လိုင်ချီး",
+    "name_en": "Lychee syrup",
+    "category": "condiment",
+    "reason": "Lychee syrup is an occasional beverage ingredient.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey beverage supply wholesalers."
+  },
+  {
+    "ingredient_id": "I0153",
+    "name_mm": "စပျစ်ရည်",
+    "name_en": "Grape syrup",
+    "category": "condiment",
+    "reason": "Grape syrup is an occasional beverage flavoring.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey beverage supply wholesalers."
+  },
+  {
+    "ingredient_id": "I0154",
+    "name_mm": "အစာအရောင်ဆိုးဆေး",
+    "name_en": "Food coloring",
+    "category": "condiment",
+    "reason": "Artificial food coloring powder/liquid is sold in micro-packets (10-50 MMK) at neighborhood sundry shops.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey neighborhood sundry retail shops."
+  },
+  {
+    "ingredient_id": "I0165",
+    "name_mm": "ထုံးကျောက်တက်ရည်",
+    "name_en": "Limewater",
+    "category": "condiment",
+    "reason": "Limewater is made in the household by dissolving slaked lime in water.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Cost basis is negligible (<5 MMK); link to betel-nut lime stalls."
+  },
+  {
+    "ingredient_id": "I0166",
+    "name_mm": "ငှက်ပျောဖက်",
+    "name_en": "Banana leaves",
+    "category": "produce",
+    "reason": "Banana leaves are packing wrappers cut from trees, sold in bundles at flower/produce markets.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey fresh morning produce wrapper stalls."
+  },
+  {
+    "ingredient_id": "I0169",
+    "name_mm": "မုန့်လုပ်ဆောင်းဖတ်",
+    "name_en": "Rice droplets (Cendol pods)",
+    "category": "dry_goods",
+    "reason": "Mont-let-saung rice droplets are made fresh by street dessert vendors.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Derive cost from rice flour and pandan base ingredients."
+  },
+  {
+    "ingredient_id": "I0174",
+    "name_mm": "ရနံ့မွှေးဆီ",
+    "name_en": "Flavouring essence",
+    "category": "condiment",
+    "reason": "Commercial flavoring essence is sold in miniature vials at baking shops.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey bakery supply shops."
+  },
+  {
+    "ingredient_id": "I0175",
+    "name_mm": "ရေခဲ",
+    "name_en": "Ice cubes",
+    "category": "condiment",
+    "reason": "Ice cubes are produced in household freezers or purchased in 100-Kyat blocks at ice depots.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Default to 0.0 MMK or nominal ice block cost."
+  },
+  {
+    "ingredient_id": "I0176",
+    "name_mm": "ဆန်လှော်မှုန့်",
+    "name_en": "Toasted rice powder",
+    "category": "dry_goods",
+    "reason": "Toasted rice powder is prepared at home by dry-roasting raw rice (I0001) in a skillet and grinding.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Derive cost dynamically from raw rice (I0001)."
+  },
+  {
+    "ingredient_id": "I0177",
+    "name_mm": "မုန့်ဟင်းခါးဖတ်",
+    "name_en": "Mohinga rice vermicelli",
+    "category": "dry_goods",
+    "reason": "Fresh Mohinga rice vermicelli is purchased fresh daily from local neighborhood noodle presses.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey local neighborhood noodle pressing shops."
+  },
+  {
+    "ingredient_id": "I0180",
+    "name_mm": "ပဒဲကော",
+    "name_en": "Galangal",
+    "category": "produce",
+    "reason": "Galangal rhizome is sold fresh in small quantities in traditional vegetable stalls.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey wet market spice vendors."
+  },
+  {
+    "ingredient_id": "I0181",
+    "name_mm": "ဆီတို့ဟူး",
+    "name_en": "Fermented bean curd",
+    "category": "condiment",
+    "reason": "Fermented bean curd in chili oil is sold in small glass jars in Chinese sundry shops.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey Chinese grocery shops."
+  },
+  {
+    "ingredient_id": "I0182",
+    "name_mm": "ကျောက်ပွင့်",
+    "name_en": "Snow fungus (Edible seaweed)",
+    "category": "dry_goods",
+    "reason": "Snow fungus / Cloud ear is an imported dried delicacy sold in Chinese herbal pharmacies.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey Chinese herbal medicine and dried goods shops."
+  },
+  {
+    "ingredient_id": "I0183",
+    "name_mm": "ပန်းခြောက်",
+    "name_en": "Dried daylily buds",
+    "category": "dry_goods",
+    "reason": "Dried daylily flower buds are traditional Chinese dried banquet ingredients.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey Chinatown dried ingredient merchants."
+  },
+  {
+    "ingredient_id": "I0185",
+    "name_mm": "ကြွပ်ဆိုင်",
+    "name_en": "Pork cracklings",
+    "category": "meat",
+    "reason": "Pork cracklings are fried at home or purchased from snack vendors.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Derive cost from pork fat/skin cuts."
+  },
+  {
+    "ingredient_id": "I0187",
+    "name_mm": "ရှမ်းခေါက်ဆွဲ",
+    "name_en": "Shan rice noodles",
+    "category": "dry_goods",
+    "reason": "Shan rice noodles are made fresh daily in Shan communities and local wet markets.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey local fresh noodle presses."
+  },
+  {
+    "ingredient_id": "I0188",
+    "name_mm": "မုန်လာဉ်ချဉ်",
+    "name_en": "Pickled mustard greens",
+    "category": "condiment",
+    "reason": "Traditional pickled mustard greens are prepared in earthenware jars at cottage scale.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey traditional pickle vendors in wet markets."
+  },
+  {
+    "ingredient_id": "I0189",
+    "name_mm": "မြီးရှည်ဖတ်",
+    "name_en": "Mee shay rice noodles",
+    "category": "dry_goods",
+    "reason": "Fresh Mee Shay rice noodles are made fresh daily by noodle artisans.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey local fresh noodle presses."
+  },
+  {
+    "ingredient_id": "I0190",
+    "name_mm": "တဆေး",
+    "name_en": "Yeast",
+    "category": "dry_goods",
+    "reason": "Baker's active dry yeast is sold in 11g sachets at baking shops.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey bakery supply shops."
+  },
+  {
+    "ingredient_id": "I0195",
+    "name_mm": "ရှောက်ယို",
+    "name_en": "Candied citron peel",
+    "category": "dry_goods",
+    "reason": "Candied citron peel is a holiday fruit preserve sold at baking suppliers.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey bakery ingredient suppliers."
+  },
+  {
+    "ingredient_id": "I0196",
+    "name_mm": "ဆိုဒါမှုန့်",
+    "name_en": "Baking soda",
+    "category": "dry_goods",
+    "reason": "Baking soda is identical to I0164.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Link to I0164 price observation."
+  },
+  {
+    "ingredient_id": "I0201",
+    "name_mm": "မြေစာဥ",
+    "name_en": "Water chestnut",
+    "category": "vegetable",
+    "reason": "Fresh water chestnuts are seasonal marsh tubers sold in Chinatown wet markets.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey Chinatown fresh produce stalls."
+  },
+  {
+    "ingredient_id": "I0202",
+    "name_mm": "အရက်",
+    "name_en": "Cooking wine",
+    "category": "sauce",
+    "reason": "Chinese cooking wine is sold in specialized import shops.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey Chinatown import grocery shops."
+  },
+  {
+    "ingredient_id": "I0203",
+    "name_mm": "ဖက်ထုပ်ရွက်",
+    "name_en": "Wonton wrappers",
+    "category": "grain",
+    "reason": "Fresh wonton wrappers are prepared fresh daily at fresh noodle presses.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey fresh noodle presses in wet markets."
+  },
+  {
+    "ingredient_id": "I0204",
+    "name_mm": "ပဲငါးပိရည်",
+    "name_en": "Fermented bean paste sauce",
+    "category": "sauce",
+    "reason": "Fermented bean paste sauce is sold in traditional ceramic jars at local markets.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey traditional condiment stalls."
+  },
+  {
+    "ingredient_id": "I0205",
+    "name_mm": "ရှယ်ရီအရက်",
+    "name_en": "Sherry cooking wine",
+    "category": "liquid",
+    "reason": "Sherry cooking wine is identical to I0060.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Link to I0060 price observation."
+  },
+  {
+    "ingredient_id": "I0208",
+    "name_mm": "နှမ်းနက်စေ့",
+    "name_en": "Black sesame seeds",
+    "category": "nut",
+    "reason": "Black sesame seeds are sold in traditional grain wholesale shops.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey grain wholesale markets."
+  },
+  {
+    "ingredient_id": "I0209",
+    "name_mm": "မုန်ညင်းစေ့",
+    "name_en": "Mustard seeds",
+    "category": "spice",
+    "reason": "Mustard seeds are identical to I0062.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Link to I0062 price observation."
+  },
+  {
+    "ingredient_id": "I0210",
+    "name_mm": "ကော်ပြန့်ရွက်",
+    "name_en": "Spring roll wrappers",
+    "category": "grain",
+    "reason": "Fresh spring roll wrappers are prepared fresh daily at local noodle presses.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey fresh noodle presses in wet markets."
+  },
+  {
+    "ingredient_id": "I0212",
+    "name_mm": "ချယ်ရီသီး",
+    "name_en": "Glacé cherries",
+    "category": "fruit",
+    "reason": "Glacé cherries are imported confectionery fruit decorations.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey bakery supply shops."
+  },
+  {
+    "ingredient_id": "I0213",
+    "name_mm": "ဗနီလာရနံ့",
+    "name_en": "Vanilla essence",
+    "category": "seasoning",
+    "reason": "Vanilla essence is sold in small vials at baking shops.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey bakery supply shops."
+  },
+  {
+    "ingredient_id": "I0214",
+    "name_mm": "ဘိုစားပဲ",
+    "name_en": "French beans (Green beans)",
+    "category": "vegetable",
+    "reason": "French beans are identical in species to I0015.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Link to I0015 market survey."
+  },
+  {
+    "ingredient_id": "I0215",
+    "name_mm": "ပင်လယ်ငါး",
+    "name_en": "Marine fish",
+    "category": "seafood",
+    "reason": "Marine ocean fish is sold at coastal landing jetties and central fish markets.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey San Pya and Maw Tin fish markets."
+  },
+  {
+    "ingredient_id": "I0216",
+    "name_mm": "ဘီစကစ်",
+    "name_en": "Plain baby biscuit",
+    "category": "dry_goods",
+    "reason": "Plain baby biscuits are sold in tin boxes at sundry shops.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey neighborhood sundry shops."
+  },
+  {
+    "ingredient_id": "I0217",
+    "name_mm": "လိမ္မော်ရည်",
+    "name_en": "Orange juice",
+    "category": "liquid",
+    "reason": "Fresh squeezed orange juice is prepared in the home from fresh oranges (I0112).",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Derive cost dynamically from fresh oranges (I0112)."
+  },
+  {
+    "ingredient_id": "I0218",
+    "name_mm": "ပီလောပီနံမှုန့်",
+    "name_en": "Tapioca starch (Cassava flour)",
+    "category": "dry_goods",
+    "reason": "Tapioca flour is identical to I0063.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Link to I0063 price observation."
+  },
+  {
+    "ingredient_id": "I0219",
+    "name_mm": "သကာရည်",
+    "name_en": "Caramel syrup (Golden syrup)",
+    "category": "seasoning",
+    "reason": "Golden caramel syrup is made in the home by melting sugar (I0005) with water.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Derive cost from granulated sugar (I0005)."
+  },
+  {
+    "ingredient_id": "I0220",
+    "name_mm": "ငါးရံ့",
+    "name_en": "Striped snakehead fish",
+    "category": "fish_seafood",
+    "reason": "Live striped snakehead fish (Nga-yant) is sold alive in wet market water basins.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey San Pya central fish market."
+  },
+  {
+    "ingredient_id": "I0221",
+    "name_mm": "ဆိတ်ရိုး",
+    "name_en": "Mutton soup bone",
+    "category": "meat",
+    "reason": "Mutton soup bones are sold as broth bones by butchers upon request.",
+    "attempted_sources": [
+      "CSO",
+      "YCE",
+      "Citymall",
+      "World Bank"
+    ],
+    "suggested_action": "Survey local mutton butcher stalls."
+  }
+]

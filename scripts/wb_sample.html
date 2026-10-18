@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Myanmar - Monthly food price estimates by product and market</title>
+<meta name="description" content="Food price inflation is an important metric to inform economic policy but traditional sources of consumer prices are often produced with delay during crises and only at an aggregate level. This may poorly reflect the actual price trends in rural or poverty-stricken areas, where large populations reside in fragile situations. This data set includes food price estimates and is intended to help gain insight in price developments beyond what can be formally measured by traditional methods. The estim"/>
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    
+
+<link rel="stylesheet" href="https://microdata.worldbank.org/themes/nada52/css/fonts.css?v20260721">
+<link rel="stylesheet" href="https://microdata.worldbank.org/themes/nada52/css/style.css?v20260721">
+<link rel="stylesheet" href="https://microdata.worldbank.org/themes/nada52/css/custom.css?v20260625">
+<link rel="stylesheet" href="https://microdata.worldbank.org/themes/nada52/css/home.css?v03212019">
+<link rel="stylesheet" href="https://microdata.worldbank.org/themes/nada52/css/variables.css?v07042021">
+<link rel="stylesheet" href="https://microdata.worldbank.org/themes/nada52/css/facets.css?v062021">
+<link rel="stylesheet" href="https://microdata.worldbank.org/themes/nada52/css/catalog-tab.css?v07052021">
+<link rel="stylesheet" href="https://microdata.worldbank.org/themes/nada52/css/catalog-card.css?v10102021-1">
+<link rel="stylesheet" href="https://microdata.worldbank.org/themes/nada52/css/filter-action-bar.css?v14052021-3">
+
+    <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+    var CI = {'base_url': 'https://microdata.worldbank.org/'};
+
+    if (top.frames.length!=0) {
+        top.location=self.document.location;
+    }
+
+    $(document).ready(function()  {
+        /*global ajax error handler */
+        $( document ).ajaxError(function(event, jqxhr, settings, exception) {
+            if(jqxhr.status==401){
+                window.location=CI.base_url+'/auth/login/?destination=catalog/';
+            }
+            else if (jqxhr.status>=500){
+                alert(jqxhr.responseText);
+            }
+        });
+
+    }); //end-document-ready
+
+</script>
+
+
+<script type="text/javascript" src="https://microdata.worldbank.org/javascript/pym.v1.min.js?v=102026"></script><script type="application/ld+json">
+    {
+    "@context": "https://schema.org/",
+    "@type": "Dataset",
+    "url": "https://microdata.worldbank.org/catalog/4501",
+    "name": "Monthly food price estimates by product and market - Myanmar",
+    "identifier": "MMR_2021_RTFP_v02_M",
+    "includedInDataCatalog": {
+        "@type": "DataCatalog",
+        "name": "Microdata Library",
+        "url": "https://microdata.worldbank.org/"
+    },
+    "dateCreated": "2023-12-13T10:04:17-05:00",
+    "dateModified": "2026-10-08T12:22:47-04:00",
+    "description": "Food price inflation is an important metric to inform economic policy but traditional sources of consumer prices are often produced with delay during crises and only at an aggregate level. This may poorly reflect the actual price trends in rural or poverty-stricken areas, where large populations reside in fragile situations. This data set includes food price estimates and is intended to help gain insight in price developments beyond what can be formally measured by traditional methods. The estimates are generated using a machine-learning approach that imputes ongoing subnational price surveys, often with accuracy similar to direct measurement of prices. The data set provides new opportunities to investigate local price dynamics in areas where populations are sensitive to localized price shocks and where traditional data are not available. A dataset of monthly food price inflation estimates (aggregated for all food products available in the data) is also available for all countries covered by this modeling exercise.",
+    "keywords": [
+        "Food Price Monitor",
+        "FPM",
+        "Real Time Food Prices",
+        "RTFP",
+        "Inflation",
+        "Food Price Inflation",
+        "Food security",
+        "Food Insecurity",
+        "Food Crisis",
+        "Famine",
+        "Fragility",
+        "FCS",
+        "FCV",
+        "Food Price Crisis",
+        "Commodity prices",
+        "Maize",
+        "Sorghum",
+        "Wheat",
+        "Rice",
+        "Agricultural prices",
+        "Food prices",
+        "Price measurement",
+        "Real-time exchange rate data",
+        "Commodity items",
+        "Geo-referenced market locations",
+        "Sub-national price inflation series",
+        "Consumer Price Inflation (CPI)",
+        "National-level CPI indicators",
+        "International Comparison Program (ICP)",
+        "Inflation series",
+        "Market prices",
+        "Price analysis",
+        "Real-time data",
+        "National prices",
+        "International prices",
+        "Price fluctuations",
+        "Price trends",
+        "Price Volatility",
+        "Myanmar"
+    ],
+    "temporalCoverage": "2007/2026",
+    "spatialCoverage": {
+        "@type": "Place",
+        "name": "Myanmar"
+    },
+    "creator": [
+        {
+            "@type": "Organization",
+            "name": "Bo Pieter Johannes Andr\u00e9e"
+        }
+    ]
+}</script>
+<script>var STUDY_ID = "4501";</script><script src="https://microdata.worldbank.org/javascript/analytics-tracker.js?v=1790974312"></script>
+<script>
+if (typeof NADA !== 'undefined' && NADA.Analytics) {
+	NADA.Analytics.init({
+		baseUrl: 'https://microdata.worldbank.org/',
+		enabled: true,
+		builtinEnabled: true,
+		gaEnabled: false,
+		debug: false,
+		sessionTimeoutMinutes: 5,
+		dedupeWindowMinutes: 5,
+		csrfToken: '75a6dac79be07a851e510b07e9e1aa59',
+		csrfTokenName: 'ncsrf'
+	});
+}
+</script>
+</head>
+
+<body>
+
+    <!-- site header -->
+    <style>
+.site-header .navbar-light .no-logo .navbar-brand--sitename {border:0px!important;margin-left:0px}
+.site-header .navbar-light .no-logo .nada-site-title {font-size:18px;}
+</style>
+<header class="site-header">
+    
+        
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-12">
+                <nav class="navbar navbar-expand-md navbar-light rounded navbar-toggleable-md wb-navbar">
+
+                                                            <div class="navbar-brand">
+                        <a href="http://www.worldbank.org" class="g01v1-logo wb-logo">
+                            <img title="The World Bank Working for a World Free of Poverty" alt="The World Bank Working for a World Free of Poverty" src="https://microdata.worldbank.org/themes/nada52/images/logo-wb-header-en.svg" class="img-responsive">
+                        </a>
+                        <strong><a class="nada-sitename" href="https://microdata.worldbank.org/">Microdata Library</a></strong>
+                        
+                    </div>
+                    
+
+                                                            
+
+                    <button class="navbar-toggler navbar-toggler-right collapsed wb-navbar-button-toggler" type="button" data-toggle="collapse" data-target="#containerNavbar" aria-controls="containerNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <!-- Start menus -->
+                    <!-- Start menus -->
+<div class="navbar-collapse collapse" id="containerNavbar" aria-expanded="false">
+        <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+	<a class="nav-link"
+		href="https://microdata.worldbank.org/catalog">
+		Data Catalog	</a>
+</li>
+<li class="nav-item">
+	<a class="nav-link"
+		href="https://microdata.worldbank.org/about">
+		About	</a>
+</li>
+<li class="nav-item">
+	<a class="nav-link"
+		href="https://microdata.worldbank.org/collections">
+		Collections	</a>
+</li>
+<li class="nav-item">
+	<a class="nav-link"
+		href="https://microdata.worldbank.org/citations">
+		Citations	</a>
+</li>
+<li class="nav-item">
+	<a class="nav-link"
+		href="https://microdata.worldbank.org/terms-of-use">
+		Terms of use	</a>
+</li>
+        
+<li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-user-circle fa-lg"></i>Login            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item" href="https://microdata.worldbank.org/auth/login">Login</a>
+            </div>
+    </li>
+<!-- /row -->
+    </ul>
+
+</div>
+<!-- Close Menus -->
+                    <!-- Close Menus -->
+
+                </nav>
+            </div>
+
+        </div>
+        <!-- /row -->
+
+    </div>
+
+</header>
+    <!-- page body -->
+    <div class="wp-page-body container-fluid page-catalog catalog-study-description">
+
+        <div class="body-content-wrap theme-nada-2">
+
+            <!--breadcrumbs -->
+            <div class="container">
+                                                    <ol class="breadcrumb wb-breadcrumb">
+                        	    <div class="breadcrumbs" xmlns:v="http://rdf.data-vocabulary.org/#">
+           <span typeof="v:Breadcrumb">
+                		         <a href="https://microdata.worldbank.org//" rel="v:url" property="v:title">Home</a> /
+                        
+       </span>
+                  <span typeof="v:Breadcrumb">
+                		         <a href="https://microdata.worldbank.org//catalog" rel="v:url" property="v:title">Central Data Catalog</a> /
+                        
+       </span>
+                  <span typeof="v:Breadcrumb">
+                		         <a href="https://microdata.worldbank.org//catalog/FCV" rel="v:url" property="v:title">FCV</a> /
+                        
+       </span>
+                  <span typeof="v:Breadcrumb">
+        	         	         <a class="active" href="https://microdata.worldbank.org//catalog/4501" rel="v:url" property="v:title">MMR_2021_RTFP_V02_M</a>
+                        
+       </span>
+               </div>
+                    </ol>
+                            </div>
+            <!-- /breadcrumbs -->
+
+            <style>
+.metadata-sidebar-container .nav .active{
+	background:#e9ecef;		
+}
+.study-metadata-page .page-header .nav-tabs .active a {
+	background: white;
+	font-weight: bold;
+	border-top: 2px solid #0071bc;
+	border-left:1px solid gainsboro;
+	border-right:1px solid gainsboro;
+}
+
+.study-info-content {
+    font-size: 14px;
+}
+
+.study-subtitle{
+	font-size:.7em;
+	margin-bottom:10px;
+}
+
+.badge-outline{
+	background:transparent;
+	color:#03a9f4;
+	border:1px solid #9e9e9e;
+}
+.study-header-right-bar span{
+	display:block;
+	margin-bottom:15px;
+}
+.study-header-right-bar{
+	font-size:14px;
+	color:gray;
+}
+.get-microdata-btn{
+	font-size:14px;
+}
+
+.link-col .badge{
+	font-size:14px;
+	font-weight:normal;
+	background:transparent;
+	border:1px solid #9E9E9E;
+	color:#03a9f4;
+}
+
+.link-col .badge:hover{
+	background:#03a9f4;
+	color:#ffffff;
+}
+
+.study-header-right-bar .stat{
+	margin-bottom:10px;
+	font-size:small;
+}
+
+.study-header-right-bar .stat .stat-label{
+	font-weight:bold;
+	text-transform:uppercase;
+}
+
+.field-metadata__table_description__ref_country .field-value,
+.field-metadata__study_desc__study_info__nation .field-value{
+	max-height:350px;
+	overflow:auto;
+}
+.field-metadata__table_description__ref_country .field-value  ::-webkit-scrollbar,
+.field-metadata__study_desc__study_info__nation .field-value ::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+
+.field-metadata__table_description__ref_country .field-value  ::-webkit-scrollbar-thumb,
+.field-metadata__study_desc__study_info__nation .field-value ::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, .5);
+  box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
+</style>
+
+
+<div class="page-body-full study-metadata-page">
+	<span 
+		id="dataset-metadata-info" 
+		data-repositoryid="FCV"
+		data-id="4501"
+		data-idno="MMR_2021_RTFP_v02_M"
+	></span>
+
+<div class="container-fluid page-header">
+<div class="container">
+
+
+<div class="row study-info">
+					<div class="col-md-2">
+			<div class="collection-thumb-container">
+				<a href="https://microdata.worldbank.org/catalog/FCV">
+				<img  src="https://microdata.worldbank.org/files/thumbnails/thumbnail-s4501.jpg?v=1791476567" class="mr-3 img-fluid img-thumbnail" alt="FCV" title="Fragility, Conflict and Violence"/>
+				</a>
+			</div>		
+		</div>
+	
+	<div class="col">
+		
+		<div>
+		    <h1 class="mt-0 mb-1" id="dataset-title">
+                <span>Monthly food price estimates by product and market</span>
+                                    <div class="study-subtitle">Myanmar, 300 markets, 2007/01/01-2026/10/01, version 2026-10-05</div>
+                            </h1>
+            <div class="clearfix">
+		        <h6 class="sub-title float-left" id="dataset-sub-title"><span id="dataset-country">Myanmar</span>, <span id="dataset-year">2007 - 2026</span></h6>
+                                <a  
+                    href="https://microdata.worldbank.org/catalog/4501/get-microdata" 
+                    class="get-microdata-btn badge badge-primary wb-text-link-uppercase float-left ml-3" 
+                    title="Get Microdata">					
+                    <span class="fa fa-download"></span>
+                    Get Microdata                </a>
+                                
+            </div>
+		</div>
+
+		<div class="row study-info-content">
+		
+            <div class="col pr-5">
+
+                <div class="row mt-4 mb-2 pb-2  border-bottom">
+                    <div class="col-md-2">
+                        Reference ID                    </div>
+                    <div class="col">
+                        <div class="study-idno">
+                            MMR_2021_RTFP_v02_M                            
+                        </div>
+                    </div>
+                </div>
+
+                		
+                                <div class="row mb-2 pb-2  border-bottom">
+                    <div class="col-md-2">
+                        Producer(s)                    </div>
+                    <div class="col">
+                        <div class="producers">
+                            Bo Pieter Johannes Andrée                        </div>
+                    </div>
+                </div>
+                                
+                
+                
+                 
+                <div class="row  border-bottom mb-2 pb-2 mt-2">
+                    <div class="col-md-2">
+                        Collection(s)                    </div>
+                    <div class="col">
+                        <div class="collections link-col">           
+                                                            <span class="collection">
+                                    <a href="https://microdata.worldbank.org/collections/FCV">
+                                        <span class="badge badge-primary">Fragility, Conflict and Violence</span>
+                                    </a>                                    
+                                </span>
+                                                            <span class="collection">
+                                    <a href="https://microdata.worldbank.org/collections/rtdi">
+                                        <span class="badge badge-primary">Real-Time Development Indicators (RTDI)</span>
+                                    </a>                                    
+                                </span>
+                                                    </div>
+                    </div>
+                </div>
+                
+                <div class="row border-bottom mb-2 pb-2 mt-2">
+                    <div class="col-md-2">
+                        Metadata                    </div>
+                    <div class="col">
+                        <div class="metadata">
+                            <!--metadata-->
+                            <span class="mr-2 link-col">
+                                                                                                    <a class="download" 
+                                       href="https://microdata.worldbank.org/catalog/4501/pdf-documentation" 
+                                       title="Documentation in PDF"
+                                       data-filename="ddi-documentation-english_microdata-4501.pdf"
+                                       data-dctype="report"
+                                       data-isurl="0"
+                                       data-extension="pdf"
+                                       data-sid="4501">
+                                        <span class="badge badge-success"><i class="fa fa-file-pdf-o" aria-hidden="true"> </i> Documentation in PDF</span>
+                                    </a>
+                                                            
+                                                                    <a class="download" 
+                                       href="https://microdata.worldbank.org/metadata/export/4501/ddi" 
+                                       title="DDI Codebook (2.5)"
+                                       data-filename="metadata-4501.xml"
+                                       data-dctype="metadata"
+                                       data-isurl="0"
+                                       data-extension="xml"
+                                       data-sid="4501">
+                                        <span class="badge badge-primary"> DDI/XML</span>
+                                    </a>
+                                
+                                <a class="download" 
+                                   href="https://microdata.worldbank.org/metadata/export/4501/json" 
+                                   title="JSON"
+                                   data-filename="metadata-4501.json"
+                                   data-dctype="metadata"
+                                   data-isurl="0"
+                                   data-extension="json"
+                                   data-sid="4501">
+                                    <span class="badge badge-info">JSON</span>
+                                </a>
+                            </span>	
+                            <!--end-metadata-->
+                        </div>
+                    </div>
+                </div>
+
+                
+                	    </div>
+	
+	</div>
+
+	</div>
+
+    <div class="col-md-2 border-left">
+		<!--right-->
+		<div class="study-header-right-bar">
+				<div class="stat">
+					<div class="stat-label">Created on </div>
+					<div class="stat-value">Dec 13, 2023</div>
+				</div>
+
+				<div class="stat">
+					<div class="stat-label">Last modified </div>
+					<div class="stat-value">Oct 08, 2026</div>
+				</div>
+				
+									<div class="stat">
+						<div class="stat-label">Page views </div>
+						<div class="stat-value">44640</div>
+					</div>
+				
+									<div class="stat">
+						<div class="stat-label">Downloads </div>
+						<div class="stat-value">18645</div>
+					</div>				
+						</div>		
+		<!--end-right-->
+	</div>
+
+</div>
+
+
+
+
+<!-- Nav tabs -->
+<ul class="nav nav-tabs wb-nav-tab-space flex-wrap" role="tablist">
+								<li class="nav-item tab-description active"  >
+				<a href="https://microdata.worldbank.org/catalog/4501/study-description" class="nav-link wb-nav-link wb-text-link-uppercase active" role="tab"  data-id="related-materials" >Study Description</a>
+			</li>
+										<li class="nav-item tab-data_dictionary "  >
+				<a href="https://microdata.worldbank.org/catalog/4501/data-dictionary" class="nav-link wb-nav-link wb-text-link-uppercase " role="tab"  data-id="related-materials" >Data Description</a>
+			</li>
+										<li class="nav-item tab-related_materials "  >
+				<a href="https://microdata.worldbank.org/catalog/4501/related-materials" class="nav-link wb-nav-link wb-text-link-uppercase " role="tab"  data-id="related-materials" >Documentation</a>
+			</li>
+										<li class="nav-item nav-item-get-microdata tab-get_microdata " >
+				<a href="https://microdata.worldbank.org/catalog/4501/get-microdata" class="nav-link wb-nav-link wb-text-link-uppercase " role="tab" data-id="related-materials" >
+					<span class="get-microdata icon-da-open"></span> Get Microdata				</a>
+			</li>                            
+												<li class="nav-item tab-related_datasets "  >
+				<a href="https://microdata.worldbank.org/catalog/4501/related-datasets" class="nav-link wb-nav-link wb-text-link-uppercase " role="tab"  data-id="related-materials" >Related datasets</a>
+			</li>
+										<li class="nav-item tab-data_api "  >
+				<a href="https://microdata.worldbank.org/catalog/4501/data-api" class="nav-link wb-nav-link wb-text-link-uppercase " role="tab"  data-id="related-materials" >Data API</a>
+			</li>
+			</ul>
+<!-- end nav tabs -->
+</div>
+</div>
+
+
+
+<div class="container study-metadata-body-content with-right-side-bar" >
+
+
+<!-- tabs -->
+<div id="tabs" class="study-metadata ui-tabs ui-widget ui-widget-content ui-corner-all study-tabs" >	
+  
+  <div id="tabs-1" aria-labelledby="ui-id-1" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" >
+  	
+        <div class="tab-body-no-sidebar-x"><div class="container-fluid" data-display-template-uid="660466dfe15925fe8c3e3ac300e01856" data-display-template-name="Microdata Library Template" data-display-template-resolution="database_default" data-display-template-type="custom" data-display-template-status="published" data-display-template-data-type="survey">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="navbar-collapse sticky-top metadata-sidebar-container">
+            <div class="nav flex-column">
+                            <li class="nav-item">                    
+                    <a class="nav-link" href="#study_desc.title_statement">Identification</a>
+                </li>
+                            <li class="nav-item">                    
+                    <a class="nav-link" href="#study_description.version">Version</a>
+                </li>
+                            <li class="nav-item">                    
+                    <a class="nav-link" href="#study_desc1674579453273">Scope</a>
+                </li>
+                            <li class="nav-item">                    
+                    <a class="nav-link" href="#study_desc1684331110642">Coverage</a>
+                </li>
+                            <li class="nav-item">                    
+                    <a class="nav-link" href="#study_desc1684331430702">Producers and sponsors</a>
+                </li>
+                            <li class="nav-item">                    
+                    <a class="nav-link" href="#study_desc1684332928200">Data collection</a>
+                </li>
+                            <li class="nav-item">                    
+                    <a class="nav-link" href="#data_access">Access policy</a>
+                </li>
+                            <li class="nav-item">                    
+                    <a class="nav-link" href="#study_desc1684335112393">Disclaimer and copyrights</a>
+                </li>
+                            <li class="nav-item">                    
+                    <a class="nav-link" href="#additional_section">Additional metadata</a>
+                </li>
+                        </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div><div class="field-section-container pb-3"><h2 class="field-section" id="study_desc.title_statement">Identification</h2><div class="mb-2 field field-study_desc.title_statement.idno"><div class="font-weight-bold field-title">Survey ID number</div><div class="field-value"><span>MMR_2021_RTFP_v02_M</span></div></div><div class="mb-2 field field-study_desc.title_statement.title"><div class="font-weight-bold field-title">Title</div><div class="field-value"><span>Monthly food price estimates by product and market</span></div></div><div class="mb-2 field field-study_desc.title_statement.sub_title"><div class="font-weight-bold field-title">Subtitle</div><div class="field-value"><span>Myanmar, 300 markets, 2007/01/01-2026/10/01, version 2026-10-05</span></div></div><div class="mb-2 field field-study_desc.title_statement.alternate_title"><div class="font-weight-bold field-title">Abbreviation or Acronym</div><div class="field-value"><span>Real Time Food Prices</span></div></div><div class="table-responsive field field-study_desc_study_info_nation">
+	<div class="field-title">Country/Economy</div>
+<div class="">
+<table class="table table-sm table-bordered table-striped table-condensed xsl-table table-grid">
+		<tr>
+					<th>Name</th>
+					<th>Country code</th>
+			</tr>
+			<tr>
+				<td>
+							<span>Myanmar</span>					</td>
+				<td>
+							<span>MMR</span>					</td>
+			</tr>
+	</table>
+</div>
+</div>
+<div class="mb-2 field field-study_desc.series_statement.series_name"><div class="font-weight-bold field-title">Study type</div><div class="field-value"><span>Monthly food price estimates in fragile countries</span></div></div><div class="mb-2 field field-study_desc.series_statement.series_info"><div class="font-weight-bold field-title">Series Information</div><div class="field-value"><span>Real Time Prices (RTP) is a live dataset compiled and updated weekly by the World Bank Development Economics Data Group (DECDG) using a combination of direct price measurement and Machine Learning estimation of missing price data. The historical and current estimates are based on price information gathered from the World Food Program (WFP), UN-Food and Agricultural Organization (FAO), select National Statistical Offices, and are continually updated and revised as more price information becomes available. Real-time exchange rate data used in this process are from official and public sources.<br>
+      <br>
+RTP consists of three sub-series, Real Time Food Prices (RTFP) includes prices on a variety of food items that primarily include country-specific staple foods, Real Time Energy Prices (RTEP) includes fuel prices, and Real Time Exchange Rates (RTFX) and includes unofficial exchange rate estimates as well as possible other unofficial deflators.<br>
+ - RTFP: <a href="https://microdata.worldbank.org/index.php/catalog/study/WLD_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/WLD_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/WLD_2021_RTFP_v02_M</a> <br>
+ - RTEP: <a href="https://microdata.worldbank.org/index.php/catalog/study/WLD_2023_RTEP_v01_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/WLD_2023_RTEP_v01_M">https://microdata.worldbank.org/index.php/catalog/study/WLD_2023_RTEP_v01_M</a> <br>
+ - RTFX: <a href="https://microdata.worldbank.org/index.php/catalog/study/WLD_2023_RTFX_v01_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/WLD_2023_RTFX_v01_M">https://microdata.worldbank.org/index.php/catalog/study/WLD_2023_RTFX_v01_M</a> <br>
+ <br>
+To produce smooth price series, outliers in the data are often adjusted using non-parametric density estimation and other techniques. Generalized Auto-Regressive Conditional Heteroskedasticity models are used to estimate intra-month price ranges. These models allow for excess kurtosis using a Generalized Error Distribution (GED). Open, High, Low, and Close price estimates are provided based on the modeled time-varying price distributions.<br>
+      <br>
+Data are produced from 2007 to the present and estimates are given for individual commodity items at geo-referenced market locations. Predicted data for missing entries are based on exchange rates, and price data available either at other market locations or from related price items.<br>
+      <br>
+RTP estimates of historical and current prices may serve as proxies for sub-national price inflation series or substitute national-level Consumer Price Inflation (CPI) indicators when complete information is unavailable. Therefore, RTP data may differ from other sources with official data, including the World Bank’s International Comparison Program (ICP) or inflation series reported in the World Development Indicators.<br>
+      <br>
+The following datasets are part of this sub-series: <br>
+<br>
+ Country-level inflation: <br>
+ - All countries: <a href="https://microdata.worldbank.org/index.php/catalog/study/WLD_2021_RTFP-CTRY_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/WLD_2021_RTFP-CTRY_v02_M">https://microdata.worldbank.org/index.php/catalog/study/WLD_2021_RTFP-CTRY_v02_M</a> <br>
+<br>
+ Market-level estimates: <br>
+ - All countries: <a href="https://microdata.worldbank.org/index.php/catalog/study/WLD_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/WLD_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/WLD_2021_RTFP_v02_M</a> <br>
+ - Afghanistan: <a href="https://microdata.worldbank.org/index.php/catalog/study/AFG_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/AFG_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/AFG_2021_RTFP_v02_M</a> <br>
+ - Armenia: <a href="https://microdata.worldbank.org/index.php/catalog/study/ARM_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/ARM_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/ARM_2021_RTFP_v02_M</a> <br>
+ - Bangladesh: <a href="https://microdata.worldbank.org/index.php/catalog/study/BGD_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/BGD_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/BGD_2021_RTFP_v02_M</a> <br>
+ - Burkina Faso: <a href="https://microdata.worldbank.org/index.php/catalog/study/BFA_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/BFA_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/BFA_2021_RTFP_v02_M</a> <br>
+ - Burundi: <a href="https://microdata.worldbank.org/index.php/catalog/study/BDI_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/BDI_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/BDI_2021_RTFP_v02_M</a> <br>
+ - Cameroon: <a href="https://microdata.worldbank.org/index.php/catalog/study/CMR_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/CMR_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/CMR_2021_RTFP_v02_M</a> <br>
+ - Central African Republic: <a href="https://microdata.worldbank.org/index.php/catalog/study/CAF_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/CAF_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/CAF_2021_RTFP_v02_M</a> <br>
+ - Chad: <a href="https://microdata.worldbank.org/index.php/catalog/study/TCD_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/TCD_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/TCD_2021_RTFP_v02_M</a> <br>
+ - Congo, Dem. Rep.: <a href="https://microdata.worldbank.org/index.php/catalog/study/COD_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/COD_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/COD_2021_RTFP_v02_M</a> <br>
+ - Congo, Rep.: <a href="https://microdata.worldbank.org/index.php/catalog/study/COG_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/COG_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/COG_2021_RTFP_v02_M</a> <br>
+ - Ethiopia: <a href="https://microdata.worldbank.org/index.php/catalog/study/ETH_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/ETH_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/ETH_2021_RTFP_v02_M</a> <br>
+ - Gambia, The: <a href="https://microdata.worldbank.org/index.php/catalog/study/GMB_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/GMB_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/GMB_2021_RTFP_v02_M</a> <br>
+ - Guatemala: <a href="https://microdata.worldbank.org/index.php/catalog/study/GTM_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/GTM_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/GTM_2021_RTFP_v02_M</a> <br>
+ - Guinea: <a href="https://microdata.worldbank.org/index.php/catalog/study/GIN_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/GIN_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/GIN_2021_RTFP_v02_M</a> <br>
+ - Guinea-Bissau: <a href="https://microdata.worldbank.org/index.php/catalog/study/GNB_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/GNB_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/GNB_2021_RTFP_v02_M</a> <br>
+ - Haiti: <a href="https://microdata.worldbank.org/index.php/catalog/study/HTI_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/HTI_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/HTI_2021_RTFP_v02_M</a> <br>
+ - Indonesia: <a href="https://microdata.worldbank.org/index.php/catalog/study/IDN_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/IDN_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/IDN_2021_RTFP_v02_M</a> <br>
+ - Iraq: <a href="https://microdata.worldbank.org/index.php/catalog/study/IRQ_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/IRQ_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/IRQ_2021_RTFP_v02_M</a> <br>
+ - Kenya: <a href="https://microdata.worldbank.org/index.php/catalog/study/KEN_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/KEN_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/KEN_2021_RTFP_v02_M</a> <br>
+ - Lao PDR: <a href="https://microdata.worldbank.org/index.php/catalog/study/LAO_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/LAO_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/LAO_2021_RTFP_v02_M</a> <br>
+ - Lebanon: <a href="https://microdata.worldbank.org/index.php/catalog/study/LBN_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/LBN_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/LBN_2021_RTFP_v02_M</a> <br>
+ - Liberia: <a href="https://microdata.worldbank.org/index.php/catalog/study/LBR_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/LBR_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/LBR_2021_RTFP_v02_M</a> <br>
+ - Libya: <a href="https://microdata.worldbank.org/index.php/catalog/study/LBY_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/LBY_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/LBY_2021_RTFP_v02_M</a> <br>
+ - Madagascar: <a href="https://microdata.worldbank.org/index.php/catalog/study/MDG_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/MDG_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/MDG_2021_RTFP_v02_M</a> <br>
+ - Malawi: <a href="https://microdata.worldbank.org/index.php/catalog/study/MWI_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/MWI_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/MWI_2021_RTFP_v02_M</a> <br>
+ - Mali: <a href="https://microdata.worldbank.org/index.php/catalog/study/MLI_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/MLI_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/MLI_2021_RTFP_v02_M</a> <br>
+ - Mauritania: <a href="https://microdata.worldbank.org/index.php/catalog/study/MRT_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/MRT_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/MRT_2021_RTFP_v02_M</a> <br>
+ - Mozambique: <a href="https://microdata.worldbank.org/index.php/catalog/study/MOZ_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/MOZ_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/MOZ_2021_RTFP_v02_M</a> <br>
+ - Myanmar: <a href="https://microdata.worldbank.org/index.php/catalog/study/MMR_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/MMR_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/MMR_2021_RTFP_v02_M</a> <br>
+ - Niger: <a href="https://microdata.worldbank.org/index.php/catalog/study/NER_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/NER_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/NER_2021_RTFP_v02_M</a> <br>
+ - Nigeria: <a href="https://microdata.worldbank.org/index.php/catalog/study/NGA_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/NGA_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/NGA_2021_RTFP_v02_M</a> <br>
+ - Senegal: <a href="https://microdata.worldbank.org/index.php/catalog/study/SEN_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/SEN_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/SEN_2021_RTFP_v02_M</a> <br>
+ - Somalia: <a href="https://microdata.worldbank.org/index.php/catalog/study/SOM_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/SOM_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/SOM_2021_RTFP_v02_M</a> <br>
+ - South Sudan: <a href="https://microdata.worldbank.org/index.php/catalog/study/SSD_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/SSD_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/SSD_2021_RTFP_v02_M</a> <br>
+ - Sri Lanka: <a href="https://microdata.worldbank.org/index.php/catalog/study/LKA_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/LKA_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/LKA_2021_RTFP_v02_M</a> <br>
+ - Sudan: <a href="https://microdata.worldbank.org/index.php/catalog/study/SDN_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/SDN_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/SDN_2021_RTFP_v02_M</a> <br>
+ - Uganda: <a href="https://microdata.worldbank.org/index.php/catalog/study/UGA_2021_RTFP_v02_M" target="_blank" title="https://microdata.worldbank.org/index.php/catalog/study/UGA_2021_RTFP_v02_M">https://microdata.worldbank.org/index.php/catalog/study/UGA_2021_RTFP_v02_M</a></span></div></div>    
+
+<div class="iframe_field field field-widgets.default">
+    
+    <div class="field-value">                
+                    <div class="xsl-caption field-caption">HIGH-LOW CHART, AND INFLATION</div>
+            <div class="border iframe_content x-embed-responsive" class="min-height:200px;">
+                
+                <div id="widget-MMR_2021_RTFP_v02_M_chart"></div>
+                <script>
+                    var pymParent = new pym.Parent('widget-MMR_2021_RTFP_v02_M_chart', 'https://microdata.worldbank.org/widgets/embed/MMR_2021_RTFP_v02_M_chart', {});
+                </script>
+
+            </div>
+                    <div class="xsl-caption field-caption">LOCATION OF MARKETS</div>
+            <div class="border iframe_content x-embed-responsive" class="min-height:200px;">
+                
+                <div id="widget-MMR_2021_RTFP_v02_M_map"></div>
+                <script>
+                    var pymParent = new pym.Parent('widget-MMR_2021_RTFP_v02_M_map', 'https://microdata.worldbank.org/widgets/embed/MMR_2021_RTFP_v02_M_map', {});
+                </script>
+
+            </div>
+                    <div class="xsl-caption field-caption">DATA PREVIEW</div>
+            <div class="border iframe_content x-embed-responsive" class="min-height:200px;">
+                
+                <div id="widget-MMR_2021_RTFP_v02_M_grid"></div>
+                <script>
+                    var pymParent = new pym.Parent('widget-MMR_2021_RTFP_v02_M_grid', 'https://microdata.worldbank.org/widgets/embed/MMR_2021_RTFP_v02_M_grid', {});
+                </script>
+
+            </div>
+                
+    </div>
+</div>
+<div class="mb-2 field field-study_desc.study_info.abstract"><div class="font-weight-bold field-title">Abstract</div><div class="field-value"><span>Food price inflation is an important metric to inform economic policy but traditional sources of consumer prices are often produced with delay during crises and only at an aggregate level. This may poorly reflect the actual price trends in rural or poverty-stricken areas, where large populations reside in fragile situations. <br>
+                    This data set includes food price estimates and is intended to help gain insight in price developments beyond what can be formally measured by traditional methods. The estimates are generated using a machine-learning approach that imputes ongoing subnational price surveys, often with accuracy similar to direct measurement of prices. The data set provides new opportunities to investigate local price dynamics in areas where populations are sensitive to localized price shocks and where traditional data are not available.<br>
+                    <br>
+                    A dataset of monthly food price inflation estimates (aggregated for all food products available in the data) is also available for all countries covered by this modeling exercise.</span></div></div></div><div class="field-section-container pb-3"><h2 class="field-section" id="study_description.version">Version</h2><div class="mb-2 field field-study_desc.version_statement.version_date"><div class="font-weight-bold field-title">Version Date</div><div class="field-value"><span>2026-10-05</span></div></div><div class="mb-2 field field-study_desc.version_statement.version_resp"><div class="font-weight-bold field-title">Version Responsibility Statement</div><div class="field-value"><span>FCV Data Platform</span></div></div></div><div class="field-section-container pb-3"><h2 class="field-section" id="study_desc1674579453273">Scope</h2><div class="mb-2 field field-study_desc.study_info.notes"><div class="font-weight-bold field-title">Notes</div><div class="field-value"><p>List of food products included in estimates (not all products are included in country-level estimates): oil, onions, pulses, rice, salt</p></div></div><div class="field-study_desc.study_info.keywords pb-3">
+        <div class="field-title">Keywords</div>
+        <div class="field-value">
+                                                            <span class="badge badge-pill badge-light badge-tags"><span>Food Price Monitor</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>FPM</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Real Time Food Prices</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>RTFP</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Inflation</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Food Price Inflation</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Food security</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Food Insecurity</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Food Crisis</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Famine</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Fragility</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>FCS</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>FCV</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Food Price Crisis</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Commodity prices</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Maize</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Sorghum</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Wheat</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Rice</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Agricultural prices</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Food prices</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Real Time Food Prices</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Price measurement</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Real-time exchange rate data</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Commodity items</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Geo-referenced market locations</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Sub-national price inflation series</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Consumer Price Inflation (CPI)</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>National-level CPI indicators</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>International Comparison Program (ICP)</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Inflation series</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Market prices</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Price analysis</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Real-time data</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>National prices</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>International prices</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Price fluctuations</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Price trends</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Price Volatility</span></span>
+                                                                            <span class="badge badge-pill badge-light badge-tags"><span>Myanmar</span></span>
+                                    </div>
+</div>
+</div><div class="field-section-container pb-3"><h2 class="field-section" id="study_desc1684331110642">Coverage</h2><div class="mb-2 field field-study_desc.study_info.geog_coverage_notes"><div class="font-weight-bold field-title">Geographic Coverage notes</div><div class="field-value"><p>The data cover the following sub-national areas: Yangon, Rakhine, Shan (North), Shan (South), Kayin, Kachin, Mon, Tanintharyi, Mandalay, Sagaing, Kayah, Shan (East), Bago (East), Chin, Magway, Nay Pyi Taw, Market Average</p></div></div><div class="mb-2 field field-study_desc.study_info.geog_unit"><div class="font-weight-bold field-title">Geographic Unit</div><div class="field-value"><p>Sub-national level, Admin 2 (selected)</p></div></div></div><div class="field-section-container pb-3"><h2 class="field-section" id="study_desc1684331430702">Producers and sponsors</h2><div class="table-responsive field field-study_desc_authoring_entity">
+	<div class="field-title">Primary investigators</div>
+<div class="">
+<table class="table table-sm table-bordered table-striped table-condensed xsl-table table-grid">
+		<tr>
+					<th>Name</th>
+					<th>Affiliation</th>
+			</tr>
+			<tr>
+				<td>
+							<span>Bo Pieter Johannes Andrée</span>					</td>
+				<td>
+							<span>World Bank, Development Data Group (DECDG), Office of the Chief Statistician (DECCS)</span>					</td>
+			</tr>
+	</table>
+</div>
+</div>
+<div class="table-responsive field field-study_desc_production_statement_funding_agencies">
+	<div class="field-title">Funding Agency/Sponsor</div>
+<div class="">
+<table class="table table-sm table-bordered table-striped table-condensed xsl-table table-grid">
+		<tr>
+					<th>Name</th>
+					<th>Grant number</th>
+					<th>Role</th>
+			</tr>
+			<tr>
+				<td>
+							<span>Foreign, Commonwealth &amp; Development Office of the United Kingdom</span>					</td>
+				<td>
+												</td>
+				<td>
+							<p>Support to data analytics</p>					</td>
+			</tr>
+		<tr>
+				<td>
+							<span>Foreign, Commonwealth &amp; Development Office of the United Kingdom</span>					</td>
+				<td>
+							<span>KP-P174529-KMCE-TF0B4149</span>					</td>
+				<td>
+							<p>Data documentation and dissemination (FCV Data Platform)</p>					</td>
+			</tr>
+		<tr>
+				<td>
+							<span>Department of Foreign Affairs and Trade of Australia</span>					</td>
+				<td>
+							<span>TF0B6892</span>					</td>
+				<td>
+							<p>Support to methodological development in low data regions</p>					</td>
+			</tr>
+		<tr>
+				<td>
+							<span>Department of Foreign Affairs and Trade of Australia</span>					</td>
+				<td>
+							<span>TF0B6579</span>					</td>
+				<td>
+							<p>Support to methodological development in low data regions</p>					</td>
+			</tr>
+		<tr>
+				<td>
+							<span>Federal Ministry for Economic Cooperation and Development of Germany as part of the World Bank’s Food Systems 2030 Multi-Donor Trust Fund</span>					</td>
+				<td>
+							<span>TF073570</span>					</td>
+				<td>
+							<p>Expansion of coverage and maintenance</p>					</td>
+			</tr>
+		<tr>
+				<td>
+							<span>Federal Ministry for Economic Cooperation and Development of Germany as part of the World Bank’s Food Systems 2030 Multi-Donor Trust Fund</span>					</td>
+				<td>
+							<span>TF0C0728</span>					</td>
+				<td>
+							<p>Expansion of coverage and maintenance</p>					</td>
+			</tr>
+	</table>
+</div>
+</div>
+<div class="table-responsive field field-study_desc_oth_id">
+	<div class="field-title">Other Identifications/Acknowledgments</div>
+<div class="">
+<table class="table table-sm table-bordered table-striped table-condensed xsl-table table-grid">
+		<tr>
+					<th>Name</th>
+					<th>Affiliation</th>
+					<th>Role</th>
+			</tr>
+			<tr>
+				<td>
+							<span>World Food Programme (WFP)</span>					</td>
+				<td>
+							<span>United Nations</span>					</td>
+				<td>
+							<p>Source of market price data</p>					</td>
+			</tr>
+		<tr>
+				<td>
+							<span>Food and Agriculture Organization (FAO)</span>					</td>
+				<td>
+							<span>United Nations</span>					</td>
+				<td>
+							<p>Source of market price data</p>					</td>
+			</tr>
+	</table>
+</div>
+</div>
+</div><div class="field-section-container pb-3"><h2 class="field-section" id="study_desc1684332928200">Data collection</h2><div class="table-responsive field field-study_desc_study_info_coll_dates">
+	<div class="field-title">Dates of Data Collection</div>
+<div class="">
+<table class="table table-sm table-bordered table-striped table-condensed xsl-table table-grid">
+		<tr>
+					<th>Start</th>
+					<th>End</th>
+			</tr>
+			<tr>
+				<td>
+							<span>2007-01-01</span>					</td>
+				<td>
+							<span>2026-10-01</span>					</td>
+			</tr>
+	</table>
+</div>
+</div>
+<div class="table-responsive field field-study_desc_study_info_time_periods">
+	<div class="field-title">Time periods</div>
+<div class="">
+<table class="table table-sm table-bordered table-striped table-condensed xsl-table table-grid">
+		<tr>
+					<th>Start date</th>
+					<th>End date</th>
+			</tr>
+			<tr>
+				<td>
+							<span>2007-01-01</span>					</td>
+				<td>
+							<span>2026-10-01</span>					</td>
+			</tr>
+	</table>
+</div>
+</div>
+<div class="table-responsive field field-study_desc_method_data_collection_sources">
+	<div class="field-title">Sources</div>
+<div class="">
+<table class="table table-sm table-bordered table-striped table-condensed xsl-table table-grid">
+		<tr>
+					<th>Data source</th>
+					<th>Origin of source</th>
+					<th>Characteristics</th>
+			</tr>
+			<tr>
+				<td>
+							<span>World Food Programme (WFP)</span>					</td>
+				<td>
+							<p><a href="https://data.humdata.org/organization/wfp?vocab_Topics=prices">https://data.humdata.org/organization/wfp?vocab_Topics=prices</a></p>					</td>
+				<td>
+							<p>World Food Programme (WFP); data published in the Humanitarian Data Exchange (HDX) data catalog at <a href="https://data.humdata.org/">https://data.humdata.org/</a></p>					</td>
+			</tr>
+		<tr>
+				<td>
+							<span>Food and Agriculture Organization (FAO)</span>					</td>
+				<td>
+							<p><a href="https://fpma.fao.org/giews/fpmat4/#/dashboard/tool/domestic">https://fpma.fao.org/giews/fpmat4/#/dashboard/tool/domestic</a></p>					</td>
+				<td>
+							<p>Local exchange rates and implied exchange rates data derived from commodity pairs published by FAO through the Food Price Monitoring and Analysis (FMPA) Tool</p>					</td>
+			</tr>
+	</table>
+</div>
+</div>
+</div><div class="field-section-container pb-3"><h2 class="field-section" id="data_access">Access policy</h2><div class="mb-2 field field-study_desc.data_access.dataset_use.restrictions"><div class="font-weight-bold field-title">Restrictions</div><div class="field-value"><p>The estimates presented in this dataset are all based on publicly-available data.<br />
+The dataset of price estimates is published as open data.</p></div></div><div class="mb-2 field field-study_desc.data_access.dataset_use.cit_req"><div class="font-weight-bold field-title">Citation requirements</div><div class="field-value"><p>Please cite this dataset as follows: Andrée, B. P. J. (2021). Monthly food price estimates by product and market (Version 2026-10-05). MMR_2021_RTFP_v02_M. Washington, DC: World Bank Microdata Library. <a href="https://doi.org/10.48529/2ZH0-JF55">https://doi.org/10.48529/2ZH0-JF55</a></p></div></div><div class="table-responsive field field-study_desc_data_access_dataset_use_contact">
+	<div class="field-title">Access authority</div>
+<div class="">
+<table class="table table-sm table-bordered table-striped table-condensed xsl-table table-grid">
+		<tr>
+					<th>Name</th>
+					<th>Affiliation</th>
+					<th>URL</th>
+			</tr>
+			<tr>
+				<td>
+							<span>Data Help Desk</span>					</td>
+				<td>
+							<span>World Bank, Development Data Group</span>					</td>
+				<td>
+							<span><a href="https://datahelpdesk.worldbank.org/" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i></a></span>					</td>
+			</tr>
+	</table>
+</div>
+</div>
+<div class="mb-2 field field-study_desc.data_access.dataset_availability.access_place"><div class="font-weight-bold field-title">Location of Data Collection</div><div class="field-value"><span>World Bank Microdata Library, FCV Collection</span></div></div><div class="mb-2 field field-study_desc.data_access.dataset_availability.access_place_url"><div class="font-weight-bold field-title">URL for Location of Data Collection</div><div class="field-value"><span><a href="https://microdata.worldbank.org" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i></a></span></div></div></div><div class="field-section-container pb-3"><h2 class="field-section" id="study_desc1684335112393">Disclaimer and copyrights</h2><div class="mb-2 field field-study_desc.data_access.dataset_use.disclaimer"><div class="font-weight-bold field-title">Disclaimer</div><div class="field-value"><p>The RTFP data and metadata provided are "as is" and "as available," and every effort is made to ensure their timeliness, accuracy, and completeness. When errors are discovered, they are corrected as appropriate and feasible. For details on the terms and conditions for usage of the RTFP database, please refer to the license details.</p></div></div></div></div><div><div class="field-section-container pb-3"><h2 class="field-section" id="additional_section">Additional metadata</h2><div class="mb-2 field field-additional.ticker_description"><div class="font-weight-bold field-title">Ticker description</div><div class="field-value"><span>Information on the model (see working paper for more information)</span></div></div><div class="table-responsive field field-additional_ticker_info">
+	<div class="field-title">Ticker</div>
+<div class="table-overflow-max-height-400">
+<table class="table table-sm table-bordered table-striped table-condensed xsl-table table-grid">
+		<tr>
+					<th>ISO3</th>
+					<th>Country</th>
+					<th>Ticker</th>
+					<th>Full name</th>
+					<th>Units</th>
+					<th>Food index weight</th>
+					<th>Data coverage</th>
+					<th>R² imputation</th>
+			</tr>
+			<tr>
+				<td>
+							<span>MMR</span>					</td>
+				<td>
+							<span>Myanmar</span>					</td>
+				<td>
+							<span>exchange_rate_unofficial</span>					</td>
+				<td>
+							<span>Unofficial exchange rate (Parallel-market Estimate)(FAO GIEWS completed with Int. Forex)</span>					</td>
+				<td>
+							<span>USD/LCU</span>					</td>
+				<td>
+							<span>0</span>					</td>
+				<td>
+							<span>100%</span>					</td>
+				<td>
+							<span>n/a</span>					</td>
+			</tr>
+		<tr>
+				<td>
+							<span>MMR</span>					</td>
+				<td>
+							<span>Myanmar</span>					</td>
+				<td>
+							<span>food_price_index</span>					</td>
+				<td>
+							<span>Food Price Index</span>					</td>
+				<td>
+							<span>LCU, Indexed, January 2018 = 1</span>					</td>
+				<td>
+							<span>Laspeyres</span>					</td>
+				<td>
+							<span>19.27%</span>					</td>
+				<td>
+							<span>0.9</span>					</td>
+			</tr>
+		<tr>
+				<td>
+							<span>MMR</span>					</td>
+				<td>
+							<span>Myanmar</span>					</td>
+				<td>
+							<span>oil</span>					</td>
+				<td>
+							<span>Oil (palm)</span>					</td>
+				<td>
+							<span>L</span>					</td>
+				<td>
+							<span>1</span>					</td>
+				<td>
+							<span>22.34%</span>					</td>
+				<td>
+							<span>0.93</span>					</td>
+			</tr>
+		<tr>
+				<td>
+							<span>MMR</span>					</td>
+				<td>
+							<span>Myanmar</span>					</td>
+				<td>
+							<span>onions</span>					</td>
+				<td>
+							<span>Onions (local)</span>					</td>
+				<td>
+							<span>KG</span>					</td>
+				<td>
+							<span>1</span>					</td>
+				<td>
+							<span>9.42%</span>					</td>
+				<td>
+							<span>0.8</span>					</td>
+			</tr>
+		<tr>
+				<td>
+							<span>MMR</span>					</td>
+				<td>
+							<span>Myanmar</span>					</td>
+				<td>
+							<span>pulses</span>					</td>
+				<td>
+							<span>Pulses</span>					</td>
+				<td>
+							<span>KG</span>					</td>
+				<td>
+							<span>1</span>					</td>
+				<td>
+							<span>18.14%</span>					</td>
+				<td>
+							<span>0.91</span>					</td>
+			</tr>
+		<tr>
+				<td>
+							<span>MMR</span>					</td>
+				<td>
+							<span>Myanmar</span>					</td>
+				<td>
+							<span>rice</span>					</td>
+				<td>
+							<span>Rice (low quality)</span>					</td>
+				<td>
+							<span>KG</span>					</td>
+				<td>
+							<span>1</span>					</td>
+				<td>
+							<span>26.71%</span>					</td>
+				<td>
+							<span>0.93</span>					</td>
+			</tr>
+		<tr>
+				<td>
+							<span>MMR</span>					</td>
+				<td>
+							<span>Myanmar</span>					</td>
+				<td>
+							<span>salt</span>					</td>
+				<td>
+							<span>Salt</span>					</td>
+				<td>
+							<span>KG</span>					</td>
+				<td>
+							<span>1</span>					</td>
+				<td>
+							<span>19.41%</span>					</td>
+				<td>
+							<span>0.9</span>					</td>
+			</tr>
+	</table>
+</div>
+</div>
+</div></div>        </div>
+    </div>
+</div>
+
+<style>
+
+.study-metadata h2{
+    border-bottom:1px solid #e8e8e8;
+    padding-bottom:5px;
+    margin-bottom:25px;
+    padding-top:20px;
+}
+.study-metadata .field-title{
+    text-transform: uppercase;
+    margin-top:15px;
+    font-weight:bold;
+}
+
+.study-metadata h4.field-title{
+    margin-top:0px;
+}
+
+.field-section-container .field-section-container h2{
+    font-size:22px;
+}
+
+.badge-tags{
+    font-size:14px!important;
+}
+.study-metadata .field-array-nested table{
+    width:auto;
+    margin:0;
+    min-width:8rem;
+}
+</style>
+</div>
+    
+	<div class="mt-5">                
+            <a class="btn btn-sm btn-secondary" href="https://microdata.worldbank.org/catalog"><i class="fas fa-arrow-circle-left"></i> Back to Catalog</a>
+        </div>
+  </div>
+</div>
+<!-- end-tabs-->    
+   </div> 
+</div>
+
+
+<!--survey summary resources-->
+<script type="text/javascript">
+	function toggle_resource(element_id){
+		$("#"+element_id).parent(".resource").toggleClass("active");
+		$("#"+element_id).toggle();
+	}
+	
+	function bind_pdf_preview_behaviours() {
+		if (!$("#pdf-preview-modal").length) {
+			return;
+		}
+
+		$(document).off("click.nadaPdfPreview", ".pdf-preview-btn").on("click.nadaPdfPreview", ".pdf-preview-btn", function(e) {
+			e.preventDefault();
+
+			var previewUrl = $(this).attr("data-preview-url");
+			var title = $(this).attr("data-title") || "PDF preview";
+			var $modal = $("#pdf-preview-modal");
+			var $frame = $("#pdf-preview-frame");
+
+			$("#pdf-preview-modal-title").text(title);
+			$frame.attr("src", "about:blank");
+
+			$modal.off("shown.bs.modal.nadaPdfPreview").one("shown.bs.modal.nadaPdfPreview", function() {
+				$frame.attr("src", previewUrl);
+			}).modal("show");
+		});
+
+		$("#pdf-preview-modal").off("hidden.bs.modal.nadaPdfPreview").on("hidden.bs.modal.nadaPdfPreview", function() {
+			$("#pdf-preview-frame").attr("src", "about:blank");
+		});
+	}
+
+	$(document).ready(function () { 
+		bind_behaviours();
+		bind_pdf_preview_behaviours();
+		
+		$(".show-datafiles").click(function(){
+			$(".data-files .hidden").removeClass("hidden");
+			$(".show-datafiles").hide();
+			return false;
+		});
+
+		//setup bootstrap scrollspy
+		$("body").attr('data-spy', 'scroll');
+		$("body").attr('data-target', '#dataset-metadata-sidebar');
+		$("body").attr('data-offset', '0');
+		$("body").scrollspy('refresh');
+
+	});	
+	
+	function bind_behaviours() {
+		//show variable info by id
+		$(".resource-info").unbind('click');
+		$(".resource-info").click(function(){
+			if($(this).attr("id")!=''){
+				toggle_resource('info_'+$(this).attr("id"));
+			}
+			return false;
+		});			
+	}
+</script>        </div>
+    </div>
+
+    <!-- page footer -->
+    <footer>
+    <!-- footer top section -->
+        <!-- End footer top section -->
+    <button onclick="javascript:uvClick()" style="background: #03A9F4;position: fixed;right: 0px;border: none;padding: 5px;color: white;bottom: 10px;"> 
+        <i class="fa fa-headphones headphones-help-widget" aria-hidden="true"></i><span>Help / Feedback</span>
+    </button>
+    <script type="text/javascript" src="https://microdata.worldbank.org/themes/bootstrap4/js/uservoice.inc.js?v=202010"></script>
+
+    <!-- footer bottom section -->
+    <div class="full-row-footer-black-components">
+        <div class="container">
+            <div class="footer">
+                <div class="row">
+
+                    <!-- / WB logo and Wbg partnership -->
+                    <div class="col-12 col-md-2">
+
+                        <div class="text-center text-lg-left">
+                            <a href="http://www.worldbank.org/">
+                                <img src="https://www.worldbank.org/content/dam/wbr-redesign/logos/logo-wbg-footer-en.svg" title="The World Bank Working for a World Free of Poverty" alt="The World Bank Working for a World Free of Poverty">
+                            </a>
+                        </div>
+
+                    </div>
+                    <div class="col-12 col-md-4  footer-bottom-left">
+                        <ul class="footer-ul-links-centered">
+                            <li>
+                                <a class="wbg-partnership" title="International Bank for Reconstruction and Development" href="http://www.worldbank.org/en/who-we-are/ibrd">IBRD</a>
+                                <a class="wbg-partnership" title="International Development Association" href="http://www.worldbank.org/ida">IDA</a>
+                                <a class="wbg-partnership" title="International Finance Corporation" href="http://www.ifc.org/">IFC</a>
+                                <a class="wbg-partnership" title="Multilateral Investment Guarantee Agency" href="http://www.miga.org/">MIGA</a>
+                                <a class="wbg-partnership" title="International Centre for Settlement of Investment Disputes" href="http://icsid.worldbank.org/">ICSID</a>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <!-- / WB logo and Wbg partnership -->
+
+                    <!-- Dropdown and fraud  -->
+                    <div class="col-12 col-md-6 footer-bottom-right">
+                        <div class="">
+                            <div class="footer-copy-right">
+
+                                <p class="text-center text-lg-right">
+
+                                    <small>
+                                        ©
+                                        <script language="JavaScript">
+                                            var time = new Date();
+                                            var year = time.getYear();
+                                            if (year < 2000)
+                                                year = year + 1900 + ", ";
+                                            document.write(year); // End -->
+                                        </script> The World Bank Group, All Rights Reserved.
+                                    </small>
+
+                                </p>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- / dropdown and fraud  -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+.consent-text,
+.consent-text p,
+.consent-text button,
+.consent-text a
+{
+    color:white;
+}
+
+.consent-text a:link{
+    text-decoration:underline;
+}
+
+.consent-text button,
+.consent-text button:hover
+{
+    color:white;
+    position:absolute;
+    top:10px;
+    right:10px;
+}
+
+.consent-popup{
+    display:none;
+	padding:25px 10px;
+}
+</style>
+
+
+<div class="fixed-bottom consent-popup" style="background:rgba(0,0,0,0.87);">
+
+<div class="container consent-text" >
+       <p>This site uses cookies to optimize functionality and give you the best possible experience. If you continue to navigate this website beyond this page, cookies will be placed on your browser. To learn more about cookies,&nbsp;<a href="https://www.worldbank.org/en/about/legal/privacy-notice">click here</a>.</p>        
+        <button type="button" class="close consent-close" aria-label="Close" >
+            <span aria-hidden="true">&times;</span>
+        </button>
+</div>
+
+</div>
+
+
+<script>
+
+function create_cookie(name,value,days) {
+	if (days) {
+		var date = new Date();
+		date.setTime(date.getTime()+(days*24*60*60*1000));
+		var expires = "; expires="+date.toGMTString();
+	}
+	else var expires = "";
+	document.cookie = name+"="+value+expires+"; path=/";
+}
+
+function read_cookie(name) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0;i < ca.length;i++) {
+		var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	}
+	return null;
+}
+
+function erase_cookie(name) {
+	create_cookie(name,"",-1);
+}
+
+$(document).ready(function() {
+    var consent=read_cookie("ml_consent");
+		
+    if(consent==null || consent==''){
+        $(".consent-popup").show();
+    }
+    else{
+        $(".consent-popup").hide();
+    }
+});
+
+
+$(document.body).on("click",".consent-close", function(){ 
+    create_cookie('ml_consent',1,0);
+    $(".consent-popup").hide();
+});
+</script>    
+	<script src="//assets.adobedtm.com/572ee9d70241b5c796ae15c773eaaee4365408ec/satelliteLib-efd6120a6f6ed94da49cf49e2ba626ac110c7e3c.js"></script>
+	
+
+
+
+<script>
+	var s_repo="CENTRAL"; 				s_repo="FCV";
+	
+var wbgData = wbgData || {};
+wbgData.page={
+	pageInfo: {
+		channel: "DEC Microdata Catalog EXT",
+		pageName: 'microdata-ext:'+document.title, //(required) - unique page name
+		pageCategory: "", //home, errorPage, search results
+		pageUid: 'microdata-ext:'+document.title,
+		pageFirstPub: "",
+		pageLastMod: "",
+		author: "",
+		topicTag: "",
+		subtopicTag: "",
+		contentType: "",
+		channel: 'DEC Microdata Catalog EXT',//required
+		webpackage: s_repo //repository
+	},
+      sectionInfo: {
+          siteSection: s_repo,
+          subsectionP2: $("#dataset-metadata-info").attr("data-idno"),
+          subsectionP3: $("#dataset-country").text(),
+          subsectionP4: $("#dataset-year").text(),
+          subsectionP5: $("#dataset-metadata-info").attr("data-idno"),
+      }
+}
+wbgData.site = {
+      pageLoad: "N",
+      siteInfo: {
+          siteLanguage: "en",
+          siteCountry: "",
+          siteEnv: "PROD",
+          siteType: "microdata",
+          siteRegion: "",
+          userIpaddressType: "",
+      },
+      techInfo: {
+          cmsType: "NADA",
+          bussVPUnit: "dec",
+          bussUnit: "decsu",
+          bussUserGroup: "external",
+          bussAgency: "ibrd",
+      }
+  }
+
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	_satellite.track("dynamicdata");
+	_satellite.pageBottom();
+});	
+</script>
+
+<script language="JavaScript">
+$(document).ready(function() 
+{	
+	//make all download links open in new 
+	$(".download").attr('target', '_blank');
+	
+	//custom links
+	$(".download").mousedown(function(e) {
+		ss=s_gi(s_account);
+		ss.pageName='download:'+$(this).attr("title");
+		ss.pageURL=$(this).attr("href");
+		ss.events="download";
+		ss.prop2=$("#dataset-metadata-info").attr("data-repositoryid");//repositoryid
+		ss.prop3=$("#dataset-metadata-info").attr("data-id");//dataset-id
+		ss.prop4=$("#dataset-metadata-info").attr("data-idno");//dataset-idno
+		ss.prop5=$("#dataset-country").text();//dataset-country
+		ss.prop6=$("#dataset-year").text();//dataset-year
+		ss.prop12=$(this).attr("data-extension");//file-extension
+		ss.prop22=$(this).attr("data-filename");//file name
+		ss.prop9=$(this).attr("data-dctype");//file type
+		ss.prop33=$(this).attr("href");//download link
+		ss.prop20='download';
+		try{
+			ss.t();
+		}
+		catch(err){
+			console.log(err);
+		}	
+	});
+	
+	$(document).ajaxSend(function(event, request, settings) {		
+
+		var ss_prop1='search';
+		//catalog search
+		if (settings.url.indexOf("catalog/search") != -1) {
+			var pos=settings.url.indexOf("?");
+			if (pos != -1) {
+				ss_prop1=s_repo.concat("> Search " + settings.url.substring(pos) );
+			}
+		}	
+		else {
+				ss_prop1=settings.url;
+		}		
+				
+		ss=s_gi(s_account);
+		ss.pageName=ss_prop1;
+		ss.pageURL=ss_prop1;
+		ss.events="search";
+		try{
+			ss.t();
+		}
+		catch(err){
+			console.log(err);
+		}
+	});
+
+});
+</script>
+
+
+
+
+
+
+</body>
+
+</html>

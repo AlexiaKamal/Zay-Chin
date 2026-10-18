@@ -1,0 +1,90 @@
+[
+  {
+    "source_id": "SRC01",
+    "name": "Myanmar Central Statistical Organization (CSO)",
+    "url": "https://www.csostat.gov.mm/Statistics/MarketPrice",
+    "type": "price",
+    "status": 200,
+    "content_type": "text/html;charset=utf-8",
+    "content_len_bytes": 82140,
+    "response_time_sec": 6.6,
+    "notes": "Accessible"
+  },
+  {
+    "source_id": "SRC02",
+    "name": "Yangon Region Commodity Exchange",
+    "url": "https://www.yangoncommodityexchange.com/local-prices",
+    "type": "price",
+    "status": 200,
+    "content_type": "text/html; charset=UTF-8",
+    "content_len_bytes": 53271,
+    "response_time_sec": 4.5,
+    "notes": "Accessible"
+  },
+  {
+    "source_id": "SRC03",
+    "name": "Citymall Myanmar",
+    "url": "https://www.citymall.com.mm/",
+    "type": "price",
+    "status": 200,
+    "content_type": "text/html;charset=UTF-8",
+    "content_len_bytes": 1844621,
+    "response_time_sec": 16.95,
+    "notes": "Accessible"
+  },
+  {
+    "source_id": "SRC04",
+    "name": "World Bank Myanmar Food Price Estimates",
+    "url": "https://microdata.worldbank.org/index.php/catalog/4501/study-description",
+    "type": "price",
+    "status": 200,
+    "content_type": "text/html; charset=UTF-8",
+    "content_len_bytes": 76802,
+    "response_time_sec": 4.8,
+    "notes": "Accessible"
+  },
+  {
+    "source_id": "SRC05",
+    "name": "USDA FoodData Central API",
+    "url": "https://api.nal.usda.gov/fdc/v1/foods/search?api_key=DEMO_KEY&query=rice&pageSize=1",
+    "type": "nutrition",
+    "status": 200,
+    "content_type": "application/json;charset=UTF-8",
+    "content_len_bytes": 7522,
+    "response_time_sec": 2.69,
+    "notes": "Accessible"
+  },
+  {
+    "source_id": "SRC06",
+    "name": "FAO/INFOODS Food Composition Databases",
+    "url": "https://www.fao.org/food-composition/tables-and-databases/",
+    "type": "nutrition",
+    "status": 200,
+    "content_type": "text/html; charset=utf-8",
+    "content_len_bytes": 162760,
+    "response_time_sec": 5.07,
+    "notes": "Accessible"
+  },
+  {
+    "source_id": "SRC07",
+    "name": "Thai Food Composition Database",
+    "url": "https://inmu.mahidol.ac.th/thaifcd/",
+    "type": "nutrition",
+    "status": 200,
+    "content_type": "text/html; charset=UTF-8",
+    "content_len_bytes": 32833,
+    "response_time_sec": 5.33,
+    "notes": "Accessible"
+  },
+  {
+    "source_id": "SRC08",
+    "name": "Open Food Facts API",
+    "url": "https://world.openfoodfacts.org/api/v2/search?categories_tags_en=rice&page_size=1",
+    "type": "nutrition",
+    "status": 503,
+    "content_type": null,
+    "content_len_bytes": 0,
+    "response_time_sec": 3.02,
+    "notes": "HTTPError 503: Service Temporarily Unavailable"
+  }
+]

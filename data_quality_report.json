@@ -1,0 +1,56 @@
+{
+  "pipeline_version": "2.0.0-production",
+  "generated_at": "2026-10-18T15:46:36.574559",
+  "phase": "Phase 3 & 4 — Full Collection & Delivery (221 ingredients)",
+  "metrics": {
+    "total_input_ingredients": 221,
+    "ingredients_successfully_matched_to_nutrition": 221,
+    "nutrition_coverage_percentage": 100.0,
+    "ingredients_with_exact_nutrition_matches": 221,
+    "ingredients_with_approximate_nutrition_matches": 0,
+    "ingredients_missing_nutrition_data": 0,
+    "ingredients_with_at_least_one_price_observation": 109,
+    "price_coverage_percentage": 49.32,
+    "ingredients_with_usable_yangon_retail_prices": 107,
+    "yangon_retail_coverage_percentage": 48.42,
+    "ingredients_with_usable_mandalay_prices": 4,
+    "mandalay_coverage_percentage": 1.81,
+    "total_price_observations_recorded": 134,
+    "price_observations_by_source": {
+      "Myanmar Central Statistical Organization (CSO)": 23,
+      "Yangon Region Commodity Exchange": 12,
+      "Citymall Myanmar": 92,
+      "World Bank Myanmar Food Price Estimates": 7
+    },
+    "price_observations_by_month": {
+      "2026-10": 134
+    },
+    "duplicate_records_detected": 0,
+    "records_requiring_manual_review": 65,
+    "sources_inaccessible_or_rate_limited": [
+      {
+        "source_id": "SRC05",
+        "source_name": "USDA FoodData Central API",
+        "status": "HTTP 429 Too Many Requests on public DEMO_KEY",
+        "mitigation": "Cached analytical SR Legacy & Foundation Food parameters locally; recommend adding developer DATA_GOV_API_KEY environment variable."
+      },
+      {
+        "source_id": "SRC08",
+        "source_name": "Open Food Facts Search API",
+        "status": "HTTP 503 Service Temporarily Unavailable on search endpoint",
+        "mitigation": "Used barcode lookup and cached exact matches; prioritized official analytical food composition tables."
+      },
+      {
+        "source_id": "SRC06",
+        "source_name": "FAO/INFOODS Myanmar Table",
+        "status": "Print-only (1967) publication without open digital REST endpoint",
+        "mitigation": "Cross-referenced with USDA and ASEANFOODS regional tables."
+      }
+    ],
+    "licensing_restrictions_summary": [
+      "Citymall online supermarket listings are proprietary commercial prices; redistribution restricted to end-consumer pricing calculations without raw bulk commercial redistribution.",
+      "Thai Food Composition Database (INMU) permits academic/research reuse with attribution; commercial repackaging restricted.",
+      "World Bank (CC BY 4.0) and USDA FoodData Central (Public Domain) permit full distribution and commercial reuse with attribution."
+    ]
+  }
+}

@@ -1,0 +1,221 @@
+I0001	grain	ဆန်	Rice
+I0002	dairy	ထောပတ်	Butter
+I0003	oil	ဆီ	Cooking oil
+I0004	seasoning	ဆား	Salt
+I0005	seasoning	သကြား	Sugar
+I0006	vegetable	ကြက်သွန်နီ	Onion
+I0007	spice	ဇာတိပ္ဖိုလ်သီး	Nutmeg
+I0008	spice	သစ်ကြံပိုးခေါက်	Cinnamon bark
+I0009	spice	လေးညှင်းပွင့်	Cloves
+I0010	spice	ဖာလာစေ့	Cardamom pods
+I0011	herb	ကရဝေးရွက်	Bay leaves
+I0012	liquid	ရေနွေး	Hot water
+I0013	legume	ပဲနီလေး	Red lentils
+I0014	vegetable	မုန်လာဥနီ	Carrot
+I0015	vegetable	ပဲသီး	Green beans
+I0016	vegetable	ပဲစိမ်းလုံး	Green peas
+I0017	liquid	ရေ	Water
+I0018	fruit	အုန်းသီး	Coconut
+I0019	grain	ထမင်း	Cooked rice
+I0020	meat	ကြက်သား	Chicken meat
+I0021	seafood	ပုစွန်ခြောက်	Dried shrimp
+I0022	vegetable	ကြက်သွန်ဖြူ	Garlic
+I0023	sauce	ပဲငံပြာရည်အကြည်	Light soy sauce
+I0024	sauce	ပဲငံပြာရည်အနောက်	Dark soy sauce
+I0025	vegetable	ကြက်သွန်မြိတ်	Spring onion
+I0026	dairy	ကြက်ဥ	Chicken egg
+I0027	dairy	ဘဲဥ	Duck egg
+I0028	meat	ကြက်ရင်အုပ်သား	Chicken breast
+I0029	dairy	ဒိန်ချဉ်	Curd / Yogurt
+I0030	vegetable	ချင်း	Ginger
+I0031	spice	နံနံစေ့အမှုန့်	Coriander powder
+I0032	nut	ဗာဒံသီး	Almonds
+I0033	fruit	စပျစ်သီးခြောက်	Raisins
+I0034	spice	ဂုံမန်	Saffron
+I0035	liquid	နှင်းရည်	Rose water
+I0036	dairy	နွားနို့	Cow milk
+I0037	meat	ဝက်သားနုပ်နုပ်စဉ်း	Minced pork
+I0038	vegetable	ဟင်းနုနွယ်	Spinach
+I0039	spice	ငရုတ်ကောင်းမှုန့်	Ground black pepper
+I0040	egg	ဘဲဥ	Duck egg
+I0041	spice	ငရုတ်သီးခြောက်	Dried red chili
+I0042	vegetable	ခရမ်းချဉ်သီး	Tomato
+I0043	grain	ဂျုံမှုန့်	Wheat flour
+I0044	vegetable	ငရုတ်သီးစိမ်း	Green chili
+I0045	seasoning	ခရမ်းချဉ်သီးကက်ချပ်	Tomato ketchup
+I0046	fruit	နာနတ်သီး	Pineapple
+I0047	liquid	အရိုးပြုတ်ရည်	Bone broth
+I0048	seasoning	ပဲငါးပိ	Fermented soybean paste
+I0049	condiment	ရှာလကာရည်	Vinegar
+I0050	seasoning	ပဲငံပြာရည်	Soy sauce
+I0051	grain	ဂျုံပြောင်းမှုန့်	Cornstarch
+I0052	vegetable	သခွားသီး	Cucumber
+I0053	legume	ကုလားပဲ	Chickpeas
+I0054	spice	နံနံစေ့	Coriander seeds
+I0055	spice	ဇီယာ	Cumin seeds
+I0056	meat	ကြက်အသည်း	Chicken liver
+I0057	meat	ဘဲသား	Duck meat
+I0058	vegetable	ကြက်သွန်မြိတ်	Spring onion
+I0059	spice	စမုန်ပွင့်	Star anise
+I0060	liquid	ရှယ်ရီအရက်	Cooking wine
+I0061	seasoning	ပဲငါးပိရည်	Fermented soybean sauce
+I0062	spice	မုန်ညင်းစေ့	Mustard seeds
+I0063	grain	ကော်မှုန့်	Tapioca / starch flour
+I0064	meat	ဘဲမြစ်	Duck gizzard
+I0065	vegetable	ငရုတ်စိမ်းပွ	Green bell pepper
+I0066	oil	ကြက်ဆီ	Chicken fat
+I0067	oil	နှမ်းဆီ	Sesame oil
+I0068	meat	ဆိတ်သား	Mutton
+I0069	fruit	သင်္ဘောသီး	Green papaya
+I0070	spice	ငရုတ်ပွခြောက်	Dried mild chili
+I0071	dairy	ဂီးထောပတ်	Ghee
+I0072	seasoning	မန်ကျည်းသီး	Tamarind
+I0073	meat	ဆိတ်ကလီစာ	Mutton offal
+I0074	grain	ပေါင်မုန့်	Bread
+I0075	grain	ပေါင်မုန့်ကြွပ်မှုန့်	Breadcrumbs
+I0076	meat	အမဲသား	Beef
+I0077	legume	ပဲစိမ်း	Green peas
+I0078	vegetable	ခရမ်းသီး	Eggplant
+I0079	fruit	ရှောက်သီး	Lemon / Citron
+I0080	vegetable	တရုတ်မှိုခြောက်	Dried Chinese mushrooms
+I0081	spice	စမုန်နက်စေ့	Nigella seeds
+I0082	herb	ပင်စိမ်း	Basil
+I0083	herb	စပါးလင်	Lemongrass
+I0084	seasoning	ခရမ်းချဉ်သီးဆော့စ်	Tomato sauce
+I0085	meat	ဝက်သား	Pork
+I0086	fish_seafood	ငါးခူ	Catfish
+I0087	fish_seafood	ငါးသလောက်	Hilsa fish
+I0088	fish_seafood	ငါးကြင်း	Carp / Rohu
+I0089	condiment	ဆန်အရက်	Rice wine
+I0090	fish_seafood	ငါးဖယ်ခြစ်	Scraped featherback fish
+I0091	vegetable	နံနံပင်	Fresh coriander / cilantro
+I0092	meat_poultry	ဝက်အဆီ	Pork fat / Lard
+I0093	fish_seafood	ပုစွန်	Prawn / Shrimp
+I0094	vegetable	မျှစ်	Bamboo shoot
+I0095	fish_seafood	ကဏန်း	Crab
+I0096	condiment	ဂျင်းဝိုင်	Ginger wine
+I0097	dairy_liquid	အုန်းနို့	Coconut milk
+I0098	vegetable	ဆလတ်ရွက်	Lettuce
+I0099	fish_seafood	ရေဂျူ	Jellyfish
+I0100	vegetable	တရုတ်နံနံ	Chinese celery
+I0101	nuts_seeds	မြေပဲလှော်	Roasted peanuts
+I0102	fruit	သရက်သီးခြောက်	Dried mango
+I0103	spice	သနပ်မဆလာ	Pickle masala
+I0104	fruit	သရက်သီးစိမ်း	Raw green mango
+I0105	spice	ပဲနံ့သာစေ့	Fenugreek seeds
+I0106	fruit	သံပရာသီး	Lime
+I0107	nuts_seeds	ဘိန်းစေ့	Poppy seeds
+I0108	vegetable	ပန်းဂေါ်ဖီ	Cauliflower
+I0109	condiment	အချဉ်မှုန့်	Citric acid / Tartaric acid
+I0110	condiment	ဆိုဒီယမ်ဘင်ဆိုအိတ်	Sodium benzoate
+I0111	fruit	မာလကာသီး	Guava
+I0112	fruit	လိမ္မော်သီး	Orange
+I0113	oil	မုန်ညင်းဆီ	Mustard oil
+I0114	spice	နနွင်း	Turmeric powder
+I0115	sauce	ငံပြာရည်	Fish sauce
+I0116	sauce	ငရုတ်ချိုဆော့	Sweet chili sauce
+I0117	seafood	ပုစွန်ချဉ်	Fermented pickled shrimp
+I0118	condiment	မျှင်ငါးပိ	Shrimp paste
+I0119	produce	မြင်းခွာရွက်	Pennywort leaves
+I0120	dry_goods	နှမ်းဖတ်	Sesame press-cake pulp
+I0121	herb	ရှောက်ရွက်	Lime leaves
+I0122	seafood	ငါးကျည်း	Spiny catfish
+I0123	produce	ကန်စွန်းရွက်	Water spinach
+I0124	condiment	စိမ်းစားငါးပိ	Edible boiled fish paste
+I0125	produce	ကျောက်ဖရုံသီး	Ash gourd
+I0126	meat	ဝက်နံရိုး	Pork ribs
+I0127	produce	မန်ကျည်းရွက်	Tamarind leaves
+I0128	dry_goods	ထန်းလျက်	Palm jaggery
+I0129	produce	ချဉ်ပေါင်	Roselle leaves
+I0130	produce	မုန်ညင်းစိမ်း	Green mustard greens
+I0131	produce	မယ်ဇလီဖူး	Cassia flower buds
+I0132	produce	ခရမ်းကစော့သီး	Pea eggplant
+I0133	produce	မုန်လာဥဖြူ	White radish
+I0134	produce	ရုံးပတီသီး	Okra
+I0135	produce	ဘူးသီး	Bottle gourd
+I0136	produce	ဂေါ်ဖီထုတ်	Cabbage
+I0137	herb	ပျဉ်းတော်သိမ်	Curry leaves
+I0138	produce	ပဲရွက်	Pea tendril / Bean leaves
+I0139	produce	မုန်ညင်းဖြူ	Napa cabbage
+I0140	dry_goods	ပဲပြား	Tofu
+I0141	egg	ငုံးဥ	Quail eggs
+I0142	seafood	ငါးတန်ခေါင်း	Pangasius fish head
+I0143	seafood	ငါးရူ	Rohu fish
+I0144	produce	ပဲတောင့်ရှည်	Yardlong beans
+I0145	produce	မျှစ်ချဉ်	Sour bamboo shoots
+I0146	condiment	ရှောက်ရည်	Lemon juice
+I0147	dry_goods	ကျောက်ကျောမှုန့်	Agar-agar powder
+I0148	produce	ပန်းသီး	Apple
+I0149	produce	ငှက်ပျောသီး	Banana
+I0150	produce	စတော်ဘယ်ရီ	Strawberry
+I0151	condiment	သစ်ခွဖျော်ရည်	Orchid nectar syrup
+I0152	condiment	လိုင်ချီး	Lychee syrup
+I0153	condiment	စပျစ်ရည်	Grape syrup
+I0154	condiment	အစာအရောင်ဆိုးဆေး	Food coloring
+I0155	dry_goods	ချောကလက်မှုန့်	Cocoa powder
+I0156	dry_goods	သာကူစေ့	Sago pearls
+I0157	herb	ဆွမ်းမွှေးရွက်	Pandan leaves
+I0158	grain	ရွှေကြည်	Semolina
+I0159	produce	အာလူး	Potato
+I0160	grain	ကွေကာအုပ်	Rolled oats
+I0161	dairy	နို့မှုန့်	Milk powder
+I0162	produce	ရွှေဖရုံသီး	Pumpkin
+I0163	dry_goods	ကောက်ညှင်း	Glutinous rice
+I0164	dry_goods	မုန့်ဖုတ်ဆော်ဒါ	Baking soda
+I0165	condiment	ထုံးကျောက်တက်ရည်	Limewater
+I0166	produce	ငှက်ပျောဖက်	Banana leaves
+I0167	dairy	နို့ဆီ	Sweetened condensed milk
+I0168	dairy	နို့စိမ်း	Evaporated milk
+I0169	dry_goods	မုန့်လုပ်ဆောင်းဖတ်	Rice droplets (Cendol pods)
+I0170	dry_goods	မြေပဲ	Peanuts
+I0171	dry_goods	နှမ်း	Sesame seeds
+I0172	dry_goods	မတ်ပဲ	Black gram
+I0173	dry_goods	စားတော်ပဲ	Yellow split peas
+I0174	condiment	ရနံ့မွှေးဆီ	Flavouring essence
+I0175	condiment	ရေခဲ	Ice cubes
+I0176	dry_goods	ဆန်လှော်မှုန့်	Toasted rice powder
+I0177	dry_goods	မုန့်ဟင်းခါးဖတ်	Mohinga rice vermicelli
+I0178	dry_goods	ဂျုံခေါက်ဆွဲ	Wheat noodles
+I0179	seafood	ငါးရွှေ	Pike conger eel
+I0180	produce	ပဒဲကော	Galangal
+I0181	condiment	ဆီတို့ဟူး	Fermented bean curd
+I0182	dry_goods	ကျောက်ပွင့်	Snow fungus (Edible seaweed)
+I0183	dry_goods	ပန်းခြောက်	Dried daylily buds
+I0184	dry_goods	ကြာဆံ	Glass noodles
+I0185	meat	ကြွပ်ဆိုင်	Pork cracklings
+I0186	dry_goods	မုန့်ကြွပ်	Crispy crackers
+I0187	dry_goods	ရှမ်းခေါက်ဆွဲ	Shan rice noodles
+I0188	condiment	မုန်လာဉ်ချဉ်	Pickled mustard greens
+I0189	dry_goods	မြီးရှည်ဖတ်	Mee shay rice noodles
+I0190	dry_goods	တဆေး	Yeast
+I0191	dairy	မာဂျရင်း	Margarine
+I0192	sauce	မရိုးနိစ်ဆော့စ်	Mayonnaise
+I0193	dairy	ဒိန်ခဲ	Cheese
+I0194	dry_goods	ဘေကင်ပေါင်ဒါ	Baking powder
+I0195	dry_goods	ရှောက်ယို	Candied citron peel
+I0196	dry_goods	ဆိုဒါမှုန့်	Baking soda
+I0197	seasoning	သကြားမှုန့်	Icing sugar
+I0198	dairy	ဒိန်ချဉ်	Yogurt
+I0199	grain	အာတာဂျုံ	Atta flour
+I0200	grain	ဂျုံချော	All-purpose flour (Maida)
+I0201	vegetable	မြေစာဥ	Water chestnut
+I0202	sauce	အရက်	Cooking wine
+I0203	grain	ဖက်ထုပ်ရွက်	Wonton wrappers
+I0204	sauce	ပဲငါးပိရည်	Fermented bean paste sauce
+I0205	liquid	ရှယ်ရီအရက်	Sherry cooking wine
+I0206	nut	သီဟိုဠ်စေ့	Cashew nuts
+I0207	seasoning	ပျားရည်	Honey
+I0208	nut	နှမ်းနက်စေ့	Black sesame seeds
+I0209	spice	မုန်ညင်းစေ့	Mustard seeds
+I0210	grain	ကော်ပြန့်ရွက်	Spring roll wrappers
+I0211	sauce	ခရုဆီ	Oyster sauce
+I0212	fruit	ချယ်ရီသီး	Glacé cherries
+I0213	seasoning	ဗနီလာရနံ့	Vanilla essence
+I0214	vegetable	ဘိုစားပဲ	French beans (Green beans)
+I0215	seafood	ပင်လယ်ငါး	Marine fish
+I0216	dry_goods	ဘီစကစ်	Plain baby biscuit
+I0217	liquid	လိမ္မော်ရည်	Orange juice
+I0218	dry_goods	ပီလောပီနံမှုန့်	Tapioca starch (Cassava flour)
+I0219	seasoning	သကာရည်	Caramel syrup (Golden syrup)
+I0220	fish_seafood	ငါးရံ့	Striped snakehead fish
+I0221	meat	ဆိတ်ရိုး	Mutton soup bone
