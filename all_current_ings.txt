@@ -1,0 +1,213 @@
+I0001 | ဆန် | Rice
+I0002 | ထောပတ် | Butter
+I0003 | ဆီ | Cooking oil
+I0004 | ဆား | Salt
+I0005 | သကြား | Sugar
+I0006 | ကြက်သွန်နီ | Onion
+I0007 | ဇာတိပ္ဖိုလ်သီး | Nutmeg
+I0008 | သစ်ကြံပိုးခေါက် | Cinnamon bark
+I0009 | လေးညှင်းပွင့် | Cloves
+I0010 | ဖာလာစေ့ | Cardamom pods
+I0011 | ကရဝေးရွက် | Bay leaves
+I0012 | ရေနွေး | Hot water
+I0013 | ပဲနီလေး | Red lentils
+I0014 | မုန်လာဥနီ | Carrot
+I0015 | ပဲသီး | Green beans
+I0016 | ပဲစိမ်းလုံး | Green peas
+I0017 | ရေ | Water
+I0018 | အုန်းသီး | Coconut
+I0019 | ထမင်း | Cooked rice
+I0020 | ကြက်သား | Chicken meat
+I0021 | ပုစွန်ခြောက် | Dried shrimp
+I0022 | ကြက်သွန်ဖြူ | Garlic
+I0023 | ပဲငံပြာရည်အကြည် | Light soy sauce
+I0024 | ပဲငံပြာရည်အနောက် | Dark soy sauce
+I0025 | ကြက်သွန်မြိတ် | Spring onion
+I0026 | ကြက်ဥ | Chicken egg
+I0027 | ဘဲဥ | Duck egg
+I0028 | ကြက်ရင်အုပ်သား | Chicken breast
+I0029 | ဒိန်ချဉ် | Curd / Yogurt
+I0030 | ချင်း | Ginger
+I0031 | နံနံစေ့အမှုန့် | Coriander powder
+I0032 | ဗာဒံသီး | Almonds
+I0033 | စပျစ်သီးခြောက် | Raisins
+I0034 | ဂုံမန် | Saffron
+I0035 | နှင်းရည် | Rose water
+I0036 | နွားနို့ | Cow milk
+I0037 | ဝက်သားနုပ်နုပ်စဉ်း | Minced pork
+I0038 | ဟင်းနုနွယ် | Spinach
+I0039 | ငရုတ်ကောင်းမှုန့် | Ground black pepper
+I0040 | ဘဲဥ | Duck egg
+I0041 | ငရုတ်သီးခြောက် | Dried red chili
+I0042 | ခရမ်းချဉ်သီး | Tomato
+I0043 | ဂျုံမှုန့် | Wheat flour
+I0044 | ငရုတ်သီးစိမ်း | Green chili
+I0045 | ခရမ်းချဉ်သီးကက်ချပ် | Tomato ketchup
+I0046 | နာနတ်သီး | Pineapple
+I0047 | အရိုးပြုတ်ရည် | Bone broth
+I0048 | ပဲငါးပိ | Fermented soybean paste
+I0049 | ရှာလကာရည် | Vinegar
+I0050 | ပဲငံပြာရည် | Soy sauce
+I0051 | ဂျုံပြောင်းမှုန့် | Cornstarch
+I0052 | သခွားသီး | Cucumber
+I0053 | ကုလားပဲ | Chickpeas
+I0054 | နံနံစေ့ | Coriander seeds
+I0055 | ဇီယာ | Cumin seeds
+I0056 | ကြက်အသည်း | Chicken liver
+I0057 | ဘဲသား | Duck meat
+I0058 | ကြက်သွန်မြိတ် | Spring onion
+I0059 | စမုန်ပွင့် | Star anise
+I0060 | ရှယ်ရီအရက် | Cooking wine
+I0061 | ပဲငါးပိရည် | Fermented soybean sauce
+I0062 | မုန်ညင်းစေ့ | Mustard seeds
+I0063 | ကော်မှုန့် | Tapioca / starch flour
+I0064 | ဘဲမြစ် | Duck gizzard
+I0065 | ငရုတ်စိမ်းပွ | Green bell pepper
+I0066 | ကြက်ဆီ | Chicken fat
+I0067 | နှမ်းဆီ | Sesame oil
+I0068 | ဆိတ်သား | Mutton
+I0069 | သင်္ဘောသီး | Green papaya
+I0070 | ငရုတ်ပွခြောက် | Dried mild chili
+I0071 | ဂီးထောပတ် | Ghee
+I0072 | မန်ကျည်းသီး | Tamarind
+I0073 | ဆိတ်ကလီစာ | Mutton offal
+I0074 | ပေါင်မုန့် | Bread
+I0075 | ပေါင်မုန့်ကြွပ်မှုန့် | Breadcrumbs
+I0076 | အမဲသား | Beef
+I0077 | ပဲစိမ်း | Green peas
+I0078 | ခရမ်းသီး | Eggplant
+I0079 | ရှောက်သီး | Lemon / Citron
+I0080 | တရုတ်မှိုခြောက် | Dried Chinese mushrooms
+I0081 | စမုန်နက်စေ့ | Nigella seeds
+I0082 | ပင်စိမ်း | Basil
+I0083 | စပါးလင် | Lemongrass
+I0084 | ခရမ်းချဉ်သီးဆော့စ် | Tomato sauce
+I0085 | ဝက်သား | Pork
+I0086 | ငါးခူ | Catfish
+I0087 | ငါးသလောက် | Hilsa fish
+I0088 | ငါးကြင်း | Carp / Rohu
+I0089 | ဆန်အရက် | Rice wine
+I0090 | ငါးဖယ်ခြစ် | Scraped featherback fish
+I0091 | နံနံပင် | Fresh coriander / cilantro
+I0092 | ဝက်အဆီ | Pork fat / Lard
+I0093 | ပုစွန် | Prawn / Shrimp
+I0094 | မျှစ် | Bamboo shoot
+I0095 | ကဏန်း | Crab
+I0096 | ဂျင်းဝိုင် | Ginger wine
+I0097 | အုန်းနို့ | Coconut milk
+I0098 | ဆလတ်ရွက် | Lettuce
+I0099 | ရေဂျူ | Jellyfish
+I0100 | တရုတ်နံနံ | Chinese celery
+I0101 | မြေပဲလှော် | Roasted peanuts
+I0102 | သရက်သီးခြောက် | Dried mango
+I0103 | သနပ်မဆလာ | Pickle masala
+I0104 | သရက်သီးစိမ်း | Raw green mango
+I0105 | ပဲနံ့သာစေ့ | Fenugreek seeds
+I0106 | သံပရာသီး | Lime
+I0107 | ဘိန်းစေ့ | Poppy seeds
+I0108 | ပန်းဂေါ်ဖီ | Cauliflower
+I0109 | အချဉ်မှုန့် | Citric acid / Tartaric acid
+I0110 | ဆိုဒီယမ်ဘင်ဆိုအိတ် | Sodium benzoate
+I0111 | မာလကာသီး | Guava
+I0112 | လိမ္မော်သီး | Orange
+I0113 | မုန်ညင်းဆီ | Mustard oil
+I0114 | နနွင်း | Turmeric powder
+I0115 | ငံပြာရည် | Fish sauce
+I0116 | ငရုတ်ချိုဆော့ | Sweet chili sauce
+I0117 | ပုစွန်ချဉ် | Fermented pickled shrimp
+I0118 | မျှင်ငါးပိ | Shrimp paste
+I0119 | မြင်းခွာရွက် | Pennywort leaves
+I0120 | နှမ်းဖတ် | Sesame press-cake pulp
+I0121 | ရှောက်ရွက် | Lime leaves
+I0122 | ငါးကျည်း | Spiny catfish
+I0123 | ကန်စွန်းရွက် | Water spinach
+I0124 | စိမ်းစားငါးပိ | Edible boiled fish paste
+I0125 | ကျောက်ဖရုံသီး | Ash gourd
+I0126 | ဝက်နံရိုး | Pork ribs
+I0127 | မန်ကျည်းရွက် | Tamarind leaves
+I0128 | ထန်းလျက် | Palm jaggery
+I0129 | ချဉ်ပေါင် | Roselle leaves
+I0130 | မုန်ညင်းစိမ်း | Green mustard greens
+I0131 | မယ်ဇလီဖူး | Cassia flower buds
+I0132 | ခရမ်းကစော့သီး | Pea eggplant
+I0133 | မုန်လာဥဖြူ | White radish
+I0134 | ရုံးပတီသီး | Okra
+I0135 | ဘူးသီး | Bottle gourd
+I0136 | ဂေါ်ဖီထုတ် | Cabbage
+I0137 | ပျဉ်းတော်သိမ် | Curry leaves
+I0138 | ပဲရွက် | Pea tendril / Bean leaves
+I0139 | မုန်ညင်းဖြူ | Napa cabbage
+I0140 | ပဲပြား | Tofu
+I0141 | ငုံးဥ | Quail eggs
+I0142 | ငါးတန်ခေါင်း | Pangasius fish head
+I0143 | ငါးရူ | Rohu fish
+I0144 | ပဲတောင့်ရှည် | Yardlong beans
+I0145 | မျှစ်ချဉ် | Sour bamboo shoots
+I0146 | ရှောက်ရည် | Lemon juice
+I0147 | ကျောက်ကျောမှုန့် | Agar-agar powder
+I0148 | ပန်းသီး | Apple
+I0149 | ငှက်ပျောသီး | Banana
+I0150 | စတော်ဘယ်ရီ | Strawberry
+I0151 | သစ်ခွဖျော်ရည် | Orchid nectar syrup
+I0152 | လိုင်ချီး | Lychee syrup
+I0153 | စပျစ်ရည် | Grape syrup
+I0154 | အစာအရောင်ဆိုးဆေး | Food coloring
+I0155 | ချောကလက်မှုန့် | Cocoa powder
+I0156 | သာကူစေ့ | Sago pearls
+I0157 | ဆွမ်းမွှေးရွက် | Pandan leaves
+I0158 | ရွှေကြည် | Semolina
+I0159 | အာလူး | Potato
+I0160 | ကွေကာအုပ် | Rolled oats
+I0161 | နို့မှုန့် | Milk powder
+I0162 | ရွှေဖရုံသီး | Pumpkin
+I0163 | ကောက်ညှင်း | Glutinous rice
+I0164 | မုန့်ဖုတ်ဆော်ဒါ | Baking soda
+I0165 | ထုံးကျောက်တက်ရည် | Limewater
+I0166 | ငှက်ပျောဖက် | Banana leaves
+I0167 | နို့ဆီ | Sweetened condensed milk
+I0168 | နို့စိမ်း | Evaporated milk
+I0169 | မုန့်လုပ်ဆောင်းဖတ် | Rice droplets (Cendol pods)
+I0170 | မြေပဲ | Peanuts
+I0171 | နှမ်း | Sesame seeds
+I0172 | မတ်ပဲ | Black gram
+I0173 | စားတော်ပဲ | Yellow split peas
+I0174 | ရနံ့မွှေးဆီ | Flavouring essence
+I0175 | ရေခဲ | Ice cubes
+I0176 | ဆန်လှော်မှုန့် | Toasted rice powder
+I0177 | မုန့်ဟင်းခါးဖတ် | Mohinga rice vermicelli
+I0178 | ဂျုံခေါက်ဆွဲ | Wheat noodles
+I0179 | ငါးရွှေ | Pike conger eel
+I0180 | ပဒဲကော | Galangal
+I0181 | ဆီတို့ဟူး | Fermented bean curd
+I0182 | ကျောက်ပွင့် | Snow fungus (Edible seaweed)
+I0183 | ပန်းခြောက် | Dried daylily buds
+I0184 | ကြာဆံ | Glass noodles
+I0185 | ကြွပ်ဆိုင် | Pork cracklings
+I0186 | မုန့်ကြွပ် | Crispy crackers
+I0187 | ရှမ်းခေါက်ဆွဲ | Shan rice noodles
+I0188 | မုန်လာဉ်ချဉ် | Pickled mustard greens
+I0189 | မြီးရှည်ဖတ် | Mee shay rice noodles
+I0190 | တဆေး | Yeast
+I0191 | မာဂျရင်း | Margarine
+I0192 | မရိုးနိစ်ဆော့စ် | Mayonnaise
+I0193 | ဒိန်ခဲ | Cheese
+I0194 | ဘေကင်ပေါင်ဒါ | Baking powder
+I0195 | ရှောက်ယို | Candied citron peel
+I0196 | ဆိုဒါမှုန့် | Baking soda
+I0197 | သကြားမှုန့် | Icing sugar
+I0198 | ဒိန်ချဉ် | Yogurt
+I0199 | အာတာဂျုံ | Atta flour
+I0200 | ဂျုံချော | All-purpose flour (Maida)
+I0201 | မြေစာဥ | Water chestnut
+I0202 | အရက် | Cooking wine
+I0203 | ဖက်ထုပ်ရွက် | Wonton wrappers
+I0204 | ပဲငါးပိရည် | Fermented bean paste sauce
+I0205 | ရှယ်ရီအရက် | Sherry cooking wine
+I0206 | သီဟိုဠ်စေ့ | Cashew nuts
+I0207 | ပျားရည် | Honey
+I0208 | နှမ်းနက်စေ့ | Black sesame seeds
+I0209 | မုန်ညင်းစေ့ | Mustard seeds
+I0210 | ကော်ပြန့်ရွက် | Spring roll wrappers
+I0211 | ခရုဆီ | Oyster sauce
+I0212 | ချယ်ရီသီး | Glacé cherries
+I0213 | ဗနီလာရနံ့ | Vanilla essence

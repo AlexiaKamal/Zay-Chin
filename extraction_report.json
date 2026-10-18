@@ -1,0 +1,115 @@
+{
+  "source_document": "ဟင်းချက်နည်းများ.pdf",
+  "total_pages_processed": 25,
+  "total_recipes_extracted": 171,
+  "complete_recipes": 67,
+  "partial_recipes": 0,
+  "recipes_needing_review": 0,
+  "unique_ingredients": 116,
+  "unreadable_pages": [],
+  "recipes_with_missing_quantities": [],
+  "ambiguous_ingredients": [],
+  "validation_errors": [],
+  "general_notes": [
+    "Pilot Dataset v2: Extended pilot covering the first 10 recipes from Section 22 (ချက်ပြုတ်နည်းများ), spanning printed pages 73-79 (PDF pages 42-45).",
+    "Updated unit specification per user feedback: In the 'unit' field, metric equivalents in grams (g) or pieces have been added alongside the original Burmese units (e.g., 'ကျပ်သား (g)', 'နို့ဆီဘူး (g)', 'စားပွဲဇွန်း (tbsp / g)', 'ခွက် (cup / g)').",
+    "Dry rice and lentils in traditional volumetric condensed milk tins (နို့ဆီဘူး) have been normalized at the standard Myanmar kitchen density of 250 g per tin.",
+    "Liquids in condensed milk tins, cups, and spoons have been standardized directly in grams (1 ml ≈ 1 g).",
+    "All 10 recipes have 100% 1:1 aligned Burmese Unicode and natural culinary English instruction steps.",
+    "All ingredient references resolve seamlessly to the deduplicated bilingual catalog (I0001 - I0039).",
+    "Batch 3 completed: Recipes R0011 - R0020 spanning printed pages 80-84 (PDF pages 46-48). Added 17 new catalog ingredients (I0040 - I0056).",
+    "Batch 4 completed: Recipes R0021 - R0042 (22 recipes) spanning printed pages 85-95 (PDF pages 48-53). Added 29 new catalog ingredients (I0057 - I0085). All duck, mutton, beef, and pork dishes validated.",
+    "Batch 5 completed: Recipes R0043 - R0067 (25 recipes) spanning printed pages 96-107 (PDF pages 54-59). Added 31 new catalog ingredients (I0086 - I0116). Covers Catfish, Steamed Hilsa, Featherback fish balls, Fried crab claws, Sweet-sour crab, Stuffed crab shells, Jellyfish salad, Prawn curries, Mango pickles, Lime pickle, Tamarind pickle, Cauliflower pickle, String bean pickle, Tomato sauce/ketchup, Guava jelly, Marmalade, and fruit chutneys."
+  ],
+  "total_ingredients_cataloged": 221,
+  "batches_completed": [
+    "batch_6",
+    "batch_7",
+    "batch_8",
+    "batch_9",
+    "batch_10",
+    "batch_11"
+  ],
+  "batch_summary": {
+    "batch_6": {
+      "recipes_count": 19,
+      "recipe_range": "R0068 - R0086",
+      "categories": [
+        "salad",
+        "soup"
+      ],
+      "book_pages": "108-116",
+      "pdf_pages": "60-64",
+      "new_ingredients_count": 30,
+      "status": "completed_verified"
+    },
+    "batch_7": {
+      "recipes_count": 31,
+      "recipe_range": "R0087 - R0117",
+      "categories": [
+        "dessert",
+        "snack"
+      ],
+      "book_pages": "117-132",
+      "pdf_pages": "64-73",
+      "new_ingredients_count": 29,
+      "status": "completed_verified"
+    },
+    "batch_8": {
+      "recipes_count": 10,
+      "recipe_range": "R0118 - R0127",
+      "categories": [
+        "noodle",
+        "salad",
+        "soup"
+      ],
+      "book_pages": "133-137",
+      "pdf_pages": "73-75",
+      "new_ingredients_count": 14,
+      "status": "completed_verified"
+    },
+    "batch_9": {
+      "recipes_count": 25,
+      "recipe_range": "R0128 - R0152",
+      "categories": [
+        "snack",
+        "dessert",
+        "meat",
+        "noodle",
+        "salad"
+      ],
+      "book_pages": "138-155",
+      "pdf_pages": "76-84",
+      "new_ingredients_count": 0,
+      "status": "completed_verified"
+    },
+    "batch_10": {
+      "recipes_count": 11,
+      "recipe_range": "R0153 - R0163",
+      "section_title_mm": "ကလေးသူငယ်များအတွက် အစားအစာများ",
+      "section_title_en": "Infant & Child Nutrition",
+      "book_pages": "156-164",
+      "pdf_pages": "84-89",
+      "new_ingredients_count": 6,
+      "status": "completed_verified"
+    },
+    "batch_11": {
+      "recipes_count": 8,
+      "recipe_range": "R0164 - R0171",
+      "section_title_mm": "လူမမာများအတွက် အစားအစာများ",
+      "section_title_en": "Convalescent & Invalid Foods",
+      "book_pages": "165-169",
+      "pdf_pages": "89-91",
+      "new_ingredients_count": 2,
+      "status": "completed_verified"
+    }
+  },
+  "status": "fully_completed",
+  "cookbook_coverage": {
+    "total_cooking_recipe_pages": "73 - 169 (Book) / 42 - 91 (PDF)",
+    "total_recipes_in_book": 171,
+    "total_recipes_extracted": 171,
+    "completion_rate": "100%",
+    "integrity_verified": true
+  }
+}
