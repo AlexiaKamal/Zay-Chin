@@ -11,6 +11,14 @@ build/
 dist/
 *.egg-info/
 .pytest_cache/
+.env
+backend/.env
+frontend/.env*
+*.db
+*.sqlite3
+node_modules/
+.next/
+.vercel/
 
 # Large Raw Media & Image Crops (Cookbook source scans & debug crops)
 *.pdf
