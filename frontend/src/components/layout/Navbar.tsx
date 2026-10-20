@@ -11,6 +11,7 @@ import {
   MenuIcon,
   XIcon,
   SparklesIcon,
+  UserIcon,
 } from "@/components/ui/Icons";
 
 export function Navbar() {
@@ -103,6 +104,15 @@ export function Navbar() {
             >
               <GlobeIcon className="w-3.5 h-3.5 text-emerald-700" />
               <span>{language === "en" ? "မြန်မာ" : "English"}</span>
+            </button>
+
+            {/* User Profile */}
+            <button
+              type="button"
+              className="flex items-center justify-center w-8 h-8 rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 transition-colors shadow-xs"
+              title={language === "mm" ? "အကောင့် / အသုံးပြုသူ" : "User Profile"}
+            >
+              <UserIcon className="w-4 h-4 text-stone-600" />
             </button>
           </div>
 

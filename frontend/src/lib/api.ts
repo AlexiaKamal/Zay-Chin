@@ -1,5 +1,7 @@
 import { RecipeListResponse, RecipeDetail, CategoryCount, Market } from "@/types";
 
+import { queryLocalRecipes, getLocalRecipeDetail, getLocalCategories } from "./local-recipes";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8001";
 
 export async function getRecipes(params: {
@@ -13,24 +15,33 @@ export async function getRecipes(params: {
   festival?: string;
   city?: string;
 }): Promise<RecipeListResponse> {
-  const query = new URLSearchParams();
-  if (params.page) query.set("page", params.page.toString());
-  if (params.pageSize) query.set("page_size", params.pageSize.toString());
-  if (params.search) query.set("search", params.search);
-  if (params.category) query.set("category", params.category);
-  if (params.mealType) query.set("meal_type", params.mealType);
-  if (params.dietary) query.set("dietary", params.dietary);
-  if (params.seasonal) query.set("seasonal", params.seasonal);
-  if (params.festival) query.set("festival", params.festival);
-  if (params.city) query.set("city", params.city);
+  try {
+    const query = new URLSearchParams();
+    if (params.page) query.set("page", params.page.toString());
+    if (params.pageSize) query.set("page_size", params.pageSize.toString());
+    if (params.search) query.set("search", params.search);
+    if (params.category) query.set("category", params.category);
+    if (params.mealType) query.set("meal_type", params.mealType);
+    if (params.dietary) query.set("dietary", params.dietary);
+    if (params.seasonal) query.set("seasonal", params.seasonal);
+    if (params.festival) query.set("festival", params.festival);
+    if (params.city) query.set("city", params.city);
 
-  const res = await fetch(`${API_BASE}/api/v1/recipes?${query.toString()}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    throw new Error(`Failed to fetch recipes: ${res.statusText}`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+    const res = await fetch(`${API_BASE}/api/v1/recipes?${query.toString()}`, {
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch {
+    // API server offline, use high-speed authentic local fallback
   }
-  return res.json();
+
+  return queryLocalRecipes(params);
 }
 
 export async function getRecipeDetail(
@@ -38,27 +49,49 @@ export async function getRecipeDetail(
   servings?: number,
   city: string = "Yangon"
 ): Promise<RecipeDetail> {
-  const query = new URLSearchParams();
-  if (servings) query.set("servings", servings.toString());
-  query.set("city", city);
+  try {
+    const query = new URLSearchParams();
+    if (servings) query.set("servings", servings.toString());
+    query.set("city", city);
 
-  const res = await fetch(`${API_BASE}/api/v1/recipes/${id}?${query.toString()}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    throw new Error(`Failed to fetch recipe ${id}: ${res.statusText}`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+    const res = await fetch(`${API_BASE}/api/v1/recipes/${id}?${query.toString()}`, {
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch {
+    // Fallback
   }
-  return res.json();
+
+  const local = getLocalRecipeDetail(id, servings, city);
+  if (!local) {
+    throw new Error(`Recipe with id ${id} not found`);
+  }
+  return local;
 }
 
 export async function getCategories(): Promise<CategoryCount[]> {
-  const res = await fetch(`${API_BASE}/api/v1/recipes/categories`, {
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    throw new Error(`Failed to fetch categories: ${res.statusText}`);
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+    const res = await fetch(`${API_BASE}/api/v1/recipes/categories`, {
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch {
+    // Fallback
   }
-  return res.json();
+
+  return getLocalCategories();
 }
 
 export async function getMarkets(city?: string): Promise<Market[]> {

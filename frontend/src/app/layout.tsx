@@ -2,13 +2,16 @@ import React from "react";
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { Navbar } from "@/components/layout/Navbar";
+import { FestivalBanner } from "@/components/FestivalBanner";
+import { ThemePreview } from "@/components/ThemePreview";
 import { Footer } from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
-  title: "Zay Chin (ဈေးခြင်း) — Intelligent Myanmar Meal Planning & Budgeting",
-  description: "Plan authentic Myanmar meals, calculate real-time grocery costs in MMK from verified market observations, and optimize nutrition with zero hallucinated pricing.",
-  keywords: "Myanmar recipes, Burmese food, meal planner, Yangon grocery prices, Mandalay market, Zay Chin, Daw San Lay, ချက်ပြုတ်နည်းများ, ဈေးခြင်း",
+  title: "Zay Chin (ဈေးခြင်း) — Living Seasons: Intelligent Myanmar Meal Planning & Seasonal Calendar",
+  description: "Authentic Myanmar meal planning automatically adapted to Myanmar lunar calendar months, Thingyan, Thadingyut, and traditional seasonal festivals. Verified 2026 market prices and laboratory nutrition.",
+  keywords: "Myanmar recipes, Burmese food, Myanmar lunar calendar, Living seasons, Thingyan, Thadingyut, Tazaungdaing, Waso, Daw San Lay, ချက်ပြုတ်နည်းများ, ဈေးခြင်း, မြန်မာ့ဆယ့်နှစ်လရာသီ",
 };
 
 export default function RootLayout({
@@ -26,15 +29,19 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-[#faf8f5] text-stone-900 font-sans antialiased flex flex-col selection:bg-emerald-100 selection:text-emerald-900">
+      <body className="min-h-screen bg-[var(--color-background)] text-[var(--color-text)] font-sans antialiased flex flex-col selection:bg-amber-100 selection:text-amber-900">
         <AppProvider>
-          <React.Suspense fallback={<div className="h-16 bg-white border-b border-stone-200" />}>
-            <Navbar />
-          </React.Suspense>
-          <main className="flex-grow">
-            {children}
-          </main>
-          <Footer />
+          <ThemeProvider>
+            <React.Suspense fallback={<div className="h-16 bg-white border-b border-stone-200" />}>
+              <Navbar />
+              <FestivalBanner />
+            </React.Suspense>
+            <main className="flex-grow">
+              {children}
+            </main>
+            <Footer />
+            <ThemePreview />
+          </ThemeProvider>
         </AppProvider>
       </body>
     </html>
