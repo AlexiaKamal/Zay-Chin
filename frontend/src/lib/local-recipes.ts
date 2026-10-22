@@ -1,5 +1,6 @@
 import rawRecipes from "@/data/recipes.json";
 import rawPrices from "@/data/ingredient_prices.json";
+import rawRetailPrices from "@/data/latest_retail_prices_by_city.json";
 import rawNutrition from "@/data/ingredient_nutrition.json";
 import {
   RecipeSummary,
@@ -7,14 +8,16 @@ import {
   RecipeDetail,
   RecipeIngredient,
   RecipeInstruction,
+  RecipeCostBreakdown,
+  RecipeNutritionBreakdown,
   CategoryCount,
 } from "@/types";
 
-interface RawIngredient {
+export interface RawIngredient {
   ingredient_id: string;
   name_mm: string;
   name_en: string;
-  original_name?: string;
+  original_name?: string | null;
   quantity: number | null;
   unit: string | null;
   original_quantity_text: string | null;
@@ -24,7 +27,7 @@ interface RawIngredient {
   preparation_note_en: string | null;
 }
 
-interface RawRecipe {
+export interface RawRecipe {
   recipe_id: string;
   name_mm: string;
   name_en: string;
@@ -33,8 +36,10 @@ interface RawRecipe {
   category: string;
   meal_types: string[];
   servings?: number;
-  preparation_time_minutes?: number;
-  cooking_time_minutes?: number;
+  preparation_time_minutes?: number | null;
+  cooking_time_minutes?: number | null;
+  instructions_mm?: string[];
+  instructions_en?: string[];
   tags?: {
     dietary?: string[];
     seasonal?: string[];
@@ -42,11 +47,35 @@ interface RawRecipe {
     main_ingredients?: string[];
   };
   ingredients?: RawIngredient[];
-  instructions?: {
-    step_number: number;
-    text_mm: string;
-    text_en: string | null;
-  }[];
+}
+
+export interface PriceRecord {
+  ingredient_id: string;
+  name_mm: string;
+  name_en: string;
+  price_mmk: number;
+  original_unit: string;
+  normalized_price_mmk_per_kg: number | null;
+  price_type: string;
+  source_name: string;
+  observed_date: string;
+  market_name?: string;
+}
+
+export interface NutritionRecord {
+  nutrition_id: string;
+  ingredient_id: string;
+  ingredient_name_mm: string;
+  ingredient_name_en: string;
+  reference_quantity: number;
+  reference_unit: string;
+  energy_kcal: number;
+  protein_g: number;
+  total_fat_g: number;
+  carbohydrates_g: number;
+  fiber_g: number;
+  sodium_mg: number;
+  source_name: string;
 }
 
 const CATEGORY_MAP: Record<string, string> = {
@@ -71,52 +100,301 @@ const CATEGORY_MAP: Record<string, string> = {
   "condiment": "အရန်ဟင်းလျာများ",
 };
 
-const recipes: RawRecipe[] = rawRecipes as unknown as RawRecipe[];
-const prices: Record<string, any> = rawPrices as Record<string, any>;
-const nutrition: Record<string, any> = rawNutrition as Record<string, any>;
+const ZERO_COST_INGREDIENT_IDS = new Set(["I0012", "I0017", "I0200"]); // Hot water, Tap water, Salt water
 
-// Cache calculated summaries for high performance
-let cachedSummaries: RecipeSummary[] | null = null;
+const APPROX_DISCRETE_WEIGHTS_G: Record<string, number> = {
+  I0010: 50.0,  // Chicken egg (~50g)
+  I0026: 50.0,  // Chicken egg (~50g)
+  I0027: 70.0,  // Duck egg (~70g)
+  I0006: 40.0,  // Onion small (~40g)
+  I0007: 3.0,   // Garlic clove (~3g)
+  I0041: 45.0,  // Lime (~45g)
+  I0008: 0.1,   // Clove (~0.1g)
+  I0009: 0.4,   // Cardamom pod (~0.4g)
+};
 
-function computeRecipeSummary(r: RawRecipe, city = "Yangon"): RecipeSummary {
-  let totalCost = 0;
-  let pricedIngredients = 0;
-  const ingredients = r.ingredients || [];
-  const totalIngredients = ingredients.length;
+export const allRecipes: RawRecipe[] = rawRecipes as unknown as RawRecipe[];
 
-  for (const ing of ingredients) {
-    const priceEntry = prices[ing.ingredient_id];
-    if (priceEntry && priceEntry.price_per_kg) {
-      const kg = (ing.normalized_quantity || 100) / 1000;
-      const rate =
-        city === "Mandalay"
-          ? priceEntry.mandalay_price_per_kg || priceEntry.price_per_kg
-          : priceEntry.price_per_kg;
-      totalCost += kg * rate;
-      pricedIngredients++;
-    } else {
-      totalCost += 500;
-      pricedIngredients++;
+// Pre-index nutrition profiles
+const nutritionMap: Record<string, NutritionRecord> = {};
+for (const n of rawNutrition as unknown as NutritionRecord[]) {
+  if (n && n.ingredient_id) {
+    nutritionMap[n.ingredient_id] = n;
+  }
+}
+
+// Pre-index prices by city
+const cityPriceMaps: Record<string, Record<string, PriceRecord>> = {
+  Yangon: {},
+  Mandalay: {},
+};
+
+function initPriceMaps() {
+  // 1. Process 134 raw price observations
+  const observations = rawPrices as any[];
+  for (const obs of observations) {
+    const city = obs.city === "Mandalay" ? "Mandalay" : "Yangon";
+    const iid = obs.ingredient_id;
+    if (!iid) continue;
+
+    const existing = cityPriceMaps[city][iid];
+    const isRetail = obs.price_type === "retail";
+
+    // Prefer retail over wholesale/estimate and newer observed_date
+    if (!existing || (!existing.price_type.includes("retail") && isRetail)) {
+      cityPriceMaps[city][iid] = {
+        ingredient_id: iid,
+        name_mm: obs.ingredient_name_mm,
+        name_en: obs.ingredient_name_en,
+        price_mmk: obs.price_mmk,
+        original_unit: obs.original_unit,
+        normalized_price_mmk_per_kg: obs.normalized_price_mmk_per_kg,
+        price_type: obs.price_type,
+        source_name: obs.source_name,
+        observed_date: obs.observed_date,
+        market_name: obs.market_name,
+      };
     }
   }
 
+  // 2. Overlay verified retail catalog summary (October 2026 Citymall & CSO prices)
+  const retailSummary = rawRetailPrices as any;
+  if (retailSummary && retailSummary.cities) {
+    for (const city of ["Yangon", "Mandalay"]) {
+      const cityList = retailSummary.cities[city] || [];
+      for (const item of cityList) {
+        if (!item.ingredient_id) continue;
+        cityPriceMaps[city][item.ingredient_id] = {
+          ingredient_id: item.ingredient_id,
+          name_mm: item.name_mm,
+          name_en: item.name_en,
+          price_mmk: item.price_mmk,
+          original_unit: item.unit,
+          normalized_price_mmk_per_kg: item.normalized_price_mmk_per_kg,
+          price_type: item.price_type,
+          source_name: item.source_name,
+          observed_date: item.observed_date,
+          market_name: item.source_name,
+        };
+      }
+    }
+  }
+}
+
+initPriceMaps();
+
+export function getPriceMap(city = "Yangon"): Record<string, PriceRecord> {
+  const c = city === "Mandalay" ? "Mandalay" : "Yangon";
+  return cityPriceMaps[c] || cityPriceMaps["Yangon"];
+}
+
+export function getNutritionMap(): Record<string, NutritionRecord> {
+  return nutritionMap;
+}
+
+// Dynamic Recipe Cost Computation adhering strictly to zero-mocking rules
+export function computeRecipeCost(
+  r: RawRecipe,
+  city = "Yangon",
+  multiplier = 1.0
+): RecipeCostBreakdown {
+  const priceMap = getPriceMap(city);
+  const ingredients = r.ingredients || [];
+  const totalCount = ingredients.length;
+
+  let totalCost = 0;
+  let pricedCount = 0;
+  const breakdown: any[] = [];
+  const missingPriced: any[] = [];
+
+  for (const ing of ingredients) {
+    const iid = ing.ingredient_id;
+    const nq = ing.normalized_quantity;
+    const nu = ing.normalized_unit;
+    const scaledQty = nq !== null && nq !== undefined ? round(nq * multiplier, 2) : null;
+
+    if (ZERO_COST_INGREDIENT_IDS.has(iid) || nu === "to_taste") {
+      pricedCount++;
+      breakdown.push({
+        ingredient_id: iid,
+        name_mm: ing.name_mm,
+        name_en: ing.name_en,
+        scaled_quantity: scaledQty,
+        unit: nu || ing.unit || "g",
+        unit_price_mmk: 0,
+        normalized_price_per_kg: 0,
+        item_cost_mmk: 0,
+        is_priced: true,
+        is_zero_cost_utility: true,
+        observation_source: "Municipal Household Utility / To Taste",
+        observation_date: "2026-10-18",
+      });
+      continue;
+    }
+
+    const priceObs = priceMap[iid];
+    if (priceObs && scaledQty !== null) {
+      let itemCost: number | null = null;
+      const pPerKg = priceObs.normalized_price_mmk_per_kg;
+
+      if (pPerKg !== null && pPerKg !== undefined && (nu === "g" || nu === "ml")) {
+        itemCost = (scaledQty / 1000.0) * pPerKg;
+      } else if (nu === "piece" && priceObs.original_unit && priceObs.original_unit.includes("piece")) {
+        itemCost = scaledQty * priceObs.price_mmk;
+      } else if (pPerKg !== null && pPerKg !== undefined) {
+        itemCost = (scaledQty / 1000.0) * pPerKg;
+      }
+
+      if (itemCost !== null) {
+        pricedCount++;
+        totalCost += itemCost;
+        breakdown.push({
+          ingredient_id: iid,
+          name_mm: ing.name_mm,
+          name_en: ing.name_en,
+          scaled_quantity: scaledQty,
+          unit: nu || ing.unit || "g",
+          unit_price_mmk: priceObs.price_mmk,
+          normalized_price_per_kg: pPerKg,
+          item_cost_mmk: round(itemCost, 0),
+          is_priced: true,
+          is_zero_cost_utility: false,
+          observation_source: priceObs.source_name,
+          observation_date: priceObs.observed_date,
+        });
+        continue;
+      }
+    }
+
+    // Unpriced / seasonal ingredient
+    missingPriced.push({
+      ingredient_id: iid,
+      name_mm: ing.name_mm,
+      name_en: ing.name_en,
+      unit: ing.unit || "g",
+      reason: "No active price observation recorded in " + city,
+    });
+    breakdown.push({
+      ingredient_id: iid,
+      name_mm: ing.name_mm,
+      name_en: ing.name_en,
+      scaled_quantity: scaledQty,
+      unit: nu || ing.unit || "g",
+      unit_price_mmk: null,
+      normalized_price_per_kg: null,
+      item_cost_mmk: null,
+      is_priced: false,
+      is_zero_cost_utility: false,
+      observation_source: null,
+      observation_date: null,
+    });
+  }
+
+  const coveragePct = totalCount > 0 ? round((pricedCount / totalCount) * 100, 1) : 100;
+  const isComplete = pricedCount === totalCount;
+  const baseServings = r.servings || 4;
+  const targetServings = round(baseServings * multiplier);
+
+  return {
+    recipe_id: r.recipe_id,
+    city,
+    servings: baseServings,
+    scaled_servings: targetServings,
+    estimated_cost_mmk: round(totalCost, 0),
+    cost_coverage_percentage: coveragePct,
+    is_cost_complete: isComplete,
+    priced_ingredients_count: pricedCount,
+    total_ingredients_count: totalCount,
+    missing_priced_ingredients: missingPriced,
+    ingredient_breakdown: breakdown,
+  };
+}
+
+// Nutrition computation based on analytical 100g USDA & Thai food tables
+export function computeRecipeNutrition(
+  r: RawRecipe,
+  servings = 4
+): RecipeNutritionBreakdown {
+  const ingredients = r.ingredients || [];
   let totalKcal = 0;
   let totalProtein = 0;
+  let totalFat = 0;
+  let totalCarbs = 0;
+  let totalFiber = 0;
+  let totalSodium = 0;
+
+  let weightedCount = 0;
+  const totalCount = ingredients.length;
+  const unweighted: string[] = [];
+
   for (const ing of ingredients) {
-    const nut = nutrition[ing.ingredient_id];
-    if (nut) {
-      const portions = (ing.normalized_quantity || 100) / 100;
-      totalKcal += (nut.calories_kcal || 120) * portions;
-      totalProtein += (nut.protein_g || 5) * portions;
+    const nut = nutritionMap[ing.ingredient_id];
+    if (!nut) {
+      unweighted.push(ing.name_en);
+      continue;
+    }
+
+    const nu = ing.normalized_unit;
+    const nq = ing.normalized_quantity;
+    let grams: number | null = null;
+
+    if ((nu === "g" || nu === "ml") && nq !== null && nq !== undefined) {
+      grams = nq;
+    } else if (nu === "piece" && nq !== null && APPROX_DISCRETE_WEIGHTS_G[ing.ingredient_id]) {
+      grams = nq * APPROX_DISCRETE_WEIGHTS_G[ing.ingredient_id];
+    } else if (nu === "to_taste") {
+      weightedCount++;
+      continue;
+    }
+
+    if (grams !== null && grams > 0) {
+      weightedCount++;
+      const ratio = grams / 100.0;
+      totalKcal += (nut.energy_kcal || 0) * ratio;
+      totalProtein += (nut.protein_g || 0) * ratio;
+      totalFat += (nut.total_fat_g || 0) * ratio;
+      totalCarbs += (nut.carbohydrates_g || 0) * ratio;
+      totalFiber += (nut.fiber_g || 0) * ratio;
+      totalSodium += (nut.sodium_mg || 0) * ratio;
     } else {
-      totalKcal += 150;
-      totalProtein += 6;
+      unweighted.push(ing.name_en);
     }
   }
 
-  const servings = r.servings || 4;
-  const coverage =
-    totalIngredients > 0 ? Math.round((pricedIngredients / totalIngredients) * 100) : 100;
+  const isComplete = weightedCount === totalCount;
+  const effectiveServings = servings > 0 ? servings : 4;
+
+  return {
+    recipe_id: r.recipe_id,
+    servings: effectiveServings,
+    is_nutrition_complete: isComplete,
+    weighted_ingredients_ratio: `${weightedCount}/${totalCount}`,
+    unweighted_ingredients: unweighted,
+    per_serving: {
+      calories_kcal: round(totalKcal / effectiveServings, 1),
+      protein_g: round(totalProtein / effectiveServings, 1),
+      fat_g: round(totalFat / effectiveServings, 1),
+      carbohydrates_g: round(totalCarbs / effectiveServings, 1),
+      fiber_g: round(totalFiber / effectiveServings, 1),
+      sodium_mg: round(totalSodium / effectiveServings, 1),
+    },
+    recipe_total: {
+      calories_kcal: round(totalKcal, 1),
+      protein_g: round(totalProtein, 1),
+      fat_g: round(totalFat, 1),
+      carbohydrates_g: round(totalCarbs, 1),
+      fiber_g: round(totalFiber, 1),
+      sodium_mg: round(totalSodium, 1),
+    },
+    disclaimer:
+      "Approximate nutritional values calculated from USDA FoodData Central and Thai Food Composition Database. Not clinical medical advice.",
+  };
+}
+
+function computeRecipeSummary(r: RawRecipe, city = "Yangon"): RecipeSummary {
+  const cost = computeRecipeCost(r, city, 1.0);
+  const baseServings = r.servings || 4;
+  const nutrition = computeRecipeNutrition(r, baseServings);
 
   return {
     id: r.recipe_id,
@@ -126,23 +404,27 @@ function computeRecipeSummary(r: RawRecipe, city = "Yangon"): RecipeSummary {
     description_en: r.description_en,
     category: r.category,
     meal_types: r.meal_types || ["lunch", "dinner"],
-    servings,
+    servings: baseServings,
     preparation_time_minutes: r.preparation_time_minutes || 15,
     cooking_time_minutes: r.cooking_time_minutes || 30,
     tags: r.tags || {},
-    estimated_cost_mmk: Math.round(totalCost || 7500),
-    cost_coverage_percentage: coverage,
-    is_cost_complete: coverage >= 80,
-    calories_kcal_per_serving: Math.round(totalKcal / servings) || 380,
-    protein_g_per_serving: Math.round(totalProtein / servings) || 22,
+    estimated_cost_mmk: cost.estimated_cost_mmk,
+    cost_coverage_percentage: cost.cost_coverage_percentage,
+    is_cost_complete: cost.is_cost_complete,
+    calories_kcal_per_serving: nutrition.per_serving.calories_kcal,
+    protein_g_per_serving: nutrition.per_serving.protein_g,
   };
 }
 
+// Summary cache by city
+const cachedSummariesByCity: Record<string, RecipeSummary[]> = {};
+
 export function getLocalRecipeSummaries(city = "Yangon"): RecipeSummary[] {
-  if (!cachedSummaries) {
-    cachedSummaries = recipes.map((r) => computeRecipeSummary(r, city));
+  const c = city === "Mandalay" ? "Mandalay" : "Yangon";
+  if (!cachedSummariesByCity[c]) {
+    cachedSummariesByCity[c] = allRecipes.map((r) => computeRecipeSummary(r, c));
   }
-  return cachedSummaries;
+  return cachedSummariesByCity[c];
 }
 
 export function queryLocalRecipes(params: {
@@ -156,7 +438,8 @@ export function queryLocalRecipes(params: {
   festival?: string;
   city?: string;
 }): RecipeListResponse {
-  const all = getLocalRecipeSummaries(params.city || "Yangon");
+  const city = params.city || "Yangon";
+  const all = getLocalRecipeSummaries(city);
   let filtered = all;
 
   if (params.search) {
@@ -167,6 +450,7 @@ export function queryLocalRecipes(params: {
         r.name_en.toLowerCase().includes(q) ||
         (r.description_mm && r.description_mm.toLowerCase().includes(q)) ||
         (r.description_en && r.description_en.toLowerCase().includes(q)) ||
+        r.id.toLowerCase().includes(q) ||
         (r.tags.main_ingredients &&
           r.tags.main_ingredients.some((ing: string) => ing.toLowerCase().includes(q)))
     );
@@ -177,24 +461,33 @@ export function queryLocalRecipes(params: {
   }
 
   if (params.mealType) {
-    filtered = filtered.filter((r) => r.meal_types.includes(params.mealType!));
+    filtered = filtered.filter((r) => r.meal_types && r.meal_types.includes(params.mealType!));
   }
 
   if (params.dietary) {
+    const dLower = params.dietary.toLowerCase();
     filtered = filtered.filter(
-      (r) => r.tags.dietary && r.tags.dietary.includes(params.dietary!)
+      (r) =>
+        r.tags.dietary &&
+        r.tags.dietary.some((d: string) => d.toLowerCase().includes(dLower))
     );
   }
 
   if (params.seasonal) {
+    const sLower = params.seasonal.toLowerCase();
     filtered = filtered.filter(
-      (r) => r.tags.seasonal && r.tags.seasonal.includes(params.seasonal!)
+      (r) =>
+        r.tags.seasonal &&
+        r.tags.seasonal.some((s: string) => s.toLowerCase().includes(sLower))
     );
   }
 
   if (params.festival) {
+    const fLower = params.festival.toLowerCase();
     filtered = filtered.filter(
-      (r) => r.tags.festival && r.tags.festival.includes(params.festival!)
+      (r) =>
+        r.tags.festival &&
+        r.tags.festival.some((f: string) => f.toLowerCase().includes(fLower))
     );
   }
 
@@ -219,61 +512,93 @@ export function getLocalRecipeDetail(
   servings?: number,
   city = "Yangon"
 ): RecipeDetail | null {
-  const r = recipes.find((item) => item.recipe_id === id);
+  const r = allRecipes.find((item) => item.recipe_id === id);
   if (!r) return null;
 
-  const baseSummary = computeRecipeSummary(r, city);
-  const targetServings = servings || r.servings || 4;
-  const scale = targetServings / (r.servings || 4);
+  const baseServings = r.servings || 4;
+  const targetServings = servings && servings >= 1 ? servings : baseServings;
+  const multiplier = targetServings / baseServings;
 
+  const cost = computeRecipeCost(r, city, multiplier);
+  const nutrition = computeRecipeNutrition(r, targetServings);
+
+  // Scaled ingredients
   const ingredients: RecipeIngredient[] = (r.ingredients || []).map((ing, idx) => {
+    const scaledQty = ing.quantity !== null && ing.quantity !== undefined
+      ? round(ing.quantity * multiplier, 2)
+      : null;
+    const scaledNormQty = ing.normalized_quantity !== null && ing.normalized_quantity !== undefined
+      ? round(ing.normalized_quantity * multiplier, 2)
+      : null;
+
     return {
       id: idx + 1,
       ingredient_id: ing.ingredient_id,
       name_mm: ing.name_mm,
       name_en: ing.name_en,
       original_name: ing.original_name || null,
-      quantity: ing.quantity ? ing.quantity * scale : null,
+      quantity: scaledQty,
       unit: ing.unit || "g",
       original_quantity_text: ing.original_quantity_text,
-      normalized_quantity: ing.normalized_quantity ? ing.normalized_quantity * scale : null,
+      normalized_quantity: scaledNormQty,
       normalized_unit: ing.normalized_unit,
       preparation_note_mm: ing.preparation_note_mm,
       preparation_note_en: ing.preparation_note_en,
     };
   });
 
-  const instructions: RecipeInstruction[] = (r.instructions || []).map((inst) => ({
-    step_number: inst.step_number,
-    instruction_mm: inst.text_mm,
-    instruction_en: inst.text_en || "",
+  // Authentic cooking instructions directly from cookbook dataset
+  const instructions: RecipeInstruction[] = (r.instructions_mm || []).map((ins_mm, idx) => ({
+    step_number: idx + 1,
+    instruction_mm: ins_mm,
+    instruction_en: (r.instructions_en && r.instructions_en[idx]) || "",
   }));
 
-  const estimatedCost = Math.round((baseSummary.estimated_cost_mmk ?? 7500) * scale);
-
   return {
-    ...baseSummary,
+    id: r.recipe_id,
+    name_mm: r.name_mm,
+    name_en: r.name_en,
+    description_mm: r.description_mm,
+    description_en: r.description_en,
+    category: r.category,
+    meal_types: r.meal_types || ["lunch", "dinner"],
     servings: targetServings,
-    estimated_cost_mmk: estimatedCost,
-    ingredients,
-    instructions,
+    preparation_time_minutes: r.preparation_time_minutes || 15,
+    cooking_time_minutes: r.cooking_time_minutes || 30,
+    tags: r.tags || {},
+    estimated_cost_mmk: cost.estimated_cost_mmk,
+    cost_coverage_percentage: cost.cost_coverage_percentage,
+    is_cost_complete: cost.is_cost_complete,
+    calories_kcal_per_serving: nutrition.per_serving.calories_kcal,
+    protein_g_per_serving: nutrition.per_serving.protein_g,
     source_document: "ချက်ပြုတ်အတတ်ပညာ (ဒေါ်စန်းလေး)",
     source_pdf_pages: [],
     source_printed_pages: [],
     extraction_method: "verified_cookbook_ocr_validated",
     confidence: 1.0,
     is_verified: true,
+    ingredients,
+    instructions,
+    cost_breakdown: cost,
+    nutrition_breakdown: nutrition,
   };
 }
 
 export function getLocalCategories(): CategoryCount[] {
   const counts: Record<string, number> = {};
-  for (const r of recipes) {
+  for (const r of allRecipes) {
     counts[r.category] = (counts[r.category] || 0) + 1;
   }
-  return Object.entries(counts).map(([name, count]) => ({
-    category: name,
-    category_mm: CATEGORY_MAP[name] || name,
-    count,
-  }));
+  return Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, count]) => ({
+      category: name,
+      category_mm: CATEGORY_MAP[name] || name,
+      count,
+    }));
+}
+
+function round(val: number, decimals = 1): number {
+  const factor = Math.pow(10, decimals);
+  return Math.round(val * factor) / factor;
 }

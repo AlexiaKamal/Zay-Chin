@@ -1,8 +1,63 @@
-import { RecipeListResponse, RecipeDetail, CategoryCount, Market } from "@/types";
+import {
+  RecipeListResponse,
+  RecipeDetail,
+  CategoryCount,
+  Market,
+  MealPlanGenerateResponse,
+  ReplacementOption,
+  GroceryListResponse,
+} from "@/types";
 
-import { queryLocalRecipes, getLocalRecipeDetail, getLocalCategories } from "./local-recipes";
+import {
+  queryLocalRecipes,
+  getLocalRecipeDetail,
+  getLocalCategories,
+} from "./local-recipes";
+import {
+  getLocalMarkets,
+  getLocalMealPlan,
+  getLocalMealReplacements,
+  getLocalGroceryList,
+} from "./local-services";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8001";
+let detectedApiBase: string | null = null;
+const CANDIDATE_BASES = Array.from(new Set([
+  process.env.NEXT_PUBLIC_API_URL,
+  "http://127.0.0.1:8001",
+  "http://localhost:8001",
+  "http://127.0.0.1:8000",
+  "http://localhost:8000",
+].filter(Boolean))) as string[];
+
+async function safeFetch<T>(
+  path: string,
+  options: RequestInit = {},
+  timeoutMs = 1200
+): Promise<T | null> {
+  const bases = detectedApiBase ? [detectedApiBase] : CANDIDATE_BASES;
+
+  for (const base of bases) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const res = await fetch(`${base}${path}`, {
+        ...options,
+        signal: controller.signal,
+        cache: "no-store",
+      });
+      clearTimeout(timer);
+      if (res.ok) {
+        detectedApiBase = base;
+        return (await res.json()) as T;
+      }
+    } catch {
+      clearTimeout(timer);
+    }
+  }
+
+  return null;
+}
 
 export async function getRecipes(params: {
   page?: number;
@@ -15,30 +70,20 @@ export async function getRecipes(params: {
   festival?: string;
   city?: string;
 }): Promise<RecipeListResponse> {
-  try {
-    const query = new URLSearchParams();
-    if (params.page) query.set("page", params.page.toString());
-    if (params.pageSize) query.set("page_size", params.pageSize.toString());
-    if (params.search) query.set("search", params.search);
-    if (params.category) query.set("category", params.category);
-    if (params.mealType) query.set("meal_type", params.mealType);
-    if (params.dietary) query.set("dietary", params.dietary);
-    if (params.seasonal) query.set("seasonal", params.seasonal);
-    if (params.festival) query.set("festival", params.festival);
-    if (params.city) query.set("city", params.city);
+  const query = new URLSearchParams();
+  if (params.page) query.set("page", params.page.toString());
+  if (params.pageSize) query.set("page_size", params.pageSize.toString());
+  if (params.search) query.set("search", params.search);
+  if (params.category) query.set("category", params.category);
+  if (params.mealType) query.set("meal_type", params.mealType);
+  if (params.dietary) query.set("dietary", params.dietary);
+  if (params.seasonal) query.set("seasonal", params.seasonal);
+  if (params.festival) query.set("festival", params.festival);
+  if (params.city) query.set("city", params.city);
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000);
-    const res = await fetch(`${API_BASE}/api/v1/recipes?${query.toString()}`, {
-      cache: "no-store",
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    if (res.ok) {
-      return await res.json();
-    }
-  } catch {
-    // API server offline, use high-speed authentic local fallback
+  const remote = await safeFetch<RecipeListResponse>(`/api/v1/recipes?${query.toString()}`);
+  if (remote && remote.recipes) {
+    return remote;
   }
 
   return queryLocalRecipes(params);
@@ -47,25 +92,15 @@ export async function getRecipes(params: {
 export async function getRecipeDetail(
   id: string,
   servings?: number,
-  city: string = "Yangon"
+  city = "Yangon"
 ): Promise<RecipeDetail> {
-  try {
-    const query = new URLSearchParams();
-    if (servings) query.set("servings", servings.toString());
-    query.set("city", city);
+  const query = new URLSearchParams();
+  if (servings) query.set("servings", servings.toString());
+  query.set("city", city);
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000);
-    const res = await fetch(`${API_BASE}/api/v1/recipes/${id}?${query.toString()}`, {
-      cache: "no-store",
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    if (res.ok) {
-      return await res.json();
-    }
-  } catch {
-    // Fallback
+  const remote = await safeFetch<RecipeDetail>(`/api/v1/recipes/${id}?${query.toString()}`);
+  if (remote && remote.id) {
+    return remote;
   }
 
   const local = getLocalRecipeDetail(id, servings, city);
@@ -76,19 +111,9 @@ export async function getRecipeDetail(
 }
 
 export async function getCategories(): Promise<CategoryCount[]> {
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000);
-    const res = await fetch(`${API_BASE}/api/v1/recipes/categories`, {
-      cache: "no-store",
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    if (res.ok) {
-      return await res.json();
-    }
-  } catch {
-    // Fallback
+  const remote = await safeFetch<CategoryCount[]>("/api/v1/recipes/categories");
+  if (remote && Array.isArray(remote) && remote.length > 0) {
+    return remote;
   }
 
   return getLocalCategories();
@@ -98,13 +123,12 @@ export async function getMarkets(city?: string): Promise<Market[]> {
   const query = new URLSearchParams();
   if (city) query.set("city", city);
 
-  const res = await fetch(`${API_BASE}/api/v1/markets?${query.toString()}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    throw new Error(`Failed to fetch markets: ${res.statusText}`);
+  const remote = await safeFetch<Market[]>(`/api/v1/markets?${query.toString()}`);
+  if (remote && Array.isArray(remote) && remote.length > 0) {
+    return remote;
   }
-  return res.json();
+
+  return getLocalMarkets(city);
 }
 
 export async function generateMealPlan(params: {
@@ -116,17 +140,18 @@ export async function generateMealPlan(params: {
   preferred_categories?: string[];
   meals_per_day?: number;
   plan_duration_days?: number;
-}): Promise<import("@/types").MealPlanGenerateResponse> {
-  const res = await fetch(`${API_BASE}/api/v1/planner/generate`, {
+}): Promise<MealPlanGenerateResponse> {
+  const remote = await safeFetch<MealPlanGenerateResponse>("/api/v1/planner/generate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(params),
-    cache: "no-store",
   });
-  if (!res.ok) {
-    throw new Error(`Failed to generate meal plan: ${res.statusText}`);
+
+  if (remote && remote.schedule && remote.schedule.length > 0) {
+    return remote;
   }
-  return res.json();
+
+  return getLocalMealPlan(params);
 }
 
 export async function getMealReplacementOptions(params: {
@@ -138,33 +163,34 @@ export async function getMealReplacementOptions(params: {
   dietary_preferences?: string[];
   preferred_category?: string;
   disliked_ingredients?: string[];
-}): Promise<import("@/types").ReplacementOption[]> {
-  const res = await fetch(`${API_BASE}/api/v1/planner/replace-options`, {
+}): Promise<ReplacementOption[]> {
+  const remote = await safeFetch<{ candidates?: ReplacementOption[] }>("/api/v1/planner/replace-options", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(params),
-    cache: "no-store",
   });
-  if (!res.ok) {
-    throw new Error(`Failed to fetch replacement options: ${res.statusText}`);
+
+  if (remote && remote.candidates && remote.candidates.length > 0) {
+    return remote.candidates;
   }
-  const data = await res.json();
-  return data.candidates || [];
+
+  return getLocalMealReplacements(params);
 }
 
 export async function generateGroceryList(params: {
   city: string;
   household_size: number;
   recipe_ids: string[];
-}): Promise<import("@/types").GroceryListResponse> {
-  const res = await fetch(`${API_BASE}/api/v1/grocery/generate`, {
+}): Promise<GroceryListResponse> {
+  const remote = await safeFetch<GroceryListResponse>("/api/v1/grocery/generate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(params),
-    cache: "no-store",
   });
-  if (!res.ok) {
-    throw new Error(`Failed to generate grocery list: ${res.statusText}`);
+
+  if (remote && remote.groups && remote.groups.length > 0) {
+    return remote;
   }
-  return res.json();
+
+  return getLocalGroceryList(params);
 }
