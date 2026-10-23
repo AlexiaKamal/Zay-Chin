@@ -9,7 +9,15 @@ class GroceryItemSchema(BaseModel):
     category: str
     total_quantity: float
     unit: str
+    purchasable_quantity: Optional[float] = None
+    purchasable_unit_en: Optional[str] = None
+    purchasable_unit_mm: Optional[str] = None
+    package_description_en: Optional[str] = None
+    package_description_mm: Optional[str] = None
     estimated_price_mmk: Optional[float] = None
+    retail_package_price_mmk: Optional[float] = None
+    is_pantry_staple: bool = False
+    in_pantry: bool = False
     is_price_available: bool = True
     is_zero_cost_utility: bool = False
     observation_source: Optional[str] = None
@@ -36,6 +44,9 @@ class GroceryListResponse(BaseModel):
     total_items_count: int
     purchased_items_count: int
     estimated_total_mmk: float
+    retail_total_mmk: Optional[float] = None
+    pantry_adjusted_total_mmk: Optional[float] = None
+    pantry_items_count: int = 0
     coverage_percentage: float
     groups: List[GroceryCategoryGroup]
     unpriced_items_count: int

@@ -381,6 +381,16 @@ function PlannerContent() {
               {language === "mm" ? plan.budget_status_message_mm : plan.budget_status_message_en}
             </div>
           )}
+
+          {/* Real-World Retail Packaging Tip */}
+          <div className="flex items-center gap-2 text-[11px] text-emerald-200/90 bg-emerald-950/60 p-3 rounded-xl border border-emerald-700/40">
+            <span className="text-sm">🛒</span>
+            <span>
+              {language === "mm"
+                ? "အကြံပြုချက်- အထက်ပါဘတ်ဂျက်သည် ဟင်းချက်စားသုံးမှု တန်ဖိုးဖြစ်ပါသည်။ လက်တွေ့စတိုးဆိုင်များတွင် အထုပ်လိုက်/အလုံးလိုက် (ဥပမာ ဆား ၁ ထုပ်၊ သခွားသီး ၁ လုံး) ဝယ်ယူစရိတ်နှင့် မီးဖိုချောင်အရန်ပစ္စည်း စာရင်းများကို 'ဈေးဝယ်စာရင်း အဆင်သင့်ရယူမည်' ခလုတ်ကို နှိပ်၍ ကြည့်ရှုနိုင်ပါသည်။"
+                : "Real-World Tip: This weekly total reflects exact portion costs. Click 'Generate Grocery List' to view full store cashier checkout totals (whole packages like 400g salt packs) with your pantry staples toggle."}
+            </span>
+          </div>
         </div>
       )}
 

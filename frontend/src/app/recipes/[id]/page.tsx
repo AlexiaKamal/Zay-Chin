@@ -17,6 +17,7 @@ import {
   PlusIcon,
   CalendarIcon,
   SparklesIcon,
+  ShoppingBagIcon,
 } from "@/components/ui/Icons";
 
 function RecipeDetailContent() {
@@ -139,11 +140,26 @@ function RecipeDetailContent() {
         {/* Quick Highlights Bar */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-stone-100 text-xs">
           <div className="p-3 bg-stone-50 rounded-xl space-y-1">
-            <span className="text-stone-400 font-medium">{t.est_cost_label} ({city})</span>
+            <span className="text-stone-400 font-medium">{t.portion_cooking_value || t.est_cost_label} ({city})</span>
             <div className="text-base sm:text-lg font-black text-emerald-800">
               {cost?.estimated_cost_mmk ? Math.round(cost.estimated_cost_mmk).toLocaleString() : "—"}{" "}
               <span className="text-xs font-normal">MMK</span>
             </div>
+            <span className="block text-[10px] text-stone-400">
+              {language === "mm" ? "အမှန်တကယ်သုံးစွဲတန်ဖိုး" : "Prorated recipe portion"}
+            </span>
+          </div>
+          <div className="p-3 bg-stone-50 rounded-xl space-y-1">
+            <span className="text-stone-400 font-medium">{t.store_checkout_pack_cost}</span>
+            <div className="text-base sm:text-lg font-black text-stone-900">
+              {cost?.full_retail_pack_cost_mmk ? Math.round(cost.full_retail_pack_cost_mmk).toLocaleString() : "—"}{" "}
+              <span className="text-xs font-normal">MMK</span>
+            </div>
+            <span className="block text-[10px] text-emerald-700 font-medium">
+              {cost?.pantry_adjusted_cost_mmk && cost.pantry_adjusted_cost_mmk < (cost.full_retail_pack_cost_mmk || 0)
+                ? `${Math.round(cost.pantry_adjusted_cost_mmk).toLocaleString()} MMK ${language === "mm" ? "အိမ်တွင်းအရန်နုတ်ပြီး" : "with pantry"}`
+                : language === "mm" ? "လက်လီအထုပ်အပြည့်ဈေး" : "Full store retail packs"}
+            </span>
           </div>
           <div className="p-3 bg-stone-50 rounded-xl space-y-1">
             <span className="text-stone-400 font-medium">{t.badge_calories}</span>
@@ -151,6 +167,7 @@ function RecipeDetailContent() {
               {nutrition?.per_serving?.calories_kcal ? `${Math.round(nutrition.per_serving.calories_kcal)}` : "—"}{" "}
               <span className="text-xs font-normal">kcal</span>
             </div>
+            <span className="block text-[10px] text-stone-400">{language === "mm" ? "၁ ဦးစာ စွမ်းအင်" : "per serving"}</span>
           </div>
           <div className="p-3 bg-stone-50 rounded-xl space-y-1">
             <span className="text-stone-400 font-medium">{t.badge_protein}</span>
@@ -158,12 +175,7 @@ function RecipeDetailContent() {
               {nutrition?.per_serving?.protein_g ? `${nutrition.per_serving.protein_g}` : "—"}{" "}
               <span className="text-xs font-normal">g</span>
             </div>
-          </div>
-          <div className="p-3 bg-stone-50 rounded-xl space-y-1">
-            <span className="text-stone-400 font-medium">{t.badge_cook_time}</span>
-            <div className="text-base sm:text-lg font-black text-stone-800">
-              {recipe.cooking_time_minutes ? `${recipe.cooking_time_minutes}m` : t.badge_time_standard}
-            </div>
+            <span className="block text-[10px] text-stone-400">{language === "mm" ? "၁ ဦးစာ ပရိုတင်း" : "per serving"}</span>
           </div>
         </div>
       </div>
@@ -225,6 +237,31 @@ function RecipeDetailContent() {
               </span>
             </div>
 
+            {/* Real-World Retail Packaging Transparency Banner */}
+            <div className="p-4 bg-emerald-50/70 rounded-2xl border border-emerald-200/80 text-xs text-stone-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-start gap-2.5">
+                <div className="p-1.5 bg-emerald-100 rounded-lg text-emerald-800 shrink-0 mt-0.5">
+                  <ShoppingBagIcon className="w-4 h-4" />
+                </div>
+                <div className="space-y-0.5">
+                  <span className="font-extrabold text-stone-900 block text-xs">
+                    {language === "mm" ? "စတိုးဆိုင် လက်လီဝယ်ယူမှု နှင့် ချက်ပြုတ်စားသုံးမှု တန်ဖိုး" : "Real-World Purchasing & Dual-Tier Costing"}
+                  </span>
+                  <p className="text-stone-600 leading-relaxed text-[11px]">
+                    {t.dual_pricing_tip}
+                  </p>
+                </div>
+              </div>
+              {cost?.full_retail_pack_cost_mmk && (
+                <div className="shrink-0 bg-white px-3 py-1.5 rounded-xl border border-emerald-200 text-right shadow-2xs">
+                  <span className="text-[10px] text-stone-400 block font-bold uppercase">{t.store_checkout_pack_cost}</span>
+                  <span className="text-xs sm:text-sm font-black text-emerald-800">
+                    ~{Math.round(cost.full_retail_pack_cost_mmk).toLocaleString()} MMK
+                  </span>
+                </div>
+              )}
+            </div>
+
             {/* Table */}
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs sm:text-sm">
@@ -233,6 +270,7 @@ function RecipeDetailContent() {
                     <th className="pb-3 pr-2">{t.table_ingredient}</th>
                     <th className="pb-3 px-2">{t.table_recipe_unit}</th>
                     <th className="pb-3 px-2">{t.table_metric_unit}</th>
+                    <th className="pb-3 px-2">{t.table_store_pack}</th>
                     <th className="pb-3 pl-2 text-right">{t.table_est_price}</th>
                   </tr>
                 </thead>
@@ -249,7 +287,14 @@ function RecipeDetailContent() {
                       <tr key={ing.id} className="hover:bg-stone-50/70 transition-colors">
                         <td className="py-3 pr-2 font-medium text-stone-900">
                           <div>
-                            <span>{language === "mm" ? ing.name_mm : ing.name_en}</span>
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="font-bold">{language === "mm" ? ing.name_mm : ing.name_en}</span>
+                              {costItem?.is_pantry_staple && (
+                                <span className="px-1.5 py-0.5 text-[9px] font-extrabold bg-amber-100 text-amber-900 rounded-md border border-amber-200">
+                                  {t.badge_pantry_staple}
+                                </span>
+                              )}
+                            </div>
                             <span className="block text-[11px] text-stone-400 font-normal">
                               {language === "mm" ? ing.name_en : ing.name_mm}
                             </span>
@@ -277,15 +322,37 @@ function RecipeDetailContent() {
                             </span>
                           )}
                         </td>
+                        <td className="py-3 px-2 text-stone-700">
+                          {isZeroUtility ? (
+                            <span className="text-stone-400 text-xs italic">
+                              {language === "mm" ? "အိမ်သုံးရေ" : "Household utility"}
+                            </span>
+                          ) : costItem?.package_description ? (
+                            <div className="space-y-0.5">
+                              <span className="inline-flex items-center gap-1 font-semibold text-stone-900 text-xs">
+                                🛒 {costItem.package_description}
+                              </span>
+                              {typeof costItem.retail_package_price_mmk === "number" && costItem.retail_package_price_mmk > 0 && (
+                                <span className="block text-[10px] text-stone-400 font-medium">
+                                  {Math.round(costItem.retail_package_price_mmk).toLocaleString()} MMK / unit
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-stone-400 text-xs">—</span>
+                          )}
+                        </td>
                         <td className="py-3 pl-2 text-right">
                           {isZeroUtility ? (
                             <span className="text-stone-400 text-xs font-semibold">
                               0 MMK
                             </span>
                           ) : isPriced && itemCost !== null && itemCost !== undefined ? (
-                            <span className="font-bold text-emerald-800">
-                              {Math.round(itemCost).toLocaleString()} MMK
-                            </span>
+                            <div>
+                              <span className="font-bold text-emerald-800">
+                                {Math.round(itemCost).toLocaleString()} MMK
+                              </span>
+                            </div>
                           ) : (
                             <span className="text-amber-700 bg-amber-50 px-2 py-0.5 rounded text-[11px] font-semibold">
                               {t.price_unpriced_tag}

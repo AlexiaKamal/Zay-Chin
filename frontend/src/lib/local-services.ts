@@ -15,6 +15,7 @@ import {
   computeRecipeNutrition,
   getPriceMap,
 } from "./local-recipes";
+import { calculateRetailPurchasing, isPantryStaple } from "./retail-packaging";
 
 const DAYS_EN = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const DAYS_MM = ["တနင်္လာ", "အင်္ဂါ", "ဗုဒ္ဓဟူး", "ကြာသပတေး", "သောကြာ", "စနေ", "တနင်္ဂနွေ"];
@@ -453,68 +454,125 @@ export function getLocalGroceryList(params: {
     }
   }
 
-  // Assign verified prices
+  // Assign verified prices and retail packaging calculations
   const items: GroceryItem[] = [];
-  let estimatedTotal = 0;
+  let estimatedPortionTotal = 0;
+  let fullRetailTotal = 0;
+  let pantryAdjustedTotal = 0;
+  let pantryItemsCount = 0;
   let pricedCount = 0;
   let unpricedCount = 0;
   let idCounter = 1;
 
   for (const agg of Object.values(aggregated)) {
     const priceObs = priceMap[agg.ingredient_id];
-    let price: number | null = null;
-    let isPriceAvailable = false;
-    let isZeroUtility = false;
-    let obsSource: string | null = null;
-    let obsDate: string | null = null;
+    const isZeroUtility = ZERO_COST_IDS.has(agg.ingredient_id) || agg.unit === "to_taste";
+    const isStaple = isPantryStaple(agg.ingredient_id);
+    if (isStaple) pantryItemsCount++;
 
-    if (ZERO_COST_IDS.has(agg.ingredient_id) || agg.unit === "to_taste") {
-      price = 0;
-      isPriceAvailable = true;
-      isZeroUtility = true;
-      obsSource = "Municipal Household Utility / To Taste";
-      obsDate = "2026-10-18";
+    if (isZeroUtility) {
       pricedCount++;
-    } else if (priceObs) {
-      const pPerKg = priceObs.normalized_price_mmk_per_kg;
-      if (pPerKg !== null && pPerKg !== undefined && (agg.unit === "g" || agg.unit === "ml")) {
-        price = Math.round((agg.total_quantity / 1000.0) * pPerKg);
-        isPriceAvailable = true;
-      } else if (agg.unit === "piece" && priceObs.original_unit && priceObs.original_unit.includes("piece")) {
-        price = Math.round(agg.total_quantity * priceObs.price_mmk);
-        isPriceAvailable = true;
-      } else if (pPerKg !== null && pPerKg !== undefined) {
-        price = Math.round((agg.total_quantity / 1000.0) * pPerKg);
-        isPriceAvailable = true;
-      }
-
-      if (isPriceAvailable && price !== null) {
-        pricedCount++;
-        estimatedTotal += price;
-        obsSource = priceObs.source_name;
-        obsDate = priceObs.observed_date;
-      } else {
-        unpricedCount++;
-      }
-    } else {
-      unpricedCount++;
+      items.push({
+        id: idCounter++,
+        ingredient_id: agg.ingredient_id,
+        name_en: agg.name_en,
+        name_mm: agg.name_mm,
+        category: agg.category,
+        total_quantity: Math.round(agg.total_quantity * 10) / 10,
+        unit: agg.unit,
+        purchasable_quantity: 0,
+        purchasable_unit_en: "Utility / To taste",
+        purchasable_unit_mm: "အိမ်သုံး / အရသာအတွက်",
+        purchasable_unit: "Utility / To taste",
+        package_description_en: "Domestic Utility / Water",
+        package_description_mm: "အိမ်သုံးရေ / အရသာအတွက်",
+        package_description: "Domestic Utility / Water",
+        estimated_price_mmk: 0,
+        retail_package_price_mmk: 0,
+        is_pantry_staple: true,
+        in_pantry: true,
+        is_price_available: true,
+        is_zero_cost_utility: true,
+        observation_source: "Municipal Household Utility / To Taste",
+        observation_date: "2026-10-18",
+        is_purchased: false,
+      });
+      continue;
     }
 
-    items.push({
-      id: idCounter++,
-      ingredient_id: agg.ingredient_id,
-      name_en: agg.name_en,
-      name_mm: agg.name_mm,
-      category: agg.category,
-      total_quantity: Math.round(agg.total_quantity * 10) / 10,
-      unit: agg.unit,
-      estimated_price_mmk: price,
-      is_price_available: isPriceAvailable,
-      is_zero_cost_utility: isZeroUtility,
-      observation_source: obsSource,
-      observation_date: obsDate,
-      is_purchased: false,
-    });
+    if (priceObs) {
+      const retailCalc = calculateRetailPurchasing({
+        ingredient_id: agg.ingredient_id,
+        name_en: agg.name_en,
+        name_mm: agg.name_mm,
+        unit: agg.unit,
+        quantity: agg.total_quantity,
+        unit_price_mmk: priceObs.price_mmk,
+        normalized_price_per_kg: priceObs.normalized_price_mmk_per_kg,
+        observation_package_unit: priceObs.original_unit,
+        observation_package_price: priceObs.price_mmk,
+      });
+
+      pricedCount++;
+      estimatedPortionTotal += retailCalc.portion_cost_mmk;
+      fullRetailTotal += retailCalc.retail_package_price_mmk;
+      if (!retailCalc.is_pantry_staple) {
+        pantryAdjustedTotal += retailCalc.retail_package_price_mmk;
+      }
+
+      items.push({
+        id: idCounter++,
+        ingredient_id: agg.ingredient_id,
+        name_en: agg.name_en,
+        name_mm: agg.name_mm,
+        category: agg.category,
+        total_quantity: Math.round(agg.total_quantity * 10) / 10,
+        unit: agg.unit,
+        purchasable_quantity: retailCalc.purchasable_quantity,
+        purchasable_unit_en: retailCalc.purchasable_unit_en,
+        purchasable_unit_mm: retailCalc.purchasable_unit_mm,
+        purchasable_unit: retailCalc.purchasable_unit_en,
+        package_description_en: retailCalc.package_description_en,
+        package_description_mm: retailCalc.package_description_mm,
+        package_description: retailCalc.package_description_en,
+        estimated_price_mmk: retailCalc.portion_cost_mmk,
+        retail_package_price_mmk: retailCalc.retail_package_price_mmk,
+        is_pantry_staple: retailCalc.is_pantry_staple,
+        in_pantry: retailCalc.is_pantry_staple,
+        is_price_available: true,
+        is_zero_cost_utility: false,
+        observation_source: priceObs.source_name,
+        observation_date: priceObs.observed_date,
+        is_purchased: false,
+      });
+    } else {
+      unpricedCount++;
+      items.push({
+        id: idCounter++,
+        ingredient_id: agg.ingredient_id,
+        name_en: agg.name_en,
+        name_mm: agg.name_mm,
+        category: agg.category,
+        total_quantity: Math.round(agg.total_quantity * 10) / 10,
+        unit: agg.unit,
+        purchasable_quantity: Math.max(1, Math.ceil(agg.total_quantity)),
+        purchasable_unit_en: `${Math.max(1, Math.ceil(agg.total_quantity))} ${agg.unit}`,
+        purchasable_unit_mm: `${Math.max(1, Math.ceil(agg.total_quantity))} ${agg.unit}`,
+        purchasable_unit: `${Math.max(1, Math.ceil(agg.total_quantity))} ${agg.unit}`,
+        package_description_en: `${agg.name_en} (Seasonal wet-market unit)`,
+        package_description_mm: `${agg.name_mm} (ရာသီပေါ် ကာလပေါက်ဈေး)`,
+        package_description: `${agg.name_en} (Seasonal wet-market unit)`,
+        estimated_price_mmk: null,
+        retail_package_price_mmk: null,
+        is_pantry_staple: isStaple,
+        in_pantry: false,
+        is_price_available: false,
+        is_zero_cost_utility: false,
+        observation_source: null,
+        observation_date: null,
+        is_purchased: false,
+      });
+    }
   }
 
   // Group by aisle
@@ -528,7 +586,7 @@ export function getLocalGroceryList(params: {
     .sort((a, b) => (AISLE_NAMES[a]?.order || 99) - (AISLE_NAMES[b]?.order || 99))
     .map((catId) => {
       const groupItems = groupedRecord[catId] || [];
-      const subtotal = groupItems.reduce((acc, it) => acc + (it.estimated_price_mmk || 0), 0);
+      const subtotal = groupItems.reduce((acc, it) => acc + (it.retail_package_price_mmk || it.estimated_price_mmk || 0), 0);
       return {
         category_id: catId,
         category_name_en: AISLE_NAMES[catId]?.en || "Other Items",
@@ -547,7 +605,10 @@ export function getLocalGroceryList(params: {
     household_size: hh,
     total_items_count: totalCount,
     purchased_items_count: 0,
-    estimated_total_mmk: estimatedTotal,
+    estimated_total_mmk: estimatedPortionTotal,
+    retail_total_mmk: fullRetailTotal,
+    pantry_adjusted_total_mmk: pantryAdjustedTotal,
+    pantry_items_count: pantryItemsCount,
     coverage_percentage: coverage,
     groups,
     unpriced_items_count: unpricedCount,

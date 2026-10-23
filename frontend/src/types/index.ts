@@ -56,6 +56,11 @@ export interface IngredientCostItem {
   item_cost_mmk?: number | null;
   is_priced: boolean;
   is_zero_cost_utility?: boolean;
+  is_pantry_staple?: boolean;
+  purchasable_quantity?: number | null;
+  purchasable_unit?: string | null;
+  package_description?: string | null;
+  retail_package_price_mmk?: number | null;
   observation_source?: string | null;
   observation_date?: string | null;
 }
@@ -66,6 +71,8 @@ export interface RecipeCostBreakdown {
   servings: number;
   scaled_servings: number;
   estimated_cost_mmk: number;
+  full_retail_pack_cost_mmk?: number;
+  pantry_adjusted_cost_mmk?: number;
   cost_coverage_percentage: number;
   is_cost_complete: boolean;
   priced_ingredients_count: number;
@@ -215,6 +222,16 @@ export interface GroceryItem {
   total_quantity: number;
   unit: string;
   estimated_price_mmk?: number | null;
+  retail_package_price_mmk?: number | null;
+  purchasable_quantity?: number;
+  purchasable_unit_en?: string;
+  purchasable_unit_mm?: string;
+  purchasable_unit?: string;
+  package_description_en?: string;
+  package_description_mm?: string;
+  package_description?: string;
+  is_pantry_staple?: boolean;
+  in_pantry?: boolean;
   is_price_available: boolean;
   is_zero_cost_utility: boolean;
   observation_source?: string | null;
@@ -237,6 +254,9 @@ export interface GroceryListResponse {
   total_items_count: number;
   purchased_items_count: number;
   estimated_total_mmk: number;
+  retail_total_mmk?: number;
+  pantry_adjusted_total_mmk?: number;
+  pantry_items_count?: number;
   coverage_percentage: number;
   groups: GroceryCategoryGroup[];
   unpriced_items_count: number;

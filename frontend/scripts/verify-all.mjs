@@ -147,6 +147,79 @@ test("Grocery list aggregates ingredients, groups by aisles, and calculates subt
   }
 });
 
+// 8. Real-World Retail Packaging & Discrete Rounding
+test("Real-world retail packaging rounds discrete items (0.6 cucumber -> 1 piece) and packages salt/sugar", async () => {
+  const { calculateRetailPurchasing, isPantryStaple } = await import("../src/lib/retail-packaging.ts");
+
+  // Discrete cucumber piece test: 0.6 cucumber must purchase 1 whole piece
+  const cucumber = calculateRetailPurchasing({
+    ingredient_id: "I0088", // Cucumber
+    name_en: "Cucumber",
+    name_mm: "သခွားသီး",
+    unit: "piece",
+    quantity: 0.6,
+    unit_price_mmk: 800,
+    normalized_price_per_kg: 800,
+    observation_package_unit: "piece",
+    observation_package_price: 800,
+  });
+
+  assert.strictEqual(cucumber.purchasable_quantity, 1, "0.6 cucumber must round up to 1 whole piece");
+  assert.strictEqual(cucumber.purchasable_unit, "piece");
+  assert.strictEqual(cucumber.retail_package_price_mmk, 800, "Store package price must be for 1 whole piece (800 MMK)");
+  assert.strictEqual(cucumber.portion_cost_mmk, 480, "Portion cost must be prorated: 0.6 * 800 = 480 MMK");
+
+  // Packaged pantry staple: Salt (I0004) - 3 tbsp (22.5g)
+  const salt = calculateRetailPurchasing({
+    ingredient_id: "I0004", // Salt
+    name_en: "Salt",
+    name_mm: "ဆား",
+    unit: "g",
+    quantity: 22.5,
+    unit_price_mmk: 3000,
+    normalized_price_per_kg: 3000,
+    observation_package_unit: "kg",
+    observation_package_price: 3000,
+  });
+
+  assert.strictEqual(salt.is_pantry_staple, true, "Salt must be flagged as a pantry staple");
+  assert.strictEqual(salt.purchasable_quantity, 1, "Store purchase quantity must be 1 pack");
+  assert.strictEqual(salt.package_description, "1 pack (400g)", "Salt pack description should be 1 pack (400g)");
+  assert.strictEqual(salt.retail_package_price_mmk, 1200, "400g salt pack at 3000 MMK/kg is 1,200 MMK");
+  assert.strictEqual(salt.portion_cost_mmk, 68, "Portion cost of 22.5g salt is ~68 MMK");
+});
+
+// 9. Dual-Tier Grocery Budgeting & Pantry Toggle
+test("Grocery list dual-tier totals: retail_total_mmk >= estimated_total_mmk and pantry deduction works", () => {
+  const grocery = getLocalGroceryList({
+    city: "Yangon",
+    household_size: 2,
+    recipe_ids: ["R0001", "R0002"],
+  });
+
+  assert.ok(grocery.retail_total_mmk > 0, "Retail total MMK must be calculated");
+  assert.ok(grocery.retail_total_mmk >= grocery.estimated_total_mmk, "Retail store checkout cost must be >= portion cost");
+  assert.ok(grocery.pantry_adjusted_total_mmk > 0, "Pantry adjusted total must be calculated");
+  assert.ok(grocery.pantry_adjusted_total_mmk <= grocery.retail_total_mmk, "Pantry adjusted total must be <= full retail cost");
+  assert.ok(grocery.pantry_items_count > 0, "Must identify pantry items in recipes");
+
+  // Verify each grocery item has retail packaging attributes
+  let foundPackagedStaple = false;
+  for (const group of grocery.groups) {
+    for (const item of group.items) {
+      if (!item.is_zero_cost_utility) {
+        assert.ok(item.purchasable_quantity >= 1, `Item ${item.name_en} purchasable_quantity must be >= 1`);
+      }
+      assert.ok(item.package_description, `Item ${item.name_en} must have package_description`);
+      assert.ok(item.retail_package_price_mmk !== undefined, `Item ${item.name_en} must have retail_package_price_mmk`);
+      if (item.is_pantry_staple) {
+        foundPackagedStaple = true;
+      }
+    }
+  }
+  assert.ok(foundPackagedStaple, "Should find at least one pantry staple in grocery list");
+});
+
 console.log(`\nResults: ${passed}/${total} tests passed!`);
 if (passed === total) {
   console.log("✓ ALL TESTS PASSED SUCCESSFULLY!");

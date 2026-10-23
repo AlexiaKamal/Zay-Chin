@@ -12,6 +12,7 @@ import {
   RecipeNutritionBreakdown,
   CategoryCount,
 } from "@/types";
+import { calculateRetailPurchasing, isPantryStaple } from "./retail-packaging";
 
 export interface RawIngredient {
   ingredient_id: string;
@@ -203,6 +204,8 @@ export function computeRecipeCost(
   const totalCount = ingredients.length;
 
   let totalCost = 0;
+  let fullRetailCost = 0;
+  let pantryAdjustedCost = 0;
   let pricedCount = 0;
   const breakdown: any[] = [];
   const missingPriced: any[] = [];
@@ -212,6 +215,7 @@ export function computeRecipeCost(
     const nq = ing.normalized_quantity;
     const nu = ing.normalized_unit;
     const scaledQty = nq !== null && nq !== undefined ? round(nq * multiplier, 2) : null;
+    const isStaple = isPantryStaple(iid);
 
     if (ZERO_COST_INGREDIENT_IDS.has(iid) || nu === "to_taste") {
       pricedCount++;
@@ -226,6 +230,11 @@ export function computeRecipeCost(
         item_cost_mmk: 0,
         is_priced: true,
         is_zero_cost_utility: true,
+        is_pantry_staple: true,
+        purchasable_quantity: 0,
+        purchasable_unit: "Utility",
+        package_description: "Domestic Utility / Water",
+        retail_package_price_mmk: 0,
         observation_source: "Municipal Household Utility / To Taste",
         observation_date: "2026-10-18",
       });
@@ -234,36 +243,45 @@ export function computeRecipeCost(
 
     const priceObs = priceMap[iid];
     if (priceObs && scaledQty !== null) {
-      let itemCost: number | null = null;
-      const pPerKg = priceObs.normalized_price_mmk_per_kg;
+      const retailCalc = calculateRetailPurchasing({
+        ingredient_id: iid,
+        name_en: ing.name_en,
+        name_mm: ing.name_mm,
+        unit: nu || ing.unit || "g",
+        quantity: scaledQty,
+        unit_price_mmk: priceObs.price_mmk,
+        normalized_price_per_kg: priceObs.normalized_price_mmk_per_kg,
+        observation_package_unit: priceObs.original_unit,
+        observation_package_price: priceObs.price_mmk,
+      });
 
-      if (pPerKg !== null && pPerKg !== undefined && (nu === "g" || nu === "ml")) {
-        itemCost = (scaledQty / 1000.0) * pPerKg;
-      } else if (nu === "piece" && priceObs.original_unit && priceObs.original_unit.includes("piece")) {
-        itemCost = scaledQty * priceObs.price_mmk;
-      } else if (pPerKg !== null && pPerKg !== undefined) {
-        itemCost = (scaledQty / 1000.0) * pPerKg;
+      pricedCount++;
+      totalCost += retailCalc.portion_cost_mmk;
+      fullRetailCost += retailCalc.retail_package_price_mmk;
+      if (!retailCalc.is_pantry_staple) {
+        pantryAdjustedCost += retailCalc.retail_package_price_mmk;
       }
 
-      if (itemCost !== null) {
-        pricedCount++;
-        totalCost += itemCost;
-        breakdown.push({
-          ingredient_id: iid,
-          name_mm: ing.name_mm,
-          name_en: ing.name_en,
-          scaled_quantity: scaledQty,
-          unit: nu || ing.unit || "g",
-          unit_price_mmk: priceObs.price_mmk,
-          normalized_price_per_kg: pPerKg,
-          item_cost_mmk: round(itemCost, 0),
-          is_priced: true,
-          is_zero_cost_utility: false,
-          observation_source: priceObs.source_name,
-          observation_date: priceObs.observed_date,
-        });
-        continue;
-      }
+      breakdown.push({
+        ingredient_id: iid,
+        name_mm: ing.name_mm,
+        name_en: ing.name_en,
+        scaled_quantity: scaledQty,
+        unit: nu || ing.unit || "g",
+        unit_price_mmk: priceObs.price_mmk,
+        normalized_price_per_kg: priceObs.normalized_price_mmk_per_kg,
+        item_cost_mmk: retailCalc.portion_cost_mmk,
+        is_priced: true,
+        is_zero_cost_utility: false,
+        is_pantry_staple: retailCalc.is_pantry_staple,
+        purchasable_quantity: retailCalc.purchasable_quantity,
+        purchasable_unit: retailCalc.purchasable_unit_en,
+        package_description: retailCalc.package_description_en,
+        retail_package_price_mmk: retailCalc.retail_package_price_mmk,
+        observation_source: priceObs.source_name,
+        observation_date: priceObs.observed_date,
+      });
+      continue;
     }
 
     // Unpriced / seasonal ingredient
@@ -285,6 +303,11 @@ export function computeRecipeCost(
       item_cost_mmk: null,
       is_priced: false,
       is_zero_cost_utility: false,
+      is_pantry_staple: isStaple,
+      purchasable_quantity: null,
+      purchasable_unit: null,
+      package_description: null,
+      retail_package_price_mmk: null,
       observation_source: null,
       observation_date: null,
     });
@@ -301,6 +324,8 @@ export function computeRecipeCost(
     servings: baseServings,
     scaled_servings: targetServings,
     estimated_cost_mmk: round(totalCost, 0),
+    full_retail_pack_cost_mmk: round(fullRetailCost, 0),
+    pantry_adjusted_cost_mmk: round(pantryAdjustedCost, 0),
     cost_coverage_percentage: coveragePct,
     is_cost_complete: isComplete,
     priced_ingredients_count: pricedCount,
