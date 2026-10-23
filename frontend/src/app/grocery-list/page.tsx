@@ -1,53 +1,100 @@
 "use client";
 
-import React, { Suspense, useState, useEffect } from "react";
+import React, { Suspense, useState, useEffect, useMemo } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { 
   CookingPotIcon, 
   SparklesIcon, 
   CalendarIcon, 
   CheckCircleIcon,
-  CoinsIcon
+  CoinsIcon,
+  PlusIcon,
+  MinusIcon,
+  SearchIcon,
+  ShoppingBagIcon
 } from "@/components/ui/Icons";
 import { generateGroceryList } from "@/lib/api";
 import { GroceryListResponse, GroceryItem } from "@/types";
+import rawRecipes from "@/data/recipes.json";
 
 function GroceryListContent() {
   const { language, city, setCity, t } = useApp();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
+  // Recipe lookup map for 171 authentic Daw San Lay recipes
+  const recipeLookup = useMemo(() => {
+    const map = new Map<string, { id: string; name_en: string; name_mm: string; category: string }>();
+    for (const r of rawRecipes as any[]) {
+      map.set(r.recipe_id, {
+        id: r.recipe_id,
+        name_en: r.name_en,
+        name_mm: r.name_mm,
+        category: r.category,
+      });
+    }
+    return map;
+  }, []);
+
+  // State
   const [householdSize, setHouseholdSize] = useState<number>(2);
+  const [recipeIds, setRecipeIds] = useState<string[]>(["R0001", "R0002", "R0003", "R0004", "R0005"]);
   const [loading, setLoading] = useState<boolean>(true);
   const [groceryList, setGroceryList] = useState<GroceryListResponse | null>(null);
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [copied, setCopied] = useState<boolean>(false);
 
+  // Modal for adding extra dishes to the grocery list
+  const [showAddModal, setShowAddModal] = useState<boolean>(false);
+  const [recipeSearch, setRecipeSearch] = useState<string>("");
+
   // Pantry Staples Mode: exclude items already stocked in kitchen cabinets (salt, sugar, oil, seasonings)
   const [excludePantry, setExcludePantry] = useState<boolean>(true);
   const [pantryOverrides, setPantryOverrides] = useState<Record<string, boolean>>({});
 
+  // Reactive Loader: Runs on mount and whenever searchParams (from planner / recipe page) or city changes
   useEffect(() => {
-    // Read cached recipe IDs from meal plan export
-    const savedRecipesRaw = localStorage.getItem("zaychin_grocery_recipes");
-    const savedHousehold = localStorage.getItem("zaychin_grocery_household");
+    const paramRecipes = searchParams.get("recipes");
+    const paramHousehold = searchParams.get("household");
 
-    let recipeIds = ["R0001", "R0002", "R0003", "R0004", "R0005"]; // Default starter recipes if none
-    if (savedRecipesRaw) {
-      try {
-        const parsed = JSON.parse(savedRecipesRaw);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          recipeIds = parsed;
+    let ids: string[] = [];
+    if (paramRecipes) {
+      ids = paramRecipes.split(",").map((s) => s.trim()).filter(Boolean);
+    } else {
+      const savedRecipesRaw = localStorage.getItem("zaychin_grocery_recipes");
+      if (savedRecipesRaw) {
+        try {
+          const parsed = JSON.parse(savedRecipesRaw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            ids = parsed;
+          }
+        } catch (e) {
+          console.error("Error reading saved recipes:", e);
         }
-      } catch (e) {
-        console.error("Error reading saved recipes:", e);
       }
     }
 
-    const hh = savedHousehold ? parseInt(savedHousehold, 10) : 2;
-    setHouseholdSize(hh);
+    if (ids.length === 0) {
+      ids = ["R0001", "R0002", "R0003", "R0004", "R0005"];
+    }
 
-    fetchGroceryList(recipeIds, hh, city);
-  }, [city]);
+    let hh = 2;
+    if (paramHousehold) {
+      hh = parseInt(paramHousehold, 10) || 2;
+    } else {
+      const savedHousehold = localStorage.getItem("zaychin_grocery_household");
+      if (savedHousehold) {
+        hh = parseInt(savedHousehold, 10) || 2;
+      }
+    }
+
+    setHouseholdSize(hh);
+    setRecipeIds(ids);
+
+    fetchGroceryList(ids, hh, city);
+  }, [city, searchParams]);
 
   const fetchGroceryList = async (recipes: string[], hh: number, currentCity: string) => {
     setLoading(true);
@@ -71,6 +118,64 @@ function GroceryListContent() {
     }
   };
 
+  // Changing household size directly from Grocery List
+  const handleHouseholdChange = (newHh: number) => {
+    const val = Math.max(1, Math.min(20, newHh));
+    setHouseholdSize(val);
+    localStorage.setItem("zaychin_grocery_household", val.toString());
+    fetchGroceryList(recipeIds, val, city);
+  };
+
+  // Adding a dish to the active grocery list
+  const handleAddRecipe = (rId: string) => {
+    if (recipeIds.includes(rId)) {
+      setShowAddModal(false);
+      return;
+    }
+    const updated = [...recipeIds, rId];
+    setRecipeIds(updated);
+    localStorage.setItem("zaychin_grocery_recipes", JSON.stringify(updated));
+    setShowAddModal(false);
+    setRecipeSearch("");
+    fetchGroceryList(updated, householdSize, city);
+  };
+
+  // Removing a dish from the active grocery list
+  const handleRemoveRecipe = (rId: string) => {
+    if (recipeIds.length <= 1) {
+      return; // Keep at least one dish
+    }
+    const updated = recipeIds.filter((id) => id !== rId);
+    setRecipeIds(updated);
+    localStorage.setItem("zaychin_grocery_recipes", JSON.stringify(updated));
+    fetchGroceryList(updated, householdSize, city);
+  };
+
+  // Syncing latest meal plan from planner
+  const handleSyncWithPlanner = () => {
+    const saved = localStorage.getItem("zaychin_grocery_recipes");
+    let ids = ["R0001", "R0002", "R0003", "R0004", "R0005"];
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          ids = parsed;
+        }
+      } catch (e) {}
+    }
+    setRecipeIds(ids);
+    fetchGroceryList(ids, householdSize, city);
+  };
+
+  // Reset to default 5 starter recipes
+  const handleResetDefaults = () => {
+    const defaults = ["R0001", "R0002", "R0003", "R0004", "R0005"];
+    setRecipeIds(defaults);
+    localStorage.setItem("zaychin_grocery_recipes", JSON.stringify(defaults));
+    fetchGroceryList(defaults, householdSize, city);
+  };
+
+  // Toggle item checked in checklist
   const toggleCheck = (itemId: string) => {
     setCheckedItems((prev) => {
       const next = { ...prev, [itemId]: !prev[itemId] };
@@ -79,6 +184,7 @@ function GroceryListContent() {
     });
   };
 
+  // Individual item pantry override
   const toggleItemPantry = (itemId: string, currentInPantry: boolean) => {
     setPantryOverrides((prev) => ({
       ...prev,
@@ -99,20 +205,33 @@ function GroceryListContent() {
   const purchasedCount = allItems.filter((i) => checkedItems[i.ingredient_id]).length;
   const progressPct = totalCount > 0 ? Math.round((purchasedCount / totalCount) * 100) : 0;
 
-  // Active cashier out-of-pocket cost
-  const activeStoreTotal = allItems.reduce((acc, item) => {
+  // Active cashier out-of-pocket cost for ALL items that need buying
+  const totalStoreNeeded = allItems.reduce((acc, item) => {
     if (item.is_zero_cost_utility) return acc;
     if (isItemInPantry(item)) return acc;
     return acc + (item.retail_package_price_mmk || item.estimated_price_mmk || 0);
   }, 0);
 
+  // Remaining cost at cashier (ONLY items NOT yet checked/purchased)
+  const remainingStoreTotal = allItems.reduce((acc, item) => {
+    if (item.is_zero_cost_utility) return acc;
+    if (isItemInPantry(item)) return acc;
+    if (checkedItems[item.ingredient_id]) return acc; // already in cart!
+    return acc + (item.retail_package_price_mmk || item.estimated_price_mmk || 0);
+  }, 0);
+
+  // In-cart cost (items already checked off)
+  const inCartStoreTotal = Math.max(0, totalStoreNeeded - remainingStoreTotal);
+
   const netPortionTotal = groceryList?.estimated_total_mmk || 0;
   const fullStoreTotal = groceryList?.retail_total_mmk || 0;
-  const pantrySavings = Math.max(0, fullStoreTotal - activeStoreTotal);
+  const pantrySavings = Math.max(0, fullStoreTotal - totalStoreNeeded);
 
   const handleCopyClipboard = () => {
     if (!groceryList) return;
-    let text = `🛒 Zay Chin (ဈေးခြင်း) — Smart Grocery Shopping Checklist (${city}, ${householdSize} Persons)\n\n`;
+    let text = `🛒 Zay Chin (ဈေးခြင်း) — Smart Grocery Shopping Checklist (${city}, ${householdSize} Persons)\n`;
+    text += `Dishes: ${recipeIds.map((id) => recipeLookup.get(id)?.name_en || id).join(", ")}\n\n`;
+
     groceryList.groups.forEach((g) => {
       const catName = language === "mm" ? g.category_name_mm : g.category_name_en;
       text += `📍 [${catName}]\n`;
@@ -130,7 +249,7 @@ function GroceryListContent() {
       });
       text += "\n";
     });
-    text += `💰 Out-of-Pocket Store Total: ${activeStoreTotal.toLocaleString()} MMK\n`;
+    text += `💰 Out-of-Pocket Store Total: ${totalStoreNeeded.toLocaleString()} MMK\n`;
     text += `🍲 Prorated Recipe Portion Value: ${netPortionTotal.toLocaleString()} MMK\n`;
     text += `Verified Retail Market Observations (CSO, Citymall, YCE) • Zero Hallucination\n`;
 
@@ -142,6 +261,16 @@ function GroceryListContent() {
   const handlePrint = () => {
     window.print();
   };
+
+  // Filter recipes for add modal
+  const filteredCandidates = useMemo(() => {
+    const q = recipeSearch.trim().toLowerCase();
+    const all = Array.from(recipeLookup.values());
+    if (!q) return all.slice(0, 15);
+    return all
+      .filter((r) => r.name_en.toLowerCase().includes(q) || r.name_mm.includes(q) || r.category.toLowerCase().includes(q))
+      .slice(0, 15);
+  }, [recipeSearch, recipeLookup]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
@@ -161,25 +290,147 @@ function GroceryListContent() {
         </p>
       </div>
 
+      {/* Planned Dishes & Household Controls Bar */}
+      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-stone-200/90 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <CookingPotIcon className="w-5 h-5 text-emerald-800" />
+              <h2 className="text-sm sm:text-base font-extrabold text-stone-900">
+                {language === "mm" ? "ဈေးဝယ်စာရင်းတွင် ထည့်သွင်းထားသော ဟင်းလျာများ" : "Active Recipes in Grocery List"}
+              </h2>
+              <span className="text-xs bg-emerald-100 text-emerald-900 font-extrabold px-2.5 py-0.5 rounded-full">
+                {recipeIds.length} {language === "mm" ? "မျိုး" : "dishes"}
+              </span>
+            </div>
+            <p className="text-xs text-stone-500">
+              {language === "mm"
+                ? "ဟင်းလျာများ ထည့်သွင်း/ဖယ်ထုတ်နိုင်ပြီး မိသားစု ဦးရေအလိုက် စာရင်းကို ချက်ချင်း အလိုအလျောက် ပြန်လည်တွက်ချက်ပေးပါသည်။"
+                : "Add or remove dishes, or adjust household size to recalculate all package quantities instantly."}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Household Size Stepper */}
+            <div className="flex items-center gap-2 bg-stone-50 px-3 py-1.5 rounded-2xl border border-stone-200">
+              <span className="text-xs font-bold text-stone-600">
+                {language === "mm" ? "စားသုံးသူ:" : "Household:"}
+              </span>
+              <button
+                type="button"
+                onClick={() => handleHouseholdChange(householdSize - 1)}
+                disabled={householdSize <= 1}
+                className="w-7 h-7 rounded-lg bg-white border border-stone-200 flex items-center justify-center font-bold text-stone-700 hover:bg-stone-100 disabled:opacity-40"
+                aria-label="Decrease household size"
+              >
+                <MinusIcon className="w-3.5 h-3.5" />
+              </button>
+              <span className="text-xs font-extrabold text-emerald-900 w-12 text-center">
+                {householdSize} {language === "mm" ? "ဦး" : "pax"}
+              </span>
+              <button
+                type="button"
+                onClick={() => handleHouseholdChange(householdSize + 1)}
+                disabled={householdSize >= 20}
+                className="w-7 h-7 rounded-lg bg-white border border-stone-200 flex items-center justify-center font-bold text-stone-700 hover:bg-stone-100 disabled:opacity-40"
+                aria-label="Increase household size"
+              >
+                <PlusIcon className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* Add Recipe Button */}
+            <button
+              type="button"
+              onClick={() => setShowAddModal(true)}
+              className="px-3.5 py-2 bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs rounded-xl shadow-xs transition-all active:scale-95 flex items-center gap-1.5"
+            >
+              <PlusIcon className="w-3.5 h-3.5 text-amber-300" />
+              <span>{language === "mm" ? "ဟင်းလျာ ထည့်မည်" : "Add Recipe"}</span>
+            </button>
+
+            {/* Sync from Planner Button */}
+            <button
+              type="button"
+              onClick={handleSyncWithPlanner}
+              title={language === "mm" ? "အပတ်စဉ် အစားအစာ ဇယားမှ ဟင်းလျာများကို ပြန်လည် ဆွဲယူမည်" : "Sync latest dishes from 7-day planner"}
+              className="px-3 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs rounded-xl transition-all active:scale-95 flex items-center gap-1.5"
+            >
+              <CalendarIcon className="w-3.5 h-3.5 text-emerald-700" />
+              <span>{language === "mm" ? "ဇယားမှ ပြန်ဆွဲမည်" : "Sync Planner"}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Recipe Chips List */}
+        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-stone-100">
+          {recipeIds.map((rId) => {
+            const recipeInfo = recipeLookup.get(rId);
+            const name = recipeInfo ? (language === "mm" ? recipeInfo.name_mm : recipeInfo.name_en) : rId;
+            return (
+              <span
+                key={rId}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-950 border border-emerald-200/80 text-xs font-semibold shadow-2xs"
+              >
+                <Link
+                  href={`/recipes/${rId}`}
+                  className="hover:underline hover:text-emerald-700"
+                  title="View recipe details"
+                >
+                  {name}
+                </Link>
+                {recipeIds.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveRecipe(rId)}
+                    className="w-4 h-4 rounded-full bg-emerald-200 hover:bg-emerald-300 text-emerald-900 flex items-center justify-center font-bold text-[10px] transition-colors"
+                    title={language === "mm" ? "ဤဟင်းလျာကို ဖယ်ထုတ်မည်" : "Remove dish from list"}
+                  >
+                    ×
+                  </button>
+                )}
+              </span>
+            );
+          })}
+          {recipeIds.length > 5 && (
+            <button
+              type="button"
+              onClick={handleResetDefaults}
+              className="text-[11px] text-stone-400 hover:text-red-600 underline font-medium pl-1"
+            >
+              {language === "mm" ? "မူလ ၅ မျိုးသို့ ပြန်ထားမည်" : "Reset to default 5"}
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* 3-Way Financial Insight Banner */}
       {groceryList && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Card 1: Out-of-pocket store cashier cost */}
-          <div className="bg-gradient-to-br from-emerald-900 to-teal-900 text-white rounded-3xl p-6 shadow-md space-y-2 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-emerald-900 via-teal-900 to-emerald-950 text-white rounded-3xl p-6 shadow-md space-y-2 relative overflow-hidden">
             <span className="text-[11px] font-bold text-amber-300 uppercase tracking-wider block">
               {language === "mm" ? "စတိုးဆိုင်/ဈေးတွင် အမှန်ဝယ်ယူရမည့် စရိတ်" : "Cashier Out-of-Pocket Total"}
             </span>
             <div className="flex items-baseline gap-2">
               <span className="text-3xl sm:text-4xl font-black text-white">
-                {activeStoreTotal.toLocaleString()}
+                {totalStoreNeeded.toLocaleString()}
               </span>
               <span className="text-sm font-bold text-emerald-200">MMK</span>
             </div>
-            <p className="text-xs text-emerald-100/80 leading-relaxed pt-1">
-              {language === "mm"
-                ? "အလုံးလိုက်နှင့် လက်လီအထုပ်လိုက် အမှန်တကယ် ဝယ်ယူရမည့် ငွေပမာဏ။"
-                : "Real money handed to the cashier for whole pieces and purchasable store packs."}
-            </p>
+            <div className="text-xs text-emerald-100/90 leading-relaxed pt-1 flex items-center gap-2">
+              {inCartStoreTotal > 0 ? (
+                <span>
+                  🛒 {inCartStoreTotal.toLocaleString()} MMK in cart • <strong>Remaining: {remainingStoreTotal.toLocaleString()} MMK</strong>
+                </span>
+              ) : (
+                <span>
+                  {language === "mm"
+                    ? "အလုံးလိုက်နှင့် လက်လီအထုပ်လိုက် အမှန်တကယ် ဝယ်ယူရမည့် ငွေပမာဏ။"
+                    : "Full retail store packages & whole piece cashier checkout."}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Card 2: Net Recipe Portion Consumption Value */}
@@ -324,6 +575,12 @@ function GroceryListContent() {
         <div className="space-y-6">
           {groceryList.groups.map((group) => {
             const groupName = language === "mm" ? group.category_name_mm : group.category_name_en;
+            // Calculate active aisle subtotal based on non-pantry items
+            const activeGroupSubtotal = group.items.reduce((sum, item) => {
+              if (item.is_zero_cost_utility || isItemInPantry(item)) return sum;
+              return sum + (item.retail_package_price_mmk || item.estimated_price_mmk || 0);
+            }, 0);
+
             return (
               <div
                 key={group.category_id}
@@ -340,7 +597,7 @@ function GroceryListContent() {
                     </h3>
                   </div>
                   <div className="text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/60">
-                    {group.subtotal_mmk.toLocaleString()} MMK
+                    {activeGroupSubtotal.toLocaleString()} MMK
                   </div>
                 </div>
 
@@ -469,6 +726,75 @@ function GroceryListContent() {
           })}
         </div>
       ) : null}
+
+      {/* Add Recipe Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl border border-stone-200 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-extrabold text-stone-900 flex items-center gap-2">
+                <CookingPotIcon className="w-5 h-5 text-emerald-800" />
+                <span>{language === "mm" ? "ဈေးဝယ်စာရင်းသို့ ဟင်းလျာ ထည့်သွင်းရန်" : "Add Dish to Grocery List"}</span>
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowAddModal(false)}
+                className="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 flex items-center justify-center font-bold text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Search Input */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder={language === "mm" ? "ဟင်းအမည် ရှာရန် (ဥပမာ- ထောပတ်၊ မုန့်ဟင်းခါး)..." : "Search recipes by name or category..."}
+                value={recipeSearch}
+                onChange={(e) => setRecipeSearch(e.target.value)}
+                className="w-full py-2.5 pl-9 pr-3 text-xs sm:text-sm bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-700"
+                autoFocus
+              />
+              <SearchIcon className="w-4 h-4 text-stone-400 absolute left-3 top-3" />
+            </div>
+
+            {/* Recipe List */}
+            <div className="max-h-72 overflow-y-auto divide-y divide-stone-100 border border-stone-100 rounded-xl">
+              {filteredCandidates.map((cand) => {
+                const isAlreadyAdded = recipeIds.includes(cand.id);
+                return (
+                  <div
+                    key={cand.id}
+                    className="p-3 flex items-center justify-between hover:bg-stone-50 transition-colors"
+                  >
+                    <div>
+                      <div className="text-xs sm:text-sm font-bold text-stone-900">
+                        {language === "mm" ? cand.name_mm : cand.name_en}
+                      </div>
+                      <span className="text-[11px] text-stone-400">
+                        {language === "mm" ? cand.name_en : cand.name_mm} • {cand.category}
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={isAlreadyAdded}
+                      onClick={() => handleAddRecipe(cand.id)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        isAlreadyAdded
+                          ? "bg-stone-100 text-stone-400 cursor-not-allowed"
+                          : "bg-emerald-800 hover:bg-emerald-900 text-white active:scale-95 shadow-2xs"
+                      }`}
+                    >
+                      {isAlreadyAdded ? (language === "mm" ? "ထည့်ပြီး" : "Added") : (language === "mm" ? "+ ထည့်မည်" : "+ Add")}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

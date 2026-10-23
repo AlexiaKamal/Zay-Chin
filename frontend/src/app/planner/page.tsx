@@ -57,6 +57,11 @@ function PlannerContent() {
         ...overrides,
       });
       setPlan(res);
+      if (res && res.schedule && res.schedule.length > 0) {
+        const uniqueIds = Array.from(new Set(res.schedule.map((s) => s.recipe_id)));
+        localStorage.setItem("zaychin_grocery_recipes", JSON.stringify(uniqueIds));
+        localStorage.setItem("zaychin_grocery_household", householdSize.toString());
+      }
     } catch (err) {
       console.error("Error generating meal plan:", err);
     } finally {
@@ -124,15 +129,20 @@ function PlannerContent() {
       is_budget_exceeded: variance !== null ? variance < 0 : false,
     });
 
+    // Immediately sync to grocery list localStorage
+    const uniqueIds = Array.from(new Set(updatedSchedule.map((s) => s.recipe_id)));
+    localStorage.setItem("zaychin_grocery_recipes", JSON.stringify(uniqueIds));
+    localStorage.setItem("zaychin_grocery_household", householdSize.toString());
+
     setActiveSlot(null);
   };
 
   const handleExportToGroceryList = () => {
     if (!plan) return;
-    const recipeIds = plan.schedule.map((s) => s.recipe_id);
-    localStorage.setItem("zaychin_grocery_recipes", JSON.stringify(recipeIds));
+    const uniqueIds = Array.from(new Set(plan.schedule.map((s) => s.recipe_id)));
+    localStorage.setItem("zaychin_grocery_recipes", JSON.stringify(uniqueIds));
     localStorage.setItem("zaychin_grocery_household", householdSize.toString());
-    router.push("/grocery-list");
+    router.push(`/grocery-list?household=${householdSize}&recipes=${uniqueIds.join(",")}&updated=${Date.now()}`);
   };
 
   return (

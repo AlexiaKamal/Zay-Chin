@@ -30,6 +30,27 @@ function RecipeDetailContent() {
   const [servings, setServings] = useState<number>(4);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [addedGrocery, setAddedGrocery] = useState(false);
+
+  const handleAddToGrocery = () => {
+    if (!recipe) return;
+    const saved = localStorage.getItem("zaychin_grocery_recipes");
+    let current: string[] = [];
+    try {
+      current = saved ? JSON.parse(saved) : [];
+      if (!Array.isArray(current)) current = [];
+    } catch (e) {
+      current = [];
+    }
+    if (!current.includes(recipe.id)) {
+      current.push(recipe.id);
+      localStorage.setItem("zaychin_grocery_recipes", JSON.stringify(current));
+    }
+    setAddedGrocery(true);
+    setTimeout(() => {
+      router.push(`/grocery-list?recipes=${current.join(",")}&updated=${Date.now()}`);
+    }, 350);
+  };
 
   useEffect(() => {
     async function loadDetail() {
@@ -478,12 +499,26 @@ function RecipeDetailContent() {
                 ? "အပတ်စဉ် အစားအစာ စီစဉ်သူတွင် ဤဟင်းလျာကို ထည့်သွင်း၍ ဘတ်ဂျက် ချွေတာလိုက်ပါ။"
                 : "Add this recipe to your weekly meal planner to automatically generate your combined grocery checklist."}
             </p>
-            <Link
-              href={`/planner?addRecipe=${recipe.id}`}
-              className="w-full inline-block text-center py-2.5 px-4 bg-amber-400 hover:bg-amber-500 text-stone-950 font-extrabold text-xs rounded-xl transition-all shadow-md active:scale-95"
-            >
-              {t.btn_add_to_plan}
-            </Link>
+            <div className="space-y-2 pt-1">
+              <button
+                type="button"
+                onClick={handleAddToGrocery}
+                className="w-full text-center py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
+              >
+                <span>🛒</span>
+                <span>
+                  {addedGrocery
+                    ? (language === "mm" ? "ဈေးဝယ်စာရင်းသို့ ထည့်ပြီးပြီ!" : "Added to Grocery List!")
+                    : (language === "mm" ? "ဈေးဝယ်စာရင်းသို့ ထည့်မည်" : "Add to Grocery List")}
+                </span>
+              </button>
+              <Link
+                href={`/planner?addRecipe=${recipe.id}`}
+                className="w-full inline-block text-center py-2.5 px-4 bg-amber-400 hover:bg-amber-500 text-stone-950 font-extrabold text-xs rounded-xl transition-all shadow-md active:scale-95"
+              >
+                {t.btn_add_to_plan}
+              </Link>
+            </div>
           </div>
         </div>
       </div>
