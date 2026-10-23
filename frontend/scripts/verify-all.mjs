@@ -109,6 +109,41 @@ test("Meal Planner generates 7-day schedule with 21 meals and daily nutrition", 
   assert.ok(plan.budget_status_message_mm.length > 0, "Must have Myanmar budget message");
 });
 
+// 5b. Strict Budget Constraints Test
+test("Meal Planner strictly respects weekly budget constraints without blowing budget", () => {
+  const budgetTest60k = getLocalMealPlan({
+    city: "Yangon",
+    household_size: 2,
+    weekly_budget_mmk: 60000,
+    meals_per_day: 3,
+    plan_duration_days: 7,
+  });
+
+  assert.ok(
+    budgetTest60k.estimated_total_cost_mmk <= 60000,
+    `Budget 60,000 MMK must not be exceeded: got ${budgetTest60k.estimated_total_cost_mmk}`
+  );
+  assert.strictEqual(budgetTest60k.is_budget_exceeded, false, "60,000 MMK plan should not be marked exceeded");
+  assert.ok(
+    budgetTest60k.budget_status_message_en.includes("Generated within your budget"),
+    "Budget success message must be rendered"
+  );
+
+  const budgetTest90k = getLocalMealPlan({
+    city: "Mandalay",
+    household_size: 2,
+    weekly_budget_mmk: 90000,
+    meals_per_day: 3,
+    plan_duration_days: 7,
+  });
+
+  assert.ok(
+    budgetTest90k.estimated_total_cost_mmk <= 90000,
+    `Budget 90,000 MMK must not be exceeded: got ${budgetTest90k.estimated_total_cost_mmk}`
+  );
+  assert.strictEqual(budgetTest90k.is_budget_exceeded, false, "90,000 MMK plan should not be marked exceeded");
+});
+
 // 6. Meal Replacement Candidates
 test("Planner replacement returns alternative options with cost deltas", () => {
   const replacements = getLocalMealReplacements({

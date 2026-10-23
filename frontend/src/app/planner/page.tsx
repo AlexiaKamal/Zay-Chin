@@ -176,7 +176,11 @@ function PlannerContent() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setHouseholdSize(Math.max(1, householdSize - 1))}
+                onClick={() => {
+                  const newHh = Math.max(1, householdSize - 1);
+                  setHouseholdSize(newHh);
+                  fetchPlan({ household_size: newHh });
+                }}
                 className="w-10 h-10 rounded-xl bg-stone-100 hover:bg-stone-200 font-bold text-lg text-stone-700 flex items-center justify-center transition-colors"
               >
                 -
@@ -186,7 +190,11 @@ function PlannerContent() {
               </div>
               <button
                 type="button"
-                onClick={() => setHouseholdSize(Math.min(10, householdSize + 1))}
+                onClick={() => {
+                  const newHh = Math.min(10, householdSize + 1);
+                  setHouseholdSize(newHh);
+                  fetchPlan({ household_size: newHh });
+                }}
                 className="w-10 h-10 rounded-xl bg-stone-100 hover:bg-stone-200 font-bold text-lg text-stone-700 flex items-center justify-center transition-colors"
               >
                 +
@@ -202,7 +210,10 @@ function PlannerContent() {
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={() => setCity("Yangon")}
+                onClick={() => {
+                  setCity("Yangon");
+                  fetchPlan({ city: "Yangon" });
+                }}
                 className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all ${
                   city === "Yangon"
                     ? "bg-emerald-800 text-white shadow-sm"
@@ -213,7 +224,10 @@ function PlannerContent() {
               </button>
               <button
                 type="button"
-                onClick={() => setCity("Mandalay")}
+                onClick={() => {
+                  setCity("Mandalay");
+                  fetchPlan({ city: "Mandalay" });
+                }}
                 className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all ${
                   city === "Mandalay"
                     ? "bg-emerald-800 text-white shadow-sm"
@@ -227,18 +241,67 @@ function PlannerContent() {
 
           {/* Weekly Budget */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-stone-700 uppercase tracking-wider block">
-              {language === "mm" ? "အပတ်စဉ် သုံးစွဲလိုသော ဘတ်ဂျက် (ကျပ်)" : "Target Weekly Budget (MMK)"}
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-stone-700 uppercase tracking-wider block">
+                {language === "mm" ? "အပတ်စဉ် သုံးစွဲလိုသော ဘတ်ဂျက်" : "Target Weekly Budget"}
+              </label>
+              {weeklyBudget !== "" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setWeeklyBudget("");
+                    fetchPlan({ weekly_budget_mmk: null });
+                  }}
+                  className="text-[10px] text-emerald-700 hover:underline font-semibold"
+                >
+                  {language === "mm" ? "ဘတ်ဂျက် ဖျက်မည်" : "Clear limit"}
+                </button>
+              )}
+            </div>
             <div className="relative">
               <input
                 type="number"
                 placeholder={language === "mm" ? "ဥပမာ- 80000" : "e.g. 80,000"}
                 value={weeklyBudget}
                 onChange={(e) => setWeeklyBudget(e.target.value ? Number(e.target.value) : "")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    fetchPlan();
+                  }
+                }}
                 className="w-full py-2.5 px-3 bg-stone-50 border border-stone-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700"
               />
               <span className="absolute right-3 top-2.5 text-xs text-stone-400 font-semibold">MMK</span>
+            </div>
+
+            {/* Quick Budget Presets */}
+            <div className="flex items-center gap-1.5 pt-1">
+              {[
+                { key: "econ", factor: 30000, label_en: "Economy", label_mm: "ချွေတာ" },
+                { key: "bal", factor: 50000, label_en: "Balanced", label_mm: "မျှတ" },
+                { key: "comf", factor: 75000, label_en: "Comfort", label_mm: "ကောင်းမွန်" },
+              ].map((preset) => {
+                const amount = preset.factor * householdSize;
+                const isActive = weeklyBudget === amount;
+                return (
+                  <button
+                    key={preset.key}
+                    type="button"
+                    onClick={() => {
+                      setWeeklyBudget(amount);
+                      fetchPlan({ weekly_budget_mmk: amount });
+                    }}
+                    className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all border ${
+                      isActive
+                        ? "bg-emerald-800 text-white border-emerald-800 shadow-xs"
+                        : "bg-stone-100 hover:bg-stone-200 text-stone-600 border-transparent"
+                    }`}
+                    title={`${amount.toLocaleString()} MMK / week`}
+                  >
+                    {language === "mm" ? preset.label_mm : preset.label_en} ({Math.round(amount / 1000)}k)
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -250,7 +313,10 @@ function PlannerContent() {
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={() => setMealsPerDay(3)}
+                onClick={() => {
+                  setMealsPerDay(3);
+                  fetchPlan({ meals_per_day: 3 });
+                }}
                 className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all ${
                   mealsPerDay === 3
                     ? "bg-emerald-800 text-white shadow-sm"
@@ -261,7 +327,10 @@ function PlannerContent() {
               </button>
               <button
                 type="button"
-                onClick={() => setMealsPerDay(2)}
+                onClick={() => {
+                  setMealsPerDay(2);
+                  fetchPlan({ meals_per_day: 2 });
+                }}
                 className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all ${
                   mealsPerDay === 2
                     ? "bg-emerald-800 text-white shadow-sm"

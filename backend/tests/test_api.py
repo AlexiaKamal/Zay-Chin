@@ -74,6 +74,9 @@ def test_planner_generation():
     assert len(data["schedule"]) == 21  # 7 days * 3 meals
     assert len(data["daily_summaries"]) == 7
     assert data["estimated_total_cost_mmk"] > 0
+    assert data["estimated_total_cost_mmk"] <= 75000
+    assert data["is_budget_exceeded"] is False
+    assert "Generated within your budget" in data["budget_status_message_en"]
     assert data["average_daily_calories_per_person"] > 0
 
 def test_planner_replacement():

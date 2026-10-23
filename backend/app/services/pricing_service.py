@@ -41,12 +41,14 @@ class PricingService:
         recipe: models.Recipe,
         db: Session,
         city: str = "Yangon",
-        servings_multiplier: float = 1.0
+        servings_multiplier: float = 1.0,
+        price_map: Optional[Dict[str, models.IngredientPrice]] = None
     ) -> Dict[str, Any]:
         """
         Computes dynamic recipe cost based on verified city price observations.
         """
-        price_map = PricingService.get_latest_prices_by_city(db, city=city)
+        if price_map is None:
+            price_map = PricingService.get_latest_prices_by_city(db, city=city)
         
         total_cost_mmk = 0.0
         priced_count = 0

@@ -138,70 +138,165 @@ export function getLocalMealPlan(params: {
     candidates = allRecipes; // Fallback to full pool if filter too restrictive
   }
 
-  // Split into meal pool types
-  const breakfastPool = candidates.filter(
-    (r) =>
-      r.category.includes("Rice") ||
-      r.category.includes("noodle") ||
-      r.category.includes("soup") ||
-      r.category.includes("salad")
-  );
-  const lunchDinnerPool = candidates.filter(
-    (r) =>
-      r.category.includes("curry") ||
-      r.category.includes("dishes") ||
-      r.category.includes("stir_fry") ||
-      r.category.includes("Poultry") ||
-      r.category.includes("Fish") ||
-      r.category.includes("Pork") ||
-      r.category.includes("Beef") ||
-      r.category.includes("Egg")
-  );
+  // Precompute costs and nutrition for all candidates for the active household size and city
+  const pricedCandidates = candidates.map((r) => {
+    const multiplier = hh / (r.servings || 4);
+    const costBreakdown = computeRecipeCost(r, city, multiplier);
+    const nutr = computeRecipeNutrition(r, hh);
+    const flags = getDietaryFlags(r);
+    return {
+      recipe: r,
+      slotCost: Math.round(costBreakdown.estimated_cost_mmk),
+      calories: Math.round(nutr.per_serving.calories_kcal * hh),
+      protein: Math.round(nutr.per_serving.protein_g * hh),
+      flags,
+    };
+  });
 
-  const finalBreakfastPool = breakfastPool.length > 0 ? breakfastPool : candidates;
-  const finalMainPool = lunchDinnerPool.length > 0 ? lunchDinnerPool : candidates;
+  // Split into Breakfast and Main (Lunch/Dinner) pools
+  const breakfastPool = pricedCandidates.filter(
+    (c) =>
+      c.recipe.category.includes("Rice") ||
+      c.recipe.category.includes("noodle") ||
+      c.recipe.category.includes("soup") ||
+      c.recipe.category.includes("salad") ||
+      c.recipe.category.includes("Egg")
+  );
+  const finalBreakfastPool = breakfastPool.length >= 5 ? breakfastPool : pricedCandidates;
 
+  const mainPool = pricedCandidates.filter(
+    (c) =>
+      c.recipe.category.includes("curry") ||
+      c.recipe.category.includes("dishes") ||
+      c.recipe.category.includes("stir_fry") ||
+      c.recipe.category.includes("Poultry") ||
+      c.recipe.category.includes("Fish") ||
+      c.recipe.category.includes("Pork") ||
+      c.recipe.category.includes("Beef") ||
+      c.recipe.category.includes("Egg")
+  );
+  const finalMainPool = mainPool.length >= 10 ? mainPool : pricedCandidates;
+
+  const mealTypes = mealsPerDay === 2 ? ["lunch", "dinner"] : ["breakfast", "lunch", "dinner"];
+  const totalSlots = days * mealTypes.length;
+
+  // Determine budget parameters
+  const isBudgetSpecified = params.weekly_budget_mmk !== null && params.weekly_budget_mmk !== undefined && params.weekly_budget_mmk > 0;
+  // If user specified a budget, adhere to it; otherwise use a balanced baseline of ~4,500 MMK per meal slot (2 pax)
+  const targetBudget = isBudgetSpecified ? params.weekly_budget_mmk! : Math.round(4500 * (hh / 2) * totalSlots);
+
+  // Minimum realistic costs in pools for safety reserve calculations
+  const minBreakfastCost = Math.min(...finalBreakfastPool.map((p) => p.slotCost).filter((c) => c > 500)) || 1500;
+  const minMainCost = Math.min(...finalMainPool.map((p) => p.slotCost).filter((c) => c > 1000)) || 2500;
+
+  let remainingBudget = targetBudget;
+  let remainingSlots = totalSlots;
   const schedule: MealSlotRecommendation[] = [];
+  const usedIdsThisWeek = new Map<string, number>();
   let currentCost = 0;
 
   for (let d = 1; d <= days; d++) {
     const dayEn = DAYS_EN[d - 1] || `Day ${d}`;
     const dayMm = DAYS_MM[d - 1] || `ရက် ${d}`;
 
-    const mealTypes = mealsPerDay === 2 ? ["lunch", "dinner"] : ["breakfast", "lunch", "dinner"];
-
     for (let mIdx = 0; mIdx < mealTypes.length; mIdx++) {
       const mealType = mealTypes[mIdx];
       const pool = mealType === "breakfast" ? finalBreakfastPool : finalMainPool;
-      const recipeIndex = (d * 3 + mIdx) % pool.length;
-      const recipe = pool[recipeIndex] || pool[0];
+      const isBreakfast = mealType === "breakfast";
 
-      const multiplier = hh / (recipe.servings || 4);
-      const costBreakdown = computeRecipeCost(recipe, city, multiplier);
-      const nutr = computeRecipeNutrition(recipe, hh);
-      const flags = getDietaryFlags(recipe);
+      // Relative meal budget target (breakfast ~25% lighter, lunch/dinner more substantial)
+      const slotWeight = isBreakfast ? 0.75 : 1.125;
+      const avgSlotAllowance = remainingBudget / remainingSlots;
+      const slotTargetCost = Math.max(isBreakfast ? minBreakfastCost : minMainCost, avgSlotAllowance * slotWeight);
 
-      const slotCost = costBreakdown.estimated_cost_mmk;
-      currentCost += slotCost;
+      // Reserve buffer for future slots
+      const reserveForFutureSlots = (remainingSlots - 1) * (isBreakfast ? minMainCost : minBreakfastCost);
+      const maxAllowedForSlot = Math.max(slotTargetCost * 1.5, remainingBudget - reserveForFutureSlots);
+
+      let eligible = pool.filter((c) => c.slotCost <= maxAllowedForSlot);
+      if (eligible.length === 0) {
+        eligible = [...pool].sort((a, b) => a.slotCost - b.slotCost).slice(0, 5);
+      }
+
+      // Sort candidates by cost proximity, nutrition, and recency penalty
+      eligible.sort((a, b) => {
+        const lastUsedA = usedIdsThisWeek.get(a.recipe.recipe_id) ?? -10;
+        const lastUsedB = usedIdsThisWeek.get(b.recipe.recipe_id) ?? -10;
+        const recencyPenaltyA = d - lastUsedA <= 2 ? 5000 : 0;
+        const recencyPenaltyB = d - lastUsedB <= 2 ? 5000 : 0;
+
+        const costDiffA = Math.abs(a.slotCost - slotTargetCost) + recencyPenaltyA;
+        const costDiffB = Math.abs(b.slotCost - slotTargetCost) + recencyPenaltyB;
+
+        return costDiffA - costDiffB;
+      });
+
+      const chosen = eligible[0] || pool[0];
+      usedIdsThisWeek.set(chosen.recipe.recipe_id, d);
+
+      currentCost += chosen.slotCost;
+      remainingBudget -= chosen.slotCost;
+      remainingSlots -= 1;
 
       schedule.push({
         day_of_week: d,
         day_name_en: dayEn,
         day_name_mm: dayMm,
         meal_type: mealType,
-        recipe_id: recipe.recipe_id,
-        recipe_name_en: recipe.name_en,
-        recipe_name_mm: recipe.name_mm,
-        category: recipe.category,
+        recipe_id: chosen.recipe.recipe_id,
+        recipe_name_en: chosen.recipe.name_en,
+        recipe_name_mm: chosen.recipe.name_mm,
+        category: chosen.recipe.category,
         servings: hh,
-        cook_time_minutes: recipe.cooking_time_minutes || 30,
-        estimated_cost_mmk: slotCost,
-        calories_kcal: Math.round(nutr.per_serving.calories_kcal * hh),
-        protein_g: Math.round(nutr.per_serving.protein_g * hh),
-        is_vegetarian: flags.is_vegetarian,
-        is_vegan: flags.is_vegan,
-        is_gluten_free: flags.is_gluten_free,
+        cook_time_minutes: chosen.recipe.cooking_time_minutes || 30,
+        estimated_cost_mmk: chosen.slotCost,
+        calories_kcal: chosen.calories,
+        protein_g: chosen.protein,
+        is_vegetarian: chosen.flags.is_vegetarian,
+        is_vegan: chosen.flags.is_vegan,
+        is_gluten_free: chosen.flags.is_gluten_free,
       });
+    }
+  }
+
+  // Secondary optimization pass: If slightly over budget, replace the most expensive slots with authentic lower-cost options
+  if (currentCost > targetBudget) {
+    const slotIndices = schedule.map((s, idx) => ({ idx, cost: s.estimated_cost_mmk })).sort((a, b) => b.cost - a.cost);
+
+    for (const { idx } of slotIndices) {
+      if (currentCost <= targetBudget) break;
+      const slot = schedule[idx];
+      const pool = slot.meal_type === "breakfast" ? finalBreakfastPool : finalMainPool;
+      const neededReduction = currentCost - targetBudget;
+
+      const cheaperCandidates = pool
+        .filter((c) => c.slotCost < slot.estimated_cost_mmk && c.recipe.recipe_id !== slot.recipe_id)
+        .sort((a, b) => {
+          const redA = slot.estimated_cost_mmk - a.slotCost;
+          const redB = slot.estimated_cost_mmk - b.slotCost;
+          return Math.abs(redA - neededReduction) - Math.abs(redB - neededReduction);
+        });
+
+      if (cheaperCandidates.length > 0) {
+        const replacement = cheaperCandidates[0];
+        const costDelta = slot.estimated_cost_mmk - replacement.slotCost;
+        currentCost -= costDelta;
+
+        schedule[idx] = {
+          ...slot,
+          recipe_id: replacement.recipe.recipe_id,
+          recipe_name_en: replacement.recipe.name_en,
+          recipe_name_mm: replacement.recipe.name_mm,
+          category: replacement.recipe.category,
+          cook_time_minutes: replacement.recipe.cooking_time_minutes || 30,
+          estimated_cost_mmk: replacement.slotCost,
+          calories_kcal: replacement.calories,
+          protein_g: replacement.protein,
+          is_vegetarian: replacement.flags.is_vegetarian,
+          is_vegan: replacement.flags.is_vegan,
+          is_gluten_free: replacement.flags.is_gluten_free,
+        };
+      }
     }
   }
 
@@ -220,23 +315,25 @@ export function getLocalMealPlan(params: {
     });
   }
 
-  const targetBudget = params.weekly_budget_mmk || null;
-  const isExceeded = targetBudget !== null && currentCost > targetBudget;
-  const variance = targetBudget !== null ? targetBudget - currentCost : null;
+  const isExceeded = currentCost > targetBudget;
+  const variance = targetBudget - currentCost;
 
   let msgEn = `Estimated total grocery expense for ${hh} person(s) across ${days} days.`;
   let msgMm = `လူဦးရေ ${hh} ဦးအတွက် (${days}) ရက်စာ ခန့်မှန်းကုန်ကျစရိတ် ဖြစ်ပါသည်။`;
 
-  if (targetBudget !== null) {
+  if (isBudgetSpecified) {
     if (isExceeded) {
       const over = currentCost - targetBudget;
-      msgEn = `Budget exceeded by ${over.toLocaleString()} MMK. Consider replacing red meat or prawns with egg or lentil dishes.`;
-      msgMm = `လျာထားဘတ်ဂျက်ထက် ${over.toLocaleString()} ကျပ် ကျော်လွန်နေပါသည်။ အမဲသား၊ ပုစွန်အစား ဥ သို့မဟုတ် ပဲဟင်းလျာများဖြင့် အစားထိုးနိုင်ပါသည်။`;
+      msgEn = `Optimized to lowest-cost authentic meals. Minimum viable expense for ${days} days is ${currentCost.toLocaleString()} MMK (Budget exceeded by ${over.toLocaleString()} MMK).`;
+      msgMm = `ကုန်ကျစရိတ် အသက်သာဆုံး စစ်မှန်သော ရိုးရာဟင်းလျာများဖြင့် စီစဉ်ထားသော်လည်း လျာထားဘတ်ဂျက်ထက် ${over.toLocaleString()} ကျပ် ကျော်လွန်နေပါသည်။`;
     } else {
       const saved = targetBudget - currentCost;
-      msgEn = `Within budget! You have ${saved.toLocaleString()} MMK surplus available for seasonal fruits and snacks.`;
-      msgMm = `လျာထားဘတ်ဂျက်အတွင်း ရှိပါသည်။ ပိုလျှံငွေ ${saved.toLocaleString()} ကျပ်ကို ရာသီပေါ်သစ်သီးနှင့် သရေစာများအတွက် အသုံးပြုနိုင်ပါသည်။`;
+      msgEn = `✓ Generated within your budget! Total: ${currentCost.toLocaleString()} MMK (Surplus: ${saved.toLocaleString()} MMK available for seasonal fruits and snacks).`;
+      msgMm = `✓ လျာထားဘတ်ဂျက်အတွင်း အောင်မြင်စွာ စီစဉ်ပြီးပါပြီ။ စုစုပေါင်း: ${currentCost.toLocaleString()} ကျပ် (ပိုလျှံငွေ: ${saved.toLocaleString()} ကျပ်)။`;
     }
+  } else {
+    msgEn = `Balanced 7-day meal plan totaling ${currentCost.toLocaleString()} MMK for ${hh} person(s).`;
+    msgMm = `လူဦးရေ ${hh} ဦးအတွက် သင့်တင့်မျှတသော ၇ ရက်စာ အစားအစာဇယား စုစုပေါင်း ကုန်ကျစရိတ် ${currentCost.toLocaleString()} ကျပ် ဖြစ်ပါသည်။`;
   }
 
   const avgCaloriesPerPerson = Math.round(

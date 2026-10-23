@@ -97,151 +97,218 @@ class PlannerService:
             # Fallback to general recipes if dietary constraints are overly restrictive
             eligible_recipes = db.query(models.Recipe).all()
 
+        # Cache city prices once to avoid repeated DB queries across recipes
+        price_map = PricingService.get_latest_prices_by_city(db, city=req.city)
+
+        # Precompute cost, nutrition, and dietary flags for all eligible recipes
+        candidate_items = []
+        for r in eligible_recipes:
+            servings_mult = req.household_size / (r.servings or 4)
+            cost_info = PricingService.calculate_recipe_cost(
+                r, db, city=req.city, servings_multiplier=servings_mult, price_map=price_map
+            )
+            nutr_info = NutritionService.calculate_recipe_nutrition(r, db)
+            ps = nutr_info.get("per_serving", {})
+            flags = cls.get_dietary_flags(r)
+
+            candidate_items.append({
+                "recipe": r,
+                "slot_cost": cost_info.get("estimated_cost_mmk", 0.0),
+                "calories": ps.get("calories_kcal", 0.0),
+                "protein": ps.get("protein_g", 0.0),
+                "carbs": ps.get("carbohydrates_g", 0.0),
+                "fat": ps.get("fat_g", 0.0),
+                "sodium": ps.get("sodium_mg", 0.0),
+                "flags": flags,
+            })
+
         # Categorize eligible recipes for balanced slot selection
-        breakfast_pool = [r for r in eligible_recipes if r.category in BREAKFAST_CATEGORIES or "soup" in r.name_en.lower() or "rice" in r.name_en.lower()]
-        if not breakfast_pool:
-            breakfast_pool = eligible_recipes
+        breakfast_pool = [
+            c for c in candidate_items
+            if c["recipe"].category in BREAKFAST_CATEGORIES or
+            "soup" in c["recipe"].name_en.lower() or
+            "rice" in c["recipe"].name_en.lower() or
+            "egg" in c["recipe"].category.lower()
+        ]
+        if len(breakfast_pool) < 5:
+            breakfast_pool = candidate_items
 
-        lunch_pool = [r for r in eligible_recipes if r.category not in {"Salads"} or len(eligible_recipes) < 10]
-        if not lunch_pool:
-            lunch_pool = eligible_recipes
-
-        dinner_pool = eligible_recipes
-
-        schedule: List[MealSlotRecommendation] = []
-        daily_summaries: List[DailyNutritionSummary] = []
-        used_recipe_ids = set()
-        
-        total_plan_cost = 0.0
-        total_calories_accum = 0.0
-        total_protein_accum = 0.0
+        main_pool = [
+            c for c in candidate_items
+            if c["recipe"].category not in {"Salads"} or len(candidate_items) < 10
+        ]
+        if len(main_pool) < 10:
+            main_pool = candidate_items
 
         meals_per_day = req.meals_per_day
         meal_types = ["breakfast", "lunch", "dinner"] if meals_per_day == 3 else ["lunch", "dinner"]
+        total_slots = req.plan_duration_days * len(meal_types)
+
+        is_budget_specified = req.weekly_budget_mmk is not None and req.weekly_budget_mmk > 0
+        target_budget = req.weekly_budget_mmk if is_budget_specified else round(4500 * (req.household_size / 2) * total_slots)
+
+        min_breakfast_cost = min((c["slot_cost"] for c in breakfast_pool if c["slot_cost"] > 500), default=1500)
+        min_main_cost = min((c["slot_cost"] for c in main_pool if c["slot_cost"] > 1000), default=2500)
+
+        remaining_budget = float(target_budget)
+        remaining_slots = total_slots
+        used_ids_this_week: Dict[str, int] = {}
+        schedule_data = []
+        current_cost = 0.0
 
         for day_idx in range(req.plan_duration_days):
             day_num = day_idx + 1
             day_en = DAYS_EN[day_idx % 7]
             day_mm = DAYS_MM[day_idx % 7]
 
-            day_cost = 0.0
-            day_calories = 0.0
-            day_protein = 0.0
-            day_carbs = 0.0
-            day_fat = 0.0
-            day_sodium = 0.0
-
             for m_type in meal_types:
-                # Pick pool
-                if m_type == "breakfast":
-                    pool = breakfast_pool
-                elif m_type == "lunch":
-                    pool = lunch_pool
-                else:
-                    pool = dinner_pool
+                pool = breakfast_pool if m_type == "breakfast" else main_pool
+                is_breakfast = (m_type == "breakfast")
 
-                # Select an unused recipe if possible
-                candidates = [r for r in pool if r.id not in used_recipe_ids]
-                if not candidates:
-                    candidates = pool
+                # Slot weight (breakfast lighter, lunch/dinner more substantial)
+                slot_weight = 0.75 if is_breakfast else 1.125
+                avg_slot_allowance = remaining_budget / max(1, remaining_slots)
+                slot_target_cost = max(min_breakfast_cost if is_breakfast else min_main_cost, avg_slot_allowance * slot_weight)
 
-                # Preference boost for preferred categories
+                reserve_for_future_slots = (remaining_slots - 1) * (min_main_cost if is_breakfast else min_breakfast_cost)
+                max_allowed = max(slot_target_cost * 1.5, remaining_budget - reserve_for_future_slots)
+
+                eligible = [c for c in pool if c["slot_cost"] <= max_allowed]
+                if not eligible:
+                    eligible = sorted(pool, key=lambda c: c["slot_cost"])[:5]
+
+                # Boost preferred categories if requested
                 if req.preferred_categories:
-                    preferred_candidates = [c for c in candidates if c.category in req.preferred_categories]
-                    if preferred_candidates:
-                        candidates = preferred_candidates
+                    cat_pref = [c for c in eligible if c["recipe"].category in req.preferred_categories]
+                    if cat_pref:
+                        eligible = cat_pref
 
-                selected_recipe: models.Recipe = random.choice(candidates)
-                used_recipe_ids.add(selected_recipe.id)
+                # Sort by cost proximity + recency penalty
+                def score_candidate(cand):
+                    last_used = used_ids_this_week.get(cand["recipe"].id, -10)
+                    recency_penalty = 5000 if (day_num - last_used <= 2) else 0
+                    return abs(cand["slot_cost"] - slot_target_cost) + recency_penalty
 
-                # Servings multiplier for household
-                servings_mult = req.household_size / (selected_recipe.servings or 4)
+                eligible.sort(key=score_candidate)
+                chosen = eligible[0]
 
-                # Cost & Nutrition calculations
-                cost_info = PricingService.calculate_recipe_cost(
-                    selected_recipe, db, city=req.city, servings_multiplier=servings_mult
-                )
-                nutr_info = NutritionService.calculate_recipe_nutrition(selected_recipe, db)
+                used_ids_this_week[chosen["recipe"].id] = day_num
+                current_cost += chosen["slot_cost"]
+                remaining_budget -= chosen["slot_cost"]
+                remaining_slots -= 1
 
-                slot_cost = cost_info.get("estimated_cost_mmk", 0.0)
-                per_serving = nutr_info.get("per_serving", {})
-                cal = per_serving.get("calories_kcal", 0.0)
-                prot = per_serving.get("protein_g", 0.0)
-                carb = per_serving.get("carbohydrates_g", 0.0)
-                fat = per_serving.get("fat_g", 0.0)
-                sod = per_serving.get("sodium_mg", 0.0)
+                schedule_data.append({
+                    "day_of_week": day_num,
+                    "day_name_en": day_en,
+                    "day_name_mm": day_mm,
+                    "meal_type": m_type,
+                    "chosen": chosen
+                })
 
-                day_cost += slot_cost
-                day_calories += cal
-                day_protein += prot
-                day_carbs += carb
-                day_fat += fat
-                day_sodium += sod
+        # Secondary optimization pass: If slightly over budget, replace the most expensive slots with authentic lower-cost alternatives
+        if current_cost > target_budget:
+            indexed_slots = sorted(range(len(schedule_data)), key=lambda i: schedule_data[i]["chosen"]["slot_cost"], reverse=True)
+            for idx in indexed_slots:
+                if current_cost <= target_budget:
+                    break
+                slot_info = schedule_data[idx]
+                pool = breakfast_pool if slot_info["meal_type"] == "breakfast" else main_pool
+                needed_reduction = current_cost - target_budget
 
-                flags = cls.get_dietary_flags(selected_recipe)
+                cheaper = [
+                    c for c in pool
+                    if c["slot_cost"] < slot_info["chosen"]["slot_cost"] and c["recipe"].id != slot_info["chosen"]["recipe"].id
+                ]
+                if cheaper:
+                    cheaper.sort(key=lambda c: abs((slot_info["chosen"]["slot_cost"] - c["slot_cost"]) - needed_reduction))
+                    replacement = cheaper[0]
+                    current_cost -= (slot_info["chosen"]["slot_cost"] - replacement["slot_cost"])
+                    schedule_data[idx]["chosen"] = replacement
 
-                schedule.append(
-                    MealSlotRecommendation(
-                        day_of_week=day_num,
-                        day_name_en=day_en,
-                        day_name_mm=day_mm,
-                        meal_type=m_type,
-                        recipe_id=selected_recipe.id,
-                        recipe_name_en=selected_recipe.name_en,
-                        recipe_name_mm=selected_recipe.name_mm,
-                        category=selected_recipe.category or "Traditional",
-                        servings=req.household_size,
-                        cook_time_minutes=selected_recipe.cooking_time_minutes,
-                        estimated_cost_mmk=round(slot_cost, 2),
-                        calories_kcal=round(cal, 1),
-                        protein_g=round(prot, 1),
-                        is_vegetarian=flags["is_vegetarian"],
-                        is_vegan=flags["is_vegan"],
-                        is_gluten_free=flags["is_gluten_free"]
-                    )
-                )
-
-            total_plan_cost += day_cost
-            total_calories_accum += day_calories
-            total_protein_accum += day_protein
-
-            daily_summaries.append(
-                DailyNutritionSummary(
-                    day_of_week=day_num,
-                    total_calories_kcal=round(day_calories, 1),
-                    total_protein_g=round(day_protein, 1),
-                    total_carbs_g=round(day_carbs, 1),
-                    total_fat_g=round(day_fat, 1),
-                    total_sodium_mg=round(day_sodium, 1),
-                    total_cost_mmk=round(day_cost, 2)
+        # Build schedule response
+        schedule: List[MealSlotRecommendation] = []
+        for item in schedule_data:
+            c = item["chosen"]
+            r = c["recipe"]
+            schedule.append(
+                MealSlotRecommendation(
+                    day_of_week=item["day_of_week"],
+                    day_name_en=item["day_name_en"],
+                    day_name_mm=item["day_name_mm"],
+                    meal_type=item["meal_type"],
+                    recipe_id=r.id,
+                    recipe_name_en=r.name_en,
+                    recipe_name_mm=r.name_mm,
+                    category=r.category or "Traditional",
+                    servings=req.household_size,
+                    cook_time_minutes=r.cooking_time_minutes,
+                    estimated_cost_mmk=round(c["slot_cost"], 2),
+                    calories_kcal=round(c["calories"], 1),
+                    protein_g=round(c["protein"], 1),
+                    is_vegetarian=c["flags"]["is_vegetarian"],
+                    is_vegan=c["flags"]["is_vegan"],
+                    is_gluten_free=c["flags"]["is_gluten_free"]
                 )
             )
 
-        # Budget analysis
-        is_exceeded = False
-        variance = None
-        msg_en = "Plan meets estimated budgetary guidelines."
-        msg_mm = "အပတ်စဉ် အစားအစာ စီစဉ်မှုသည် ခန့်မှန်းဘတ်ဂျက်နှင့် ကိုက်ညီပါသည်။"
+        # Build daily summaries
+        daily_summaries: List[DailyNutritionSummary] = []
+        total_calories_accum = 0.0
+        total_protein_accum = 0.0
 
-        if req.weekly_budget_mmk is not None:
-            variance = req.weekly_budget_mmk - total_plan_cost
-            if variance < 0:
-                is_exceeded = True
-                msg_en = f"Estimated cost exceeds budget by {abs(round(variance, 0)):,} MMK. Consider substituting premium proteins with egg, dhal, or seasonal vegetable curries."
-                msg_mm = f"ခန့်မှန်းကုန်ကျစရိတ်သည် သတ်မှတ်ဘတ်ဂျက်ထက် {abs(round(variance, 0)):,} ကျပ် ပိုလွန်နေပါသည်။ ဥ၊ ပဲ သို့မဟုတ် ရာသီပေါ်ဟင်းသီးဟင်းရွက်များဖြင့် အစားထိုးစီစဉ်နိုင်ပါသည်။"
+        for d in range(1, req.plan_duration_days + 1):
+            day_items = [s for s in schedule_data if s["day_of_week"] == d]
+            d_cal = sum(s["chosen"]["calories"] for s in day_items)
+            d_prot = sum(s["chosen"]["protein"] for s in day_items)
+            d_carbs = sum(s["chosen"]["carbs"] for s in day_items)
+            d_fat = sum(s["chosen"]["fat"] for s in day_items)
+            d_sod = sum(s["chosen"]["sodium"] for s in day_items)
+            d_cost = sum(s["chosen"]["slot_cost"] for s in day_items)
+
+            total_calories_accum += d_cal
+            total_protein_accum += d_prot
+
+            daily_summaries.append(
+                DailyNutritionSummary(
+                    day_of_week=d,
+                    total_calories_kcal=round(d_cal, 1),
+                    total_protein_g=round(d_prot, 1),
+                    total_carbs_g=round(d_carbs, 1),
+                    total_fat_g=round(d_fat, 1),
+                    total_sodium_mg=round(d_sod, 1),
+                    total_cost_mmk=round(d_cost, 2)
+                )
+            )
+
+        # Budget analysis & verified messages
+        is_exceeded = current_cost > target_budget
+        variance = target_budget - current_cost
+
+        if is_budget_specified:
+            if is_exceeded:
+                over = int(current_cost - target_budget)
+                msg_en = f"Optimized to lowest-cost authentic meals. Minimum viable expense for {req.plan_duration_days} days is {int(current_cost):,} MMK (Budget exceeded by {over:,} MMK)."
+                msg_mm = f"ကုန်ကျစရိတ် အသက်သာဆုံး စစ်မှန်သော ရိုးရာဟင်းလျာများဖြင့် စီစဉ်ထားသော်လည်း လျာထားဘတ်ဂျက်ထက် {over:,} ကျပ် ကျော်လွန်နေပါသည်။"
+            else:
+                saved = int(target_budget - current_cost)
+                msg_en = f"✓ Generated within your budget! Total: {int(current_cost):,} MMK (Surplus: {saved:,} MMK available for seasonal fruits and snacks)."
+                msg_mm = f"✓ လျာထားဘတ်ဂျက်အတွင်း အောင်မြင်စွာ စီစဉ်ပြီးပါပြီ။ စုစုပေါင်း: {int(current_cost):,} ကျပ် (ပိုလျှံငွေ: {saved:,} ကျပ်)။"
+        else:
+            msg_en = f"Balanced {req.plan_duration_days}-day meal plan totaling {int(current_cost):,} MMK for {req.household_size} person(s)."
+            msg_mm = f"လူဦးရေ {req.household_size} ဦးအတွက် သင့်တင့်မျှတသော {req.plan_duration_days} ရက်စာ အစားအစာဇယား စုစုပေါင်း ကုန်ကျစရိတ် {int(current_cost):,} ကျပ် ဖြစ်ပါသည်။"
 
         days_count = req.plan_duration_days
-        avg_cal = round(total_calories_accum / days_count, 1) if days_count else 0.0
-        avg_prot = round(total_protein_accum / days_count, 1) if days_count else 0.0
+        avg_cal = round(total_calories_accum / (days_count * req.household_size), 1) if (days_count and req.household_size) else 0.0
+        avg_prot = round(total_protein_accum / (days_count * req.household_size), 1) if (days_count and req.household_size) else 0.0
 
         return MealPlanGenerateResponse(
             plan_name=f"{req.household_size}-Person Weekly Plan ({req.city})",
             city=req.city,
             household_size=req.household_size,
-            target_budget_mmk=req.weekly_budget_mmk,
-            estimated_total_cost_mmk=round(total_plan_cost, 2),
+            target_budget_mmk=target_budget if is_budget_specified else None,
+            estimated_total_cost_mmk=round(current_cost, 2),
             is_budget_exceeded=is_exceeded,
-            budget_variance_mmk=round(variance, 2) if variance is not None else None,
+            budget_variance_mmk=round(variance, 2) if is_budget_specified else None,
             budget_status_message_en=msg_en,
             budget_status_message_mm=msg_mm,
             days_count=days_count,
