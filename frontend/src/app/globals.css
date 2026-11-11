@@ -13,6 +13,11 @@
 
   --background: var(--color-background);
   --foreground: var(--color-text);
+
+  /* Dynamic Theme Shadows */
+  --shadow-theme-sm: 0 2px 8px -2px rgba(82, 108, 78, 0.08), 0 1px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-theme-md: 0 12px 28px -6px rgba(82, 108, 78, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+  --shadow-theme-lg: 0 20px 40px -10px rgba(82, 108, 78, 0.18), 0 8px 16px -4px rgba(0, 0, 0, 0.06);
 }
 
 @theme inline {
@@ -37,9 +42,56 @@ body {
 
 /* Gentle transitions across theme changes */
 header, aside, section, div, button, a {
-  transition-property: background-color, border-color, color, fill, stroke;
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 350ms;
+  transition-duration: 300ms;
+}
+
+/* Lively Dynamic Animations */
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.88;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-float {
+  animation: float-gentle 4s ease-in-out infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+/* Card hover lifts & lively shadows */
+.card-hover-lift {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+.card-hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.1), 0 6px 12px -3px rgba(0, 0, 0, 0.05);
 }
 
 /* Respect prefers-reduced-motion */

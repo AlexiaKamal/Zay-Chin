@@ -136,11 +136,12 @@ function RecipeExplorerContent() {
                 setActiveCategory("");
                 setPage(1);
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-2xs ${
                 activeCategory === ""
-                  ? "bg-emerald-800 text-white shadow-xs"
+                  ? "text-white shadow-xs"
                   : "bg-stone-100 text-stone-700 hover:bg-stone-200"
               }`}
+              style={activeCategory === "" ? { backgroundColor: "var(--color-primary)" } : {}}
             >
               {t.filter_all_categories} ({total})
             </button>
@@ -152,11 +153,12 @@ function RecipeExplorerContent() {
                   setActiveCategory(activeCategory === c.category ? "" : c.category);
                   setPage(1);
                 }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-2xs ${
                   activeCategory === c.category
-                    ? "bg-emerald-800 text-white shadow-xs"
+                    ? "text-white shadow-xs"
                     : "bg-stone-100 text-stone-700 hover:bg-stone-200"
                 }`}
+                style={activeCategory === c.category ? { backgroundColor: "var(--color-primary)" } : {}}
               >
                 {language === "mm" ? c.category_mm : c.category} ({c.count})
               </button>
@@ -216,7 +218,8 @@ function RecipeExplorerContent() {
           <button
             type="button"
             onClick={handleClearFilters}
-            className="text-xs font-bold text-emerald-700 hover:underline"
+            className="text-xs font-bold hover:underline"
+            style={{ color: "var(--color-primary)" }}
           >
             {t.clear_filters}
           </button>
@@ -231,7 +234,7 @@ function RecipeExplorerContent() {
           ))}
         </div>
       ) : recipes.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-stone-200 p-8 space-y-4">
+        <div className="text-center py-16 bg-white rounded-3xl border border-[var(--color-border)] p-8 space-y-4 shadow-sm">
           <CookingPotIcon className="w-12 h-12 text-stone-400 mx-auto" />
           <h3 className="text-lg font-bold text-stone-800">{t.no_recipes_found}</h3>
           <p className="text-sm text-stone-500 max-w-sm mx-auto">
@@ -242,7 +245,8 @@ function RecipeExplorerContent() {
           <button
             type="button"
             onClick={handleClearFilters}
-            className="px-4 py-2 bg-emerald-800 text-white text-xs font-bold rounded-xl"
+            className="px-4 py-2 text-white text-xs font-bold rounded-xl shadow-xs"
+            style={{ backgroundColor: "var(--color-primary)" }}
           >
             {t.clear_filters}
           </button>

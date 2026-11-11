@@ -158,4 +158,10 @@ export function applyThemeVariables(palette: ThemePalette): void {
   root.style.setProperty("--color-text", palette.text);
   root.style.setProperty("--color-muted", palette.muted);
   root.style.setProperty("--color-border", palette.border);
+
+  // Dynamic Theme Shadows that adapt to the active seasonal palette
+  const rgb = hexToRgb(palette.primary);
+  root.style.setProperty("--shadow-theme-sm", `0 4px 12px -2px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`);
+  root.style.setProperty("--shadow-theme-md", `0 12px 30px -6px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
+  root.style.setProperty("--shadow-theme-lg", `0 20px 44px -8px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.22)`);
 }

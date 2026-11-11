@@ -107,13 +107,13 @@ export function Navbar() {
             </button>
 
             {/* User Profile */}
-            <button
-              type="button"
-              className="flex items-center justify-center w-8 h-8 rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 transition-colors shadow-xs"
+            <Link
+              href="/profile"
+              className="flex items-center justify-center w-9 h-9 rounded-xl border border-[var(--color-border)] bg-[var(--color-muted)]/60 text-[var(--color-primary)] hover:bg-[var(--color-muted)] transition-all shadow-2xs hover:scale-105 active:scale-95"
               title={language === "mm" ? "အကောင့် / အသုံးပြုသူ" : "User Profile"}
             >
-              <UserIcon className="w-4 h-4 text-stone-600" />
-            </button>
+              <UserIcon className="w-4 h-4 text-[var(--color-primary)]" />
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -147,11 +147,18 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-md text-base font-medium text-stone-700 hover:bg-emerald-50 hover:text-emerald-800"
+              className="block px-3 py-2 rounded-md text-base font-medium text-stone-700 hover:bg-stone-50 hover:text-[var(--color-primary)]"
             >
               {link.label}
             </Link>
           ))}
+          <Link
+            href="/profile"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-md text-base font-bold text-[var(--color-primary)] bg-[var(--color-muted)]/40 border border-[var(--color-border)]"
+          >
+            👤 {language === "mm" ? "အကောင့် / ကိုယ်ရေးမှတ်တမ်း" : "Profile & Health Settings"}
+          </Link>
           <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
             <span className="text-xs font-medium text-stone-500">{t.city_select}:</span>
             <div className="flex gap-2">

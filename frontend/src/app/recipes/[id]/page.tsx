@@ -19,6 +19,7 @@ import {
   SparklesIcon,
   ShoppingBagIcon,
 } from "@/components/ui/Icons";
+import recipeImagesData from "@/data/recipe_images.json";
 
 function RecipeDetailContent() {
   const params = useParams();
@@ -31,6 +32,9 @@ function RecipeDetailContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [addedGrocery, setAddedGrocery] = useState(false);
+  const [imgError, setImgError] = useState(false);
+
+  const imgInfo = (recipeImagesData as Record<string, any>)[recipeId];
 
   const handleAddToGrocery = () => {
     if (!recipe) return;
@@ -45,6 +49,9 @@ function RecipeDetailContent() {
     if (!current.includes(recipe.id)) {
       current.push(recipe.id);
       localStorage.setItem("zaychin_grocery_recipes", JSON.stringify(current));
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("zaychin_recipes_updated", { detail: { recipeIds: current } }));
+      }
     }
     setAddedGrocery(true);
     setTimeout(() => {
@@ -121,7 +128,21 @@ function RecipeDetailContent() {
       </div>
 
       {/* Header Banner */}
-      <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-10 shadow-xs space-y-6">
+      <div className="bg-white rounded-3xl border border-[var(--color-border)] p-6 sm:p-10 shadow-md space-y-6">
+        {imgInfo && (
+          <div className="relative aspect-[21/9] sm:aspect-[24/9] w-full rounded-2xl overflow-hidden bg-stone-100 border border-stone-200 shadow-sm">
+            <img
+              src={imgError && imgInfo.fallback_local ? imgInfo.fallback_local : imgInfo.image_url}
+              alt={primaryName}
+              onError={() => setImgError(true)}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+              📸 {imgInfo.source_name} ({imgInfo.license})
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="px-3 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
@@ -202,9 +223,12 @@ function RecipeDetailContent() {
       </div>
 
       {/* Interactive Serving Scaler */}
-      <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-[var(--color-muted)]/40 border border-[var(--color-border)] rounded-3xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-800 text-white flex items-center justify-center font-bold">
+          <div
+            className="w-10 h-10 rounded-xl text-white flex items-center justify-center font-bold shadow-2xs"
+            style={{ backgroundColor: "var(--color-primary)" }}
+          >
             <UsersIcon className="w-5 h-5 text-amber-200" />
           </div>
           <div>

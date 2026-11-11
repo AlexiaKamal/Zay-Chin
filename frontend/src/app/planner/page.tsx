@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useState, useEffect } from "react";
+import React, { Suspense, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useApp } from "@/context/AppContext";
@@ -30,20 +30,16 @@ function PlannerContent() {
   const [weeklyBudget, setWeeklyBudget] = useState<number | "">("");
   const [mealsPerDay, setMealsPerDay] = useState<number>(3);
   const [selectedDietary, setSelectedDietary] = useState<string[]>([]);
+  const [showOtherInput, setShowOtherInput] = useState<boolean>(false);
+  const [otherInputText, setOtherInputText] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [plan, setPlan] = useState<MealPlanGenerateResponse | null>(null);
-
   // Replacement Modal State
   const [activeSlot, setActiveSlot] = useState<MealSlotRecommendation | null>(null);
   const [replacementCandidates, setReplacementCandidates] = useState<ReplacementOption[]>([]);
   const [loadingReplacements, setLoadingReplacements] = useState<boolean>(false);
 
-  // Initial plan load
-  useEffect(() => {
-    fetchPlan();
-  }, [city]);
-
-  const fetchPlan = async (overrides?: any) => {
+  const fetchPlan = useCallback(async (overrides?: Record<string, unknown>) => {
     setLoading(true);
     try {
       const budgetNum = weeklyBudget !== "" ? Number(weeklyBudget) : undefined;
@@ -61,18 +57,47 @@ function PlannerContent() {
         const uniqueIds = Array.from(new Set(res.schedule.map((s) => s.recipe_id)));
         localStorage.setItem("zaychin_grocery_recipes", JSON.stringify(uniqueIds));
         localStorage.setItem("zaychin_grocery_household", householdSize.toString());
+        // Dispatch storage update event so grocery list synchronizes immediately
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("zaychin_recipes_updated", { detail: { recipeIds: uniqueIds, household: householdSize } }));
+        }
       }
     } catch (err) {
       console.error("Error generating meal plan:", err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [city, householdSize, weeklyBudget, mealsPerDay, selectedDietary]);
+
+  // Initial plan load
+  useEffect(() => {
+    fetchPlan();
+  }, [fetchPlan]);
 
   const handleToggleDietary = (key: string) => {
-    setSelectedDietary((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
-    );
+    const updated = selectedDietary.includes(key)
+      ? selectedDietary.filter((k) => k !== key)
+      : [...selectedDietary, key];
+    setSelectedDietary(updated);
+    fetchPlan({ dietary_preferences: updated });
+  };
+
+  const handleAddCustomDietary = () => {
+    const trimmed = otherInputText.trim();
+    if (!trimmed) return;
+    if (!selectedDietary.includes(trimmed)) {
+      const updated = [...selectedDietary, trimmed];
+      setSelectedDietary(updated);
+      fetchPlan({ dietary_preferences: updated });
+    }
+    setOtherInputText("");
+    setShowOtherInput(false);
+  };
+
+  const handleRemoveCustomDietary = (tag: string) => {
+    const updated = selectedDietary.filter((t) => t !== tag);
+    setSelectedDietary(updated);
+    fetchPlan({ dietary_preferences: updated });
   };
 
   const openReplaceModal = async (slot: MealSlotRecommendation) => {
@@ -133,6 +158,9 @@ function PlannerContent() {
     const uniqueIds = Array.from(new Set(updatedSchedule.map((s) => s.recipe_id)));
     localStorage.setItem("zaychin_grocery_recipes", JSON.stringify(uniqueIds));
     localStorage.setItem("zaychin_grocery_household", householdSize.toString());
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("zaychin_recipes_updated", { detail: { recipeIds: uniqueIds, household: householdSize } }));
+    }
 
     setActiveSlot(null);
   };
@@ -146,16 +174,16 @@ function PlannerContent() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-in fade-in duration-300">
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
-          <CalendarIcon className="w-4 h-4 text-emerald-700" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-[var(--color-muted)] text-[var(--color-primary)] border border-[var(--color-border)] shadow-xs">
+          <CalendarIcon className="w-4 h-4 text-[var(--color-primary)]" />
           <span>
             {language === "mm" ? "အပတ်စဉ် အစားအစာ စီစဉ်ရေး စနစ်" : "Intelligent 7-Day Meal Planner"}
           </span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-stone-900 tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[var(--color-text)] tracking-tight">
           {language === "mm" ? "မိသားစု အစားအစာ စီစဉ်မှုနှင့် ဘတ်ဂျက်" : "Myanmar Household Meal Planning"}
         </h1>
         <p className="text-sm sm:text-base text-stone-600">
@@ -166,7 +194,7 @@ function PlannerContent() {
       </div>
 
       {/* Controls Form Drawer */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200/80 shadow-xs space-y-6">
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[var(--color-border)] shadow-md hover:shadow-lg transition-all duration-300 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Household Size */}
           <div className="space-y-2">
@@ -181,11 +209,11 @@ function PlannerContent() {
                   setHouseholdSize(newHh);
                   fetchPlan({ household_size: newHh });
                 }}
-                className="w-10 h-10 rounded-xl bg-stone-100 hover:bg-stone-200 font-bold text-lg text-stone-700 flex items-center justify-center transition-colors"
+                className="w-10 h-10 rounded-xl bg-stone-100 hover:bg-stone-200 font-bold text-lg text-stone-700 flex items-center justify-center transition-all active:scale-90"
               >
                 -
               </button>
-              <div className="flex-1 py-2 px-3 bg-stone-50 border border-stone-200 rounded-xl text-center font-bold text-emerald-800">
+              <div className="flex-1 py-2 px-3 bg-[var(--color-muted)]/30 border border-[var(--color-border)] rounded-xl text-center font-bold text-[var(--color-primary)]">
                 {householdSize} {language === "mm" ? "ဦး" : "Persons"}
               </div>
               <button
@@ -195,7 +223,7 @@ function PlannerContent() {
                   setHouseholdSize(newHh);
                   fetchPlan({ household_size: newHh });
                 }}
-                className="w-10 h-10 rounded-xl bg-stone-100 hover:bg-stone-200 font-bold text-lg text-stone-700 flex items-center justify-center transition-colors"
+                className="w-10 h-10 rounded-xl bg-stone-100 hover:bg-stone-200 font-bold text-lg text-stone-700 flex items-center justify-center transition-all active:scale-90"
               >
                 +
               </button>
@@ -216,9 +244,10 @@ function PlannerContent() {
                 }}
                 className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all ${
                   city === "Yangon"
-                    ? "bg-emerald-800 text-white shadow-sm"
+                    ? "text-white shadow-md"
                     : "bg-stone-100 hover:bg-stone-200 text-stone-700"
                 }`}
+                style={city === "Yangon" ? { backgroundColor: "var(--color-primary)" } : {}}
               >
                 {language === "mm" ? "ရန်ကုန်" : "Yangon"}
               </button>
@@ -230,9 +259,10 @@ function PlannerContent() {
                 }}
                 className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all ${
                   city === "Mandalay"
-                    ? "bg-emerald-800 text-white shadow-sm"
+                    ? "text-white shadow-md"
                     : "bg-stone-100 hover:bg-stone-200 text-stone-700"
                 }`}
+                style={city === "Mandalay" ? { backgroundColor: "var(--color-primary)" } : {}}
               >
                 {language === "mm" ? "မန္တလေး" : "Mandalay"}
               </button>
@@ -344,9 +374,9 @@ function PlannerContent() {
         </div>
 
         {/* Dietary Rules & Submit */}
-        <div className="pt-4 border-t border-stone-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="pt-4 border-t border-[var(--color-border)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-bold text-stone-500 mr-2">
+            <span className="text-xs font-bold text-stone-500 mr-1">
               {language === "mm" ? "အစားအသောက် စည်းကမ်း:" : "Dietary Filter:"}
             </span>
             {[
@@ -360,25 +390,91 @@ function PlannerContent() {
                   key={d.id}
                   type="button"
                   onClick={() => handleToggleDietary(d.id)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-200 shadow-2xs hover:scale-105 active:scale-95 ${
                     active
-                      ? "bg-emerald-50 border-emerald-600 text-emerald-800"
-                      : "bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100"
+                      ? "bg-[var(--color-muted)] border-[var(--color-primary)] text-[var(--color-primary)] font-bold shadow-xs"
+                      : "bg-white border-stone-200 text-stone-600 hover:bg-stone-50"
                   }`}
                 >
                   {language === "mm" ? d.label_mm : d.label_en}
                 </button>
               );
             })}
+
+            {/* Custom "Other" Dietary Tags */}
+            {selectedDietary
+              .filter((d) => !["vegetarian", "vegan", "gluten_free"].includes(d))
+              .map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-[var(--color-muted)] border border-[var(--color-primary)] text-[var(--color-primary)] shadow-xs animate-in fade-in zoom-in-95"
+                >
+                  <span>{tag}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveCustomDietary(tag)}
+                    className="hover:text-red-600 font-extrabold ml-0.5 text-xs"
+                    title="Remove custom preference"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+
+            {/* "Other" button & input toggler */}
+            {!showOtherInput ? (
+              <button
+                type="button"
+                onClick={() => setShowOtherInput(true)}
+                className="px-3 py-1.5 rounded-full text-xs font-semibold border border-dashed border-stone-300 text-stone-600 hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] bg-stone-50 hover:bg-white transition-all shadow-2xs flex items-center gap-1"
+              >
+                <span>+</span>
+                <span>{language === "mm" ? "အခြား (ကိုယ်ပိုင်ထည့်ရန်)" : "Other"}</span>
+              </button>
+            ) : (
+              <div className="inline-flex items-center gap-1 bg-white p-1 rounded-full border border-[var(--color-primary)] shadow-sm animate-in fade-in zoom-in-95">
+                <input
+                  type="text"
+                  value={otherInputText}
+                  onChange={(e) => setOtherInputText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddCustomDietary();
+                    } else if (e.key === "Escape") {
+                      setShowOtherInput(false);
+                    }
+                  }}
+                  autoFocus
+                  placeholder={language === "mm" ? "ဥပမာ- အမဲသားမစား, Halal..." : "e.g. Halal, No pork..."}
+                  className="px-2.5 py-1 text-xs text-stone-800 bg-transparent focus:outline-none w-36 sm:w-44"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddCustomDietary}
+                  className="px-2.5 py-1 text-xs font-bold rounded-full bg-[var(--color-primary)] text-white hover:opacity-90 transition-opacity"
+                >
+                  {language === "mm" ? "ထည့်မည်" : "Add"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowOtherInput(false)}
+                  className="px-1.5 text-stone-400 hover:text-stone-600 font-bold text-xs"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
           </div>
 
           <button
             type="button"
             onClick={() => fetchPlan()}
             disabled={loading}
-            className="w-full sm:w-auto px-6 py-2.5 bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-6 py-2.5 rounded-xl text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 hover:opacity-95"
+            style={{ backgroundColor: "var(--color-primary)" }}
           >
-            <SparklesIcon className="w-4 h-4 text-amber-300" />
+            <SparklesIcon className={`w-4 h-4 text-amber-300 ${loading ? "animate-spin" : ""}`} />
             <span>
               {loading
                 ? language === "mm"

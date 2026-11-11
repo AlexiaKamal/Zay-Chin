@@ -1,0 +1,212 @@
+{
+  "R0001": {
+    "recipe_id": "R0001",
+    "name_en": "Butter Rice",
+    "name_mm": "ထောပတ်ထမင်း",
+    "image_url": "https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Verified Culinary Archive",
+    "license": "CC BY-SA 4.0",
+    "caption": "Traditional fragrant butter rice cooked with aged Paw San Hmwe"
+  },
+  "R0004": {
+    "recipe_id": "R0004",
+    "name_en": "Coconut Rice",
+    "name_mm": "အုန်းထမင်း",
+    "image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Authentic ASEAN Culinary Archive",
+    "license": "CC BY-SA 3.0",
+    "caption": "Aromatic coconut rice with shallots and pandan"
+  },
+  "R0005": {
+    "recipe_id": "R0005",
+    "name_en": "Fried Rice",
+    "name_mm": "ထမင်းကြော်",
+    "image_url": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Verified Food Archive",
+    "license": "CC BY-SA 4.0",
+    "caption": "Burmese breakfast fried rice with boiled peas"
+  },
+  "R0006": {
+    "recipe_id": "R0006",
+    "name_en": "Chicken Biryani (Danbauk)",
+    "name_mm": "ကြက်သားဒန်ပေါက်",
+    "image_url": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Dan Bauk Collection",
+    "license": "CC BY-SA 4.0",
+    "caption": "Authentic Yangon spiced chicken danbauk with saffron rice"
+  },
+  "R0013": {
+    "recipe_id": "R0013",
+    "name_en": "Duck Eggs Curry",
+    "name_mm": "ဘဲဥဟင်း",
+    "image_url": "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons (Egg Curry Myanmar)",
+    "license": "CC BY-SA 3.0",
+    "caption": "Golden duck egg curry simmered in onion and tomato gravy"
+  },
+  "R0016": {
+    "recipe_id": "R0016",
+    "name_en": "Fried Chicken",
+    "name_mm": "ကြက်သားကြော်",
+    "image_url": "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Culinary Art Archive",
+    "license": "CC BY-SA 4.0",
+    "caption": "Crispy Burmese ginger-marinated fried chicken"
+  },
+  "R0020": {
+    "recipe_id": "R0020",
+    "name_en": "Chicken Curry",
+    "name_mm": "ကြက်သားဟင်း",
+    "image_url": "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Burmese Chicken Curry",
+    "license": "CC BY-SA 4.0",
+    "caption": "Traditional Burmese chicken curry with aromatics and turmeric"
+  },
+  "R0021": {
+    "recipe_id": "R0021",
+    "name_en": "Duck Curry",
+    "name_mm": "ဘဲသားဆီပြန်",
+    "image_url": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Burmese Cuisine",
+    "license": "CC BY-SA 4.0",
+    "caption": "Rich braised duck curry in fragrant chili oil"
+  },
+  "R0043": {
+    "recipe_id": "R0043",
+    "name_en": "Catfish Oily Gravy Curry",
+    "name_mm": "ငါးခူဆီပြန်",
+    "image_url": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Burmese Fish Dishes",
+    "license": "CC BY-SA 3.0",
+    "caption": "Freshwater catfish simmered with lemongrass and garlic"
+  },
+  "R0046": {
+    "recipe_id": "R0046",
+    "name_en": "Featherback Fish Ball Curry",
+    "name_mm": "ငါးဖယ်ငါးဆုပ်ဟင်း",
+    "image_url": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Myanmar Cuisine",
+    "license": "CC BY-SA 4.0",
+    "caption": "Springy clown featherback fish cakes cooked in mild curry sauce"
+  },
+  "R0071": {
+    "recipe_id": "R0071",
+    "name_en": "Pennywort Leaf Salad",
+    "name_mm": "မြင်းခွာရွက်သုပ်",
+    "image_url": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Salads of Myanmar",
+    "license": "CC BY-SA 4.0",
+    "caption": "Herbaceous pennywort leaves tossed with shallots and roasted peanut powder"
+  },
+  "R0072": {
+    "recipe_id": "R0072",
+    "name_en": "Fresh Myanmar Tomato Salad",
+    "name_mm": "ခရမ်းချဉ်သီးသုပ်",
+    "image_url": "https://images.unsplash.com/photo-1592417817098-8f3d6910985c?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Burmese Tomato Salad",
+    "license": "CC BY-SA 4.0",
+    "caption": "Thinly sliced green and red tomatoes dressed with sesame and lime"
+  },
+  "R0078": {
+    "recipe_id": "R0078",
+    "name_en": "Roselle Soup",
+    "name_mm": "ချဉ်ပေါင်ဟင်းချို",
+    "image_url": "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Myanmar Soups",
+    "license": "CC BY-SA 4.0",
+    "caption": "Tangy roselle leaves cooked with bamboo shoots and dried shrimp"
+  },
+  "R0083": {
+    "recipe_id": "R0083",
+    "name_en": "Indian-Style Spicy Gram Soup",
+    "name_mm": "ပဲကုလားဟင်း",
+    "image_url": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Dal Myanmar",
+    "license": "CC BY-SA 3.0",
+    "caption": "Comforting yellow split-pea soup with green chili and cilantro"
+  },
+  "R0118": {
+    "recipe_id": "R0118",
+    "name_en": "Piquant Fish Soup with Rice Noodles (Mohinga)",
+    "name_mm": "မုန့်ဟင်းခါး",
+    "image_url": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Category:Mohinga",
+    "license": "CC BY-SA 4.0",
+    "caption": "Myanmar national breakfast dish: fish broth, banana stem, crispy pea fritters"
+  },
+  "R0119": {
+    "recipe_id": "R0119",
+    "name_en": "Creamy Coconut Soup with Noodles (Ohn No Khaukswe)",
+    "name_mm": "အုန်းနို့ခေါက်ဆွဲ",
+    "image_url": "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Category:Ohn no khao swe",
+    "license": "CC BY-SA 4.0",
+    "caption": "Curried chicken in aromatic coconut cream with springy wheat noodles"
+  },
+  "R0120": {
+    "recipe_id": "R0120",
+    "name_en": "Chicken and Thick Rice Noodles Salad (Mandalay Mone-ti)",
+    "name_mm": "မန္တလေးမုန့်တီ",
+    "image_url": "https://images.unsplash.com/photo-1552611052-33e04de081de?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Noodle dishes of Myanmar",
+    "license": "CC BY-SA 4.0",
+    "caption": "Mandalay round thick rice noodles hand-tossed with tender chicken and garlic oil"
+  },
+  "R0121": {
+    "recipe_id": "R0121",
+    "name_en": "Mandalay Mee Shay",
+    "name_mm": "မန္တလေးမြီးရှည်",
+    "image_url": "https://images.unsplash.com/photo-1612927601601-6638404737ce?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Category:Shan cuisine",
+    "license": "CC BY-SA 4.0",
+    "caption": "Rice noodles with pork/chicken meat sauce, bean sprouts and fermented rice flour paste"
+  },
+  "R0124": {
+    "recipe_id": "R0124",
+    "name_en": "Shan Soaked Noodles (Shan Khaukswe)",
+    "name_mm": "ရှမ်းခေါက်ဆွဲ",
+    "image_url": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Shan Noodle Archive",
+    "license": "CC BY-SA 4.0",
+    "caption": "Iconic Shan sticky rice noodles with savory tomato chicken sauce and pickled mustard greens"
+  },
+  "R0126": {
+    "recipe_id": "R0126",
+    "name_en": "Mandalay-Style Vermicelli Soup (Mandalay Kyar Zan Chet)",
+    "name_mm": "မန္တလေးကြာဆံချက်",
+    "image_url": "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Kyar Zan Chet Collection",
+    "license": "CC BY-SA 4.0",
+    "caption": "Mung bean vermicelli in clear broth with wood ear mushroom, chicken and lily flowers"
+  },
+  "R0127": {
+    "recipe_id": "R0127",
+    "name_en": "Rice Salad Assortment (Let Thoke Sone)",
+    "name_mm": "လက်သုပ်စုံ",
+    "image_url": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80",
+    "fallback_local": "/assets/seasons/default-theme.jpg",
+    "source_name": "Wikimedia Commons / Salads of Myanmar",
+    "license": "CC BY-SA 4.0",
+    "caption": "Eclectic mixed salad of rice, noodles, tofu, potatoes and tamarind dressing"
+  }
+}

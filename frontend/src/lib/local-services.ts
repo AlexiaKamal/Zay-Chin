@@ -122,20 +122,35 @@ export function getLocalMealPlan(params: {
   // Filter candidates
   let candidates = allRecipes;
   if (params.dietary_preferences && params.dietary_preferences.length > 0) {
-    const prefs = params.dietary_preferences.map((p) => p.toLowerCase());
+    const prefs = params.dietary_preferences.map((p) => p.toLowerCase().trim()).filter(Boolean);
     candidates = candidates.filter((r) => {
       const flags = getDietaryFlags(r);
+      const rText = `${r.name_en} ${r.name_mm} ${r.category}`.toLowerCase();
+      const ingText = (r.ingredients || []).map((i) => `${i.name_en} ${i.name_mm}`).join(" ").toLowerCase();
+      const tagText = (r.tags?.dietary || []).join(" ").toLowerCase();
+
       return prefs.every((p) => {
-        if (p.includes("vegetarian")) return flags.is_vegetarian;
-        if (p.includes("vegan")) return flags.is_vegan;
-        if (p.includes("gluten")) return flags.is_gluten_free;
-        return true;
+        if (p.includes("vegetarian") || p.includes("သက်သတ်လွတ်")) return flags.is_vegetarian;
+        if (p.includes("vegan") || p.includes("တိရစ္ဆာန်ထွက်ပစ္စည်းမပါ")) return flags.is_vegan;
+        if (p.includes("gluten") || p.includes("ဂျုံ")) return flags.is_gluten_free;
+
+        // Custom "Other" user dietary filter
+        // If user wants to avoid an ingredient (e.g., "no beef", "no pork", "no seafood", "အမဲမစား")
+        if (p.startsWith("no ") || p.startsWith("no-") || p.includes("မပါ") || p.includes("မစား")) {
+          const term = p.replace(/^no\s+/, "").replace(/^no-/, "").replace(/မပါ/g, "").replace(/မစား/g, "").trim();
+          if (term) {
+            return !rText.includes(term) && !ingText.includes(term) && !tagText.includes(term);
+          }
+        }
+
+        // Positive requirement (e.g. "chicken", "fish", "soup", "salad", "ကြက်သား")
+        return rText.includes(p) || ingText.includes(p) || tagText.includes(p);
       });
     });
   }
 
-  if (candidates.length < 10) {
-    candidates = allRecipes; // Fallback to full pool if filter too restrictive
+  if (candidates.length < 5) {
+    candidates = allRecipes; // Fallback to full pool if custom filter is too restrictive
   }
 
   // Precompute costs and nutrition for all candidates for the active household size and city
@@ -152,6 +167,12 @@ export function getLocalMealPlan(params: {
       flags,
     };
   });
+
+  // Shuffle pricedCandidates randomly so each call produces a different plan
+  for (let i = pricedCandidates.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pricedCandidates[i], pricedCandidates[j]] = [pricedCandidates[j], pricedCandidates[i]];
+  }
 
   // Split into Breakfast and Main (Lunch/Dinner) pools
   const breakfastPool = pricedCandidates.filter(
@@ -218,20 +239,26 @@ export function getLocalMealPlan(params: {
         eligible = [...pool].sort((a, b) => a.slotCost - b.slotCost).slice(0, 5);
       }
 
-      // Sort candidates by cost proximity, nutrition, and recency penalty
+      // Sort candidates by cost proximity, recency penalty, with realistic stochastic variation
       eligible.sort((a, b) => {
         const lastUsedA = usedIdsThisWeek.get(a.recipe.recipe_id) ?? -10;
         const lastUsedB = usedIdsThisWeek.get(b.recipe.recipe_id) ?? -10;
-        const recencyPenaltyA = d - lastUsedA <= 2 ? 5000 : 0;
-        const recencyPenaltyB = d - lastUsedB <= 2 ? 5000 : 0;
+        const recencyPenaltyA = d - lastUsedA <= 2 ? 6000 : 0;
+        const recencyPenaltyB = d - lastUsedB <= 2 ? 6000 : 0;
 
-        const costDiffA = Math.abs(a.slotCost - slotTargetCost) + recencyPenaltyA;
-        const costDiffB = Math.abs(b.slotCost - slotTargetCost) + recencyPenaltyB;
+        // Jitter between -800 and +800 MMK gives natural variety while respecting target budget
+        const jitterA = (Math.random() - 0.5) * 1600;
+        const jitterB = (Math.random() - 0.5) * 1600;
+
+        const costDiffA = Math.abs(a.slotCost - slotTargetCost) + recencyPenaltyA + jitterA;
+        const costDiffB = Math.abs(b.slotCost - slotTargetCost) + recencyPenaltyB + jitterB;
 
         return costDiffA - costDiffB;
       });
 
-      const chosen = eligible[0] || pool[0];
+      // Pick randomly from top 3 closest matches for maximum diversity on regeneration
+      const candidatePool = eligible.slice(0, Math.min(3, eligible.length));
+      const chosen = candidatePool[Math.floor(Math.random() * candidatePool.length)] || eligible[0] || pool[0];
       usedIdsThisWeek.set(chosen.recipe.recipe_id, d);
 
       currentCost += chosen.slotCost;
