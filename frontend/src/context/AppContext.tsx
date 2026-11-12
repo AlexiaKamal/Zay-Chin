@@ -8,8 +8,10 @@ export interface UserProfile {
   name: string;
   email: string;
   age: number;
-  height_cm: number;
-  weight_kg: number;
+  height_cm?: number;
+  weight_kg?: number;
+  address?: string;
+  cooking_time_preference: "easy" | "medium" | "hard" | "any";
   preference_meal: string;
   isLoggedIn: boolean;
 }
@@ -20,7 +22,9 @@ export const DEFAULT_USER_PROFILE: UserProfile = {
   age: 28,
   height_cm: 162,
   weight_kg: 56,
-  preference_meal: "ကြက်သားနှင့် ရိုးရာဟင်းရည်များ",
+  address: "ရန်ကုန်မြို့",
+  cooking_time_preference: "medium",
+  preference_meal: "curry",
   isLoggedIn: true,
 };
 

@@ -91,11 +91,17 @@ function GroceryListContent() {
       setAtHomeItems((prev) => (Object.keys(prev).length === 0 ? initialAtHome : prev));
 
       // Load saved checked items
-      const savedChecked = localStorage.getItem("zaychin_grocery_checked");
+      const savedChecked =
+        localStorage.getItem(`zaychin_checked_${currentCity}`) ||
+        localStorage.getItem("zaychin_grocery_checked");
       if (savedChecked) {
         try {
           setCheckedItems(JSON.parse(savedChecked));
-        } catch (e) {}
+        } catch {
+          setCheckedItems({});
+        }
+      } else {
+        setCheckedItems({});
       }
     } catch (err) {
       console.error("Error generating grocery list:", err);
@@ -110,37 +116,39 @@ function GroceryListContent() {
     const paramHousehold = searchParams.get("household");
 
     let ids = overrideRecipes || [];
+
+    // 1. Prefer localStorage (has latest plan from planner or additions)
     if (ids.length === 0) {
-      if (paramRecipes) {
-        ids = paramRecipes.split(",").map((s) => s.trim()).filter(Boolean);
-      } else {
-        const savedRecipesRaw = localStorage.getItem("zaychin_grocery_recipes");
-        if (savedRecipesRaw) {
-          try {
-            const parsed = JSON.parse(savedRecipesRaw);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              ids = parsed;
-            }
-          } catch (e) {
-            console.error("Error reading saved recipes:", e);
+      const savedRecipesRaw = localStorage.getItem("zaychin_grocery_recipes");
+      if (savedRecipesRaw) {
+        try {
+          const parsed = JSON.parse(savedRecipesRaw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            ids = parsed;
           }
+        } catch (e) {
+          console.error("Error reading saved recipes:", e);
         }
       }
     }
 
+    // 2. URL searchParams fallback
+    if (ids.length === 0 && paramRecipes) {
+      ids = paramRecipes.split(",").map((s) => s.trim()).filter(Boolean);
+    }
+
+    // 3. Default fallback
     if (ids.length === 0) {
       ids = ["R0001", "R0002", "R0003", "R0004", "R0005"];
     }
 
     let hh = overrideHh || 2;
     if (!overrideHh) {
-      if (paramHousehold) {
+      const savedHousehold = localStorage.getItem("zaychin_grocery_household");
+      if (savedHousehold) {
+        hh = parseInt(savedHousehold, 10) || 2;
+      } else if (paramHousehold) {
         hh = parseInt(paramHousehold, 10) || 2;
-      } else {
-        const savedHousehold = localStorage.getItem("zaychin_grocery_household");
-        if (savedHousehold) {
-          hh = parseInt(savedHousehold, 10) || 2;
-        }
       }
     }
 
@@ -158,12 +166,20 @@ function GroceryListContent() {
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "zaychin_grocery_recipes" || e.key === "zaychin_grocery_household") {
+        setCheckedItems({});
+        localStorage.removeItem(`zaychin_checked_${city}`);
+        localStorage.removeItem("zaychin_grocery_checked");
         syncAndFetch();
       }
     };
 
     const handleCustomUpdate = (e: Event) => {
       const custom = e as CustomEvent<{ recipeIds?: string[]; household?: number }>;
+      setCheckedItems({});
+      localStorage.removeItem(`zaychin_checked_${city}`);
+      localStorage.removeItem("zaychin_grocery_checked");
+      setHasCelebrated(false);
+      setShowCelebration(false);
       if (custom.detail?.recipeIds) {
         syncAndFetch(custom.detail.recipeIds, custom.detail.household);
       } else {
@@ -252,6 +268,7 @@ function GroceryListContent() {
     setCheckedItems((prev) => {
       const next = { ...prev, [itemId]: !prev[itemId] };
       localStorage.setItem(`zaychin_checked_${city}`, JSON.stringify(next));
+      localStorage.setItem("zaychin_grocery_checked", JSON.stringify(next));
       return next;
     });
   };
@@ -260,6 +277,7 @@ function GroceryListContent() {
   const handleResetChecklist = () => {
     setCheckedItems({});
     localStorage.removeItem(`zaychin_checked_${city}`);
+    localStorage.removeItem("zaychin_grocery_checked");
     setHasCelebrated(false);
     setShowCelebration(false);
   };
@@ -821,15 +839,15 @@ function GroceryListContent() {
                 <span>🖨️</span>
                 <span>{language === "mm" ? "ပုံနှိပ် / PDF" : "Print / PDF"}</span>
               </button>
-              {purchasedCount > 0 && (
-                <button
-                  type="button"
-                  onClick={handleResetChecklist}
-                  className="px-3 py-2 text-stone-400 hover:text-red-600 text-xs font-semibold underline"
-                >
-                  {language === "mm" ? "အမှတ်အသားများ ဖျက်မည်" : "Reset checks"}
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={handleResetChecklist}
+                className="px-3.5 py-2 bg-stone-100 hover:bg-stone-200 text-stone-600 hover:text-red-600 text-xs font-bold rounded-xl transition-all flex items-center gap-1 active:scale-95"
+                title={language === "mm" ? "အမှတ်အသားများ ဖျက်မည်" : "Reset checks"}
+              >
+                <span>↺</span>
+                <span>{language === "mm" ? "အမှတ်အသားများ ဖျက်မည်" : "Reset checks"}</span>
+              </button>
             </div>
           </div>
 

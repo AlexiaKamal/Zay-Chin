@@ -32,9 +32,55 @@ function RecipeDetailContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [addedGrocery, setAddedGrocery] = useState(false);
+  const [addedPlan, setAddedPlan] = useState(false);
   const [imgError, setImgError] = useState(false);
 
   const imgInfo = (recipeImagesData as Record<string, any>)[recipeId];
+
+  // Add to Weekly Planner
+  const handleAddToPlan = () => {
+    if (!recipe) return;
+    const savedRecipesRaw = localStorage.getItem("zaychin_grocery_recipes");
+    let currentIds: string[] = [];
+    try {
+      currentIds = savedRecipesRaw ? JSON.parse(savedRecipesRaw) : [];
+      if (!Array.isArray(currentIds)) currentIds = [];
+    } catch {
+      currentIds = [];
+    }
+    if (!currentIds.includes(recipe.id)) {
+      currentIds.push(recipe.id);
+      localStorage.setItem("zaychin_grocery_recipes", JSON.stringify(currentIds));
+    }
+
+    const savedPlanRaw = localStorage.getItem("zaychin_weekly_plan");
+    if (savedPlanRaw) {
+      try {
+        const parsed = JSON.parse(savedPlanRaw);
+        if (parsed && Array.isArray(parsed.schedule)) {
+          parsed.schedule.push({
+            day_of_week: (parsed.schedule.length % 7) + 1,
+            meal_type: "dinner",
+            recipe_id: recipe.id,
+            recipe_name_en: recipe.name_en,
+            recipe_name_mm: recipe.name_mm,
+            category: recipe.category,
+            estimated_cost_mmk: recipe.estimated_cost_mmk || 2500,
+            calories_kcal: recipe.calories_kcal_per_serving || 280,
+            protein_g: recipe.protein_g_per_serving || 14,
+          });
+          localStorage.setItem("zaychin_weekly_plan", JSON.stringify(parsed));
+        }
+      } catch {}
+    }
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("zaychin_recipes_updated", { detail: { recipeIds: currentIds } }));
+    }
+
+    setAddedPlan(true);
+    setTimeout(() => setAddedPlan(false), 2200);
+  };
 
   const handleAddToGrocery = () => {
     if (!recipe) return;
@@ -43,7 +89,7 @@ function RecipeDetailContent() {
     try {
       current = saved ? JSON.parse(saved) : [];
       if (!Array.isArray(current)) current = [];
-    } catch (e) {
+    } catch {
       current = [];
     }
     if (!current.includes(recipe.id)) {
@@ -264,6 +310,51 @@ function RecipeDetailContent() {
             aria-label="Increase servings"
           >
             <PlusIcon className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Recipe Action Bar: Add to Weekly Planner & Generate Grocery List */}
+      <div className="bg-white border border-stone-200 rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+        <div className="flex items-center gap-2 text-xs text-stone-500">
+          <CalendarIcon className="w-4 h-4 text-[var(--color-primary)]" />
+          <span>
+            {language === "mm"
+              ? "ဤဟင်းလျာကို သင့်အပတ်စဉ် အစားအစာဇယား သို့မဟုတ် ဈေးဝယ်စာရင်းထဲသို့ ထည့်သွင်းပါ"
+              : "Add this recipe directly to your 7-day meal plan or generate grocery shopping list"}
+          </span>
+        </div>
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <button
+            type="button"
+            onClick={handleAddToPlan}
+            className={`flex-1 sm:flex-none px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border transition-all flex items-center justify-center gap-1.5 ${
+              addedPlan
+                ? "bg-emerald-600 text-white border-emerald-600"
+                : "border-stone-200 bg-white hover:bg-stone-50 text-stone-800"
+            }`}
+          >
+            {addedPlan ? (
+              <>
+                <CheckIcon className="w-4 h-4 text-white" />
+                <span>{language === "mm" ? "အပတ်စဉ်ဇယားသို့ ထည့်ပြီး ✓" : "Added to Plan ✓"}</span>
+              </>
+            ) : (
+              <>
+                <PlusIcon className="w-4 h-4 text-[var(--color-primary)]" />
+                <span>{language === "mm" ? "+ အပတ်စဉ်ဇယားသို့ ထည့်မည်" : "+ Add to Weekly Plan"}</span>
+              </>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleAddToGrocery}
+            className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-white shadow-xs transition-all flex items-center justify-center gap-1.5 active:scale-95"
+            style={{ backgroundColor: "var(--color-primary)" }}
+          >
+            <ShoppingBagIcon className="w-4 h-4 text-amber-200" />
+            <span>{language === "mm" ? "ဈေးဝယ်စာရင်း ထုတ်မည် →" : "Generate Grocery List →"}</span>
           </button>
         </div>
       </div>

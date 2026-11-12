@@ -20,7 +20,11 @@ export default function ProfilePage() {
   const [age, setAge] = useState<number | "">(userProfile.age || 28);
   const [height, setHeight] = useState<number | "">(userProfile.height_cm || 165);
   const [weight, setWeight] = useState<number | "">(userProfile.weight_kg || 60);
-  const [preferenceMeal, setPreferenceMeal] = useState(userProfile.preference_meal || "ကြက်သားနှင့် ဟင်းသီးဟင်းရွက်");
+  const [address, setAddress] = useState(userProfile.address || "");
+  const [cookingTimePref, setCookingTimePref] = useState<"easy" | "medium" | "hard" | "any">(
+    userProfile.cooking_time_preference || "medium"
+  );
+  const [preferenceMeal, setPreferenceMeal] = useState(userProfile.preference_meal || "curry");
   const [savedSuccess, setSavedSuccess] = useState(false);
 
   // Live BMI calculation during edits
@@ -39,6 +43,8 @@ export default function ProfilePage() {
       age: Number(age) || 28,
       height_cm: Number(height) || 165,
       weight_kg: Number(weight) || 60,
+      address,
+      cooking_time_preference: cookingTimePref,
       preference_meal: preferenceMeal,
     });
     setSavedSuccess(true);
@@ -241,6 +247,48 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* Address */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-stone-700 block uppercase tracking-wider">
+            {language === "mm" ? "နေရပ်လိပ်စာ (Address)" : "Address"}
+          </label>
+          <input
+            type="text"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder={language === "mm" ? "ဥပမာ - ကမာရွတ်မြို့နယ်၊ ရန်ကုန်" : "e.g. Kamayut, Yangon"}
+            className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+          />
+        </div>
+
+        {/* Cooking Time Preference */}
+        <div className="space-y-2 pt-2">
+          <label className="text-xs font-bold text-stone-700 block uppercase tracking-wider">
+            {language === "mm" ? "ဟင်းချက်ရန် သုံးလိုသည့် အချိန် (Cooking Time Preference)" : "Cooking Time Preference"}
+          </label>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {[
+              { id: "easy" as const, label_mm: "🟢 လွယ်ကူ (≤ 25m)", label_en: "🟢 Easy (≤ 25m)" },
+              { id: "medium" as const, label_mm: "🟡 အလယ်အလတ် (25-45m)", label_en: "🟡 Medium (25-45m)" },
+              { id: "hard" as const, label_mm: "🔴 အချိန်ယူ (45m+)", label_en: "🔴 Hard (45m+)" },
+              { id: "any" as const, label_mm: "⚪ အချိန်မရွေး", label_en: "⚪ Any Time" },
+            ].map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setCookingTimePref(c.id)}
+                className={`p-3 rounded-2xl text-xs font-bold text-center border transition-all ${
+                  cookingTimePref === c.id
+                    ? "bg-[var(--color-muted)] border-[var(--color-primary)] text-[var(--color-primary)] shadow-xs"
+                    : "bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100"
+                }`}
+              >
+                {language === "mm" ? c.label_mm : c.label_en}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Preference Meal */}
         <div className="space-y-2 pt-2">
           <label className="text-xs font-bold text-stone-700 block uppercase tracking-wider">
@@ -248,12 +296,12 @@ export default function ProfilePage() {
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {[
-              { id: "ကြက်သားနှင့် ဟင်းသီးဟင်းရွက်", label_mm: "ကြက်သားနှင့် ဟင်းသီးဟင်းရွက်", label_en: "Chicken & Veggies" },
-              { id: "ငါးနှင့် ပင်လယ်စာ", label_mm: "ငါးနှင့် ပင်လယ်စာ", label_en: "Fish & Seafood" },
-              { id: "သက်သတ်လွတ်", label_mm: "သက်သတ်လွတ်", label_en: "Vegetarian" },
-              { id: "အဆီလျှော့ အရည်သောက်ဟင်း", label_mm: "အဆီလျှော့ အရည်သောက်ဟင်း", label_en: "Clear Soups (Low Cal)" },
-              { id: "အသားဟင်းနှင့် ပရိုတင်းများ", label_mm: "အသားဟင်းနှင့် ပရိုတင်းများ", label_en: "High Protein Meats" },
-              { id: "မြန်မာ့ရိုးရာ အသုပ်စုံ", label_mm: "မြန်မာ့ရိုးရာ အသုပ်စုံ", label_en: "Traditional Salads" },
+              { id: "curry", label_mm: "🍲 ဆီပြန်ဟင်းများ", label_en: "🍲 Curries" },
+              { id: "soup", label_mm: "🥣 ဟင်းချို / ချဉ်ရည်", label_en: "🥣 Soups" },
+              { id: "salad", label_mm: "🥗 ရိုးရာ အသုပ်စုံ", label_en: "🥗 Salads" },
+              { id: "fried", label_mm: "🍳 အကြော်အလှော်", label_en: "🍳 Fried Dishes" },
+              { id: "healthy", label_mm: "🥦 သက်သတ်လွတ် / ကျန်းမာရေး", label_en: "🥦 Healthy / Veg" },
+              { id: "noodles", label_mm: "🍜 ခေါက်ဆွဲ / မုန့်တီ", label_en: "🍜 Noodles" },
             ].map((p) => (
               <button
                 key={p.id}

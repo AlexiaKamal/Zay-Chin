@@ -54,9 +54,13 @@ function PlannerContent() {
       });
       setPlan(res);
       if (res && res.schedule && res.schedule.length > 0) {
+        localStorage.setItem("zaychin_weekly_plan", JSON.stringify(res));
         const uniqueIds = Array.from(new Set(res.schedule.map((s) => s.recipe_id)));
         localStorage.setItem("zaychin_grocery_recipes", JSON.stringify(uniqueIds));
         localStorage.setItem("zaychin_grocery_household", householdSize.toString());
+        // Clear checked items in grocery list so the new plan has fresh checkboxes
+        localStorage.removeItem(`zaychin_checked_${city}`);
+        localStorage.removeItem("zaychin_grocery_checked");
         // Dispatch storage update event so grocery list synchronizes immediately
         if (typeof window !== "undefined") {
           window.dispatchEvent(new CustomEvent("zaychin_recipes_updated", { detail: { recipeIds: uniqueIds, household: householdSize } }));
@@ -174,23 +178,43 @@ function PlannerContent() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-in fade-in duration-300">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 animate-in fade-in duration-300">
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-[var(--color-muted)] text-[var(--color-primary)] border border-[var(--color-border)] shadow-xs">
-          <CalendarIcon className="w-4 h-4 text-[var(--color-primary)]" />
-          <span>
-            {language === "mm" ? "အပတ်စဉ် အစားအစာ စီစဉ်ရေး စနစ်" : "Intelligent 7-Day Meal Planner"}
-          </span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-200/80 pb-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">
+            {language === "mm" ? "အပတ်စဉ် အစားအစာ စီစဉ်ရေး" : "Weekly Meal Planner"}
+          </h1>
+          <p className="text-xs sm:text-sm text-stone-500">
+            {language === "mm"
+              ? "မိသားစု ၇ ရက်စာ အာဟာရပြည့်ဝသော မြန်မာ့ရိုးရာ အစားအစာဇယား"
+              : "Balanced 7-day authentic Myanmar meal schedule and budget breakdown"}
+          </p>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[var(--color-text)] tracking-tight">
-          {language === "mm" ? "မိသားစု အစားအစာ စီစဉ်မှုနှင့် ဘတ်ဂျက်" : "Myanmar Household Meal Planning"}
-        </h1>
-        <p className="text-sm sm:text-base text-stone-600">
-          {language === "mm"
-            ? "ဒေါ်စန်းလေး၏ မူရင်းဟင်းချက်နည်း ၁၇၁ မျိုးကို ရန်ကုန်နှင့် မန္တလေးမြို့ရှိ အမှန်တကယ် ကာလပေါက်ဈေးနှုန်းများဖြင့် တွက်ချက်ကာ အာဟာရပြည့်ဝသော ၇ ရက်စာ အစားအစာဇယား ရေးဆွဲပေးပါသည်။"
-            : "Generate a custom 7-day schedule backed by authentic Myanmar recipes, lab nutrition values, and real MMK prices from verified wet markets."}
-        </p>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => fetchPlan()}
+            disabled={loading}
+            className="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white shadow-xs transition-all active:scale-95 flex items-center gap-1.5"
+            style={{ backgroundColor: "var(--color-primary)" }}
+          >
+            <span>↻</span>
+            <span>{language === "mm" ? "ဇယား အသစ်ပြန်ထုတ်မည်" : "Regenerate Plan"}</span>
+          </button>
+
+          {plan && (
+            <button
+              type="button"
+              onClick={handleExportToGroceryList}
+              className="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border border-stone-200 bg-white hover:bg-stone-50 text-stone-800 shadow-2xs transition-all flex items-center gap-1.5"
+            >
+              <CookingPotIcon className="w-4 h-4 text-[var(--color-primary)]" />
+              <span>{language === "mm" ? "ဈေးဝယ်စာရင်း ကြည့်မည် →" : "View Grocery List →"}</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Controls Form Drawer */}
@@ -569,7 +593,7 @@ function PlannerContent() {
         </div>
       )}
 
-      {/* 7-Day Meal Calendar */}
+      {/* 7-Day Meal Calendar - Vertical Layout */}
       {loading ? (
         <div className="p-16 text-center text-stone-400 space-y-3">
           <div className="w-10 h-10 border-4 border-emerald-700 border-t-transparent rounded-full animate-spin mx-auto" />
@@ -578,88 +602,109 @@ function PlannerContent() {
           </p>
         </div>
       ) : plan ? (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
-            {[1, 2, 3, 4, 5, 6, 7].map((dayNum) => {
-              const dayMeals = plan.schedule.filter((s) => s.day_of_week === dayNum);
-              const daySummary = plan.daily_summaries.find((d) => d.day_of_week === dayNum);
-              const dayEn = DAYS_EN[dayNum - 1];
-              const dayMm = DAYS_MM[dayNum - 1];
+        <div className="space-y-4">
+          {[1, 2, 3, 4, 5, 6, 7].map((dayNum) => {
+            const dayMeals = plan.schedule.filter((s) => s.day_of_week === dayNum);
+            const daySummary = plan.daily_summaries.find((d) => d.day_of_week === dayNum);
+            const dayEn = DAYS_EN[dayNum - 1];
+            const dayMm = DAYS_MM[dayNum - 1];
 
-              return (
-                <div
-                  key={dayNum}
-                  className="bg-white rounded-3xl border border-stone-200 p-4 space-y-3 shadow-xs flex flex-col justify-between"
-                >
-                  {/* Day Header */}
-                  <div className="border-b border-stone-100 pb-2 flex items-center justify-between">
+            return (
+              <div
+                key={dayNum}
+                className="bg-white rounded-3xl border border-stone-200 p-5 sm:p-6 shadow-xs hover:border-[var(--color-primary)] transition-all space-y-4"
+              >
+                {/* Day Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 pb-3">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm text-white shadow-2xs"
+                      style={{ backgroundColor: "var(--color-primary)" }}
+                    >
+                      {dayNum}
+                    </span>
                     <div>
-                      <span className="font-extrabold text-sm text-emerald-800 block">
+                      <h3 className="font-black text-base sm:text-lg text-stone-900">
                         {language === "mm" ? dayMm : dayEn}
+                      </h3>
+                      <span className="text-xs text-stone-400">
+                        Day {dayNum} • {dayMeals.length} {language === "mm" ? "နပ်စာ" : "meals"}
                       </span>
-                      <span className="text-[11px] text-stone-400">Day {dayNum}</span>
                     </div>
-                    {daySummary && (
-                      <span className="text-[11px] font-bold text-stone-600 bg-stone-100 px-2 py-0.5 rounded-full">
-                        {daySummary.total_cost_mmk.toLocaleString()} K
-                      </span>
-                    )}
                   </div>
 
-                  {/* Meals list */}
-                  <div className="space-y-3 flex-1">
-                    {dayMeals.map((meal) => (
-                      <div
-                        key={meal.meal_type}
-                        className="p-3 bg-stone-50/80 hover:bg-emerald-50/40 rounded-2xl border border-stone-100 space-y-2 transition-colors group"
-                      >
+                  {daySummary && (
+                    <div className="flex items-center gap-4 text-xs font-bold text-stone-600">
+                      <div>
+                        <span className="text-stone-400 font-medium mr-1">
+                          {language === "mm" ? "ကုန်ကျစရိတ်:" : "Cost:"}
+                        </span>
+                        <span className="text-sm font-black text-[var(--color-primary)]">
+                          {daySummary.total_cost_mmk.toLocaleString()} MMK
+                        </span>
+                      </div>
+                      <div className="hidden sm:block text-stone-400">•</div>
+                      <div>
+                        <span className="text-stone-400 font-medium mr-1">
+                          {language === "mm" ? "စွမ်းအင်:" : "Calories:"}
+                        </span>
+                        <span className="text-stone-700">
+                          {daySummary.total_calories_kcal} kcal
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Vertical / Responsive Grid for the Day's Meals */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {dayMeals.map((meal) => (
+                    <div
+                      key={meal.meal_type}
+                      className="p-4 bg-stone-50/70 hover:bg-[var(--color-muted)]/15 rounded-2xl border border-stone-200/80 space-y-2.5 transition-all flex flex-col justify-between"
+                    >
+                      <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] uppercase font-bold text-stone-400">
-                            {meal.meal_type}
+                          <span className="text-[10px] uppercase font-extrabold tracking-wider px-2 py-0.5 rounded-md bg-stone-200/70 text-stone-700">
+                            {meal.meal_type === "breakfast"
+                              ? language === "mm" ? "မနက်စာ" : "Breakfast"
+                              : meal.meal_type === "lunch"
+                              ? language === "mm" ? "နေ့လယ်စာ" : "Lunch"
+                              : language === "mm" ? "ညနေစာ" : "Dinner"}
                           </span>
-                          <span className="text-[11px] font-bold text-emerald-700">
+                          <span className="text-xs font-black text-[var(--color-primary)]">
                             {meal.estimated_cost_mmk.toLocaleString()} MMK
                           </span>
                         </div>
 
                         <Link
                           href={`/recipes/${meal.recipe_id}`}
-                          className="font-bold text-xs text-stone-800 hover:text-emerald-700 block line-clamp-1 transition-colors"
+                          className="font-bold text-sm text-stone-900 hover:text-[var(--color-primary)] block line-clamp-1 transition-colors"
                         >
                           {language === "mm" ? meal.recipe_name_mm : meal.recipe_name_en}
                         </Link>
-
-                        <div className="flex items-center justify-between text-[10px] text-stone-500">
-                          <span>{meal.calories_kcal} kcal</span>
-                          <span>{meal.protein_g}g prot</span>
-                        </div>
-
-                        {/* Swap Button */}
-                        <div className="pt-1 border-t border-stone-200/60 flex items-center justify-end">
-                          <button
-                            type="button"
-                            onClick={() => openReplaceModal(meal)}
-                            className="text-[11px] text-stone-500 hover:text-emerald-800 font-semibold transition-colors flex items-center gap-1"
-                          >
-                            <span>↻</span>
-                            <span>{language === "mm" ? "အစားထိုးမည်" : "Swap"}</span>
-                          </button>
-                        </div>
                       </div>
-                    ))}
-                  </div>
 
-                  {/* Day Footer Nutrition */}
-                  {daySummary && (
-                    <div className="pt-2 border-t border-stone-100 text-[10px] text-stone-500 flex justify-between">
-                      <span>Total Cal:</span>
-                      <span className="font-semibold">{daySummary.total_calories_kcal} kcal</span>
+                      <div className="flex items-center justify-between pt-2 border-t border-stone-200/60 text-xs">
+                        <span className="text-stone-400 text-[11px]">
+                          {meal.calories_kcal} kcal • {meal.protein_g}g prot
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() => openReplaceModal(meal)}
+                          className="text-xs text-stone-600 hover:text-[var(--color-primary)] font-bold transition-colors flex items-center gap-1"
+                        >
+                          <span>↻</span>
+                          <span>{language === "mm" ? "အစားထိုးမည်" : "Swap"}</span>
+                        </button>
+                      </div>
                     </div>
-                  )}
+                  ))}
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
       ) : null}
 

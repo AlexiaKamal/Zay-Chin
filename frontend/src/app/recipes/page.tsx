@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useTransition, Suspense } from "react";
+import React, { useEffect, useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { getRecipes, getCategories } from "@/lib/api";
@@ -9,12 +9,13 @@ import { RecipeCard } from "@/components/recipes/RecipeCard";
 import {
   SearchIcon,
   CookingPotIcon,
-  SparklesIcon,
   XIcon,
+  ClockIcon,
 } from "@/components/ui/Icons";
+import { computeRecipeDifficulty, DifficultyLevel } from "@/lib/recipe-difficulty";
 
 function RecipeExplorerContent() {
-  const { language, city, t } = useApp();
+  const { language, city, t, userProfile } = useApp();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -23,11 +24,14 @@ function RecipeExplorerContent() {
 
   const [search, setSearch] = useState(initialSearch);
   const [activeCategory, setActiveCategory] = useState(initialCategory);
-  const [activeDietary, setActiveDietary] = useState<string>("");
+  const [activeDifficulty, setActiveDifficulty] = useState<DifficultyLevel | "all">(
+    userProfile?.cooking_time_preference && userProfile.cooking_time_preference !== "any"
+      ? (userProfile.cooking_time_preference as DifficultyLevel)
+      : "all"
+  );
   const [recipes, setRecipes] = useState<RecipeSummary[]>([]);
   const [categories, setCategories] = useState<CategoryCount[]>([]);
   const [loading, setLoading] = useState(true);
-  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const pageSize = 12;
 
@@ -44,21 +48,20 @@ function RecipeExplorerContent() {
     loadCats();
   }, []);
 
-  // Fetch recipes whenever search, category, dietary, city, or page changes
+  // Fetch all recipes for city
   useEffect(() => {
     async function loadData() {
       try {
         setLoading(true);
+        // Fetch up to 200 recipes so client can accurately filter by difficulty & category
         const data = await getRecipes({
-          page,
-          pageSize,
+          page: 1,
+          pageSize: 200,
           search: search.trim() || undefined,
           category: activeCategory || undefined,
-          dietary: activeDietary || undefined,
           city,
         });
         setRecipes(data.recipes);
-        setTotal(data.total);
       } catch (err) {
         console.error("Error loading recipes:", err);
       } finally {
@@ -66,40 +69,54 @@ function RecipeExplorerContent() {
       }
     }
     loadData();
-  }, [search, activeCategory, activeDietary, city, page]);
+  }, [search, activeCategory, city]);
+
+  // Filter by Difficulty (Easy, Medium, Hard)
+  const filteredRecipes = useMemo(() => {
+    if (activeDifficulty === "all") return recipes;
+    return recipes.filter((r) => {
+      const diff = computeRecipeDifficulty(r);
+      return diff.difficulty === activeDifficulty;
+    });
+  }, [recipes, activeDifficulty]);
+
+  // Paginated slice
+  const totalPages = Math.ceil(filteredRecipes.length / pageSize) || 1;
+  const paginatedRecipes = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filteredRecipes.slice(start, start + pageSize);
+  }, [filteredRecipes, page, pageSize]);
 
   const handleClearFilters = () => {
     setSearch("");
     setActiveCategory("");
-    setActiveDietary("");
+    setActiveDifficulty("all");
     setPage(1);
     router.push("/recipes");
   };
 
-  const totalPages = Math.ceil(total / pageSize);
-
-  const dietaryOptions = [
-    { id: "vegetarian", label: t.tag_vegetarian },
-    { id: "vegan", label: t.tag_vegan },
-    { id: "gluten-free", label: t.tag_gluten_free },
-    { id: "convalescent_food", label: t.tag_convalescent },
-    { id: "baby_food", label: t.tag_baby_food },
-  ];
-
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
-      {/* Page Header */}
-      <div className="space-y-2">
-        <h1 className="text-2xl sm:text-4xl font-extrabold text-stone-900 tracking-tight">
-          {t.explorer_title}
-        </h1>
-        <p className="text-sm sm:text-base text-stone-600">
-          {t.explorer_subtitle}
-        </p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6">
+      {/* Page Header - Clean & Simple */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-200/80 pb-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">
+            {language === "mm" ? "ဟင်းချက်နည်းများ ရှာဖွေရန်" : "Recipe Explorer"}
+          </h1>
+          <p className="text-xs sm:text-sm text-stone-500">
+            {language === "mm"
+              ? "ဒေါ်စန်းလေး၏ မြန်မာ့ရိုးရာ ၁၇၁ မျိုးသော ဟင်းချက်နည်းများနှင့် ဈေးနှုန်းများ"
+              : "Explore 171 authentic Myanmar home recipes with real wet market prices"}
+          </p>
+        </div>
+
+        <span className="text-xs font-bold text-stone-600 bg-stone-100 px-3 py-1.5 rounded-xl self-start sm:self-auto">
+          {language === "mm" ? `စုစုပေါင်း ${filteredRecipes.length} မျိုး` : `${filteredRecipes.length} recipes`}
+        </span>
       </div>
 
-      {/* Controls: Search & Filters */}
-      <div className="space-y-4 bg-white p-5 rounded-2xl border border-stone-200 shadow-xs">
+      {/* Simplified Controls: Search & Difficulty & Category */}
+      <div className="bg-white p-4 sm:p-5 rounded-3xl border border-stone-200 shadow-xs space-y-4">
         {/* Search Bar */}
         <div className="relative">
           <SearchIcon className="w-5 h-5 absolute left-3.5 top-3.5 text-stone-400" />
@@ -110,13 +127,20 @@ function RecipeExplorerContent() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            placeholder={t.search_placeholder}
-            className="w-full pl-11 pr-10 py-3 text-sm rounded-xl border border-stone-200 bg-stone-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-600 transition-all"
+            placeholder={
+              language === "mm"
+                ? "ဟင်းအမည် သို့မဟုတ် ပါဝင်ပစ္စည်းဖြင့် ရှာဖွေပါ (ဥပမာ - ကြက်သား၊ ချဉ်ပေါင်)..."
+                : "Search by dish name or ingredient (e.g. Chicken, Roselle)..."
+            }
+            className="w-full pl-11 pr-10 py-3 text-sm rounded-2xl border border-stone-200 bg-stone-50/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all"
           />
           {search && (
             <button
               type="button"
-              onClick={() => setSearch("")}
+              onClick={() => {
+                setSearch("");
+                setPage(1);
+              }}
               className="absolute right-3.5 top-3.5 text-stone-400 hover:text-stone-600"
             >
               <XIcon className="w-4 h-4" />
@@ -124,26 +148,58 @@ function RecipeExplorerContent() {
           )}
         </div>
 
-        {/* Category Filter Pills */}
+        {/* Cooking Time / Difficulty Filter Pills */}
         <div className="space-y-1.5">
-          <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">
-            {language === "mm" ? "အမျိုးအစားအလိုက် စစ်ထုတ်ရန်" : "Categories"}:
+          <div className="flex items-center gap-1.5 text-xs font-bold text-stone-500 uppercase tracking-wider">
+            <ClockIcon className="w-3.5 h-3.5" />
+            <span>{language === "mm" ? "ချက်ပြုတ်ချိန်နှင့် အဆင့်" : "Cooking Difficulty"}:</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { id: "all" as const, label_en: "All Difficulties", label_mm: "အားလုံး" },
+              { id: "easy" as const, label_en: "🟢 Easy (≤ 25m)", label_mm: "🟢 လွယ်ကူ (≤ ၂၅ မိနစ်)" },
+              { id: "medium" as const, label_en: "🟡 Medium (25-45m)", label_mm: "🟡 အလယ်အလတ် (၂၅-၄၅ မိနစ်)" },
+              { id: "hard" as const, label_en: "🔴 Hard (45m+)", label_mm: "🔴 အချိန်ယူရ (၄၅ မိနစ်ထက်ကျော်)" },
+            ].map((d) => (
+              <button
+                key={d.id}
+                type="button"
+                onClick={() => {
+                  setActiveDifficulty(d.id);
+                  setPage(1);
+                }}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-2xs ${
+                  activeDifficulty === d.id
+                    ? "text-white shadow-xs"
+                    : "bg-stone-100 text-stone-700 hover:bg-stone-200"
+                }`}
+                style={activeDifficulty === d.id ? { backgroundColor: "var(--color-primary)" } : {}}
+              >
+                {language === "mm" ? d.label_mm : d.label_en}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Categories Pills */}
+        <div className="space-y-1.5 pt-2 border-t border-stone-100">
+          <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block">
+            {language === "mm" ? "အမျိုးအစား" : "Category"}:
           </span>
-          <div className="flex flex-wrap gap-2 pt-1">
+          <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pr-1">
             <button
               type="button"
               onClick={() => {
                 setActiveCategory("");
                 setPage(1);
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-2xs ${
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                 activeCategory === ""
-                  ? "text-white shadow-xs"
+                  ? "bg-stone-900 text-white"
                   : "bg-stone-100 text-stone-700 hover:bg-stone-200"
               }`}
-              style={activeCategory === "" ? { backgroundColor: "var(--color-primary)" } : {}}
             >
-              {t.filter_all_categories} ({total})
+              {language === "mm" ? "အားလုံး" : "All"}
             </button>
             {categories.map((c) => (
               <button
@@ -153,94 +209,55 @@ function RecipeExplorerContent() {
                   setActiveCategory(activeCategory === c.category ? "" : c.category);
                   setPage(1);
                 }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-2xs ${
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                   activeCategory === c.category
-                    ? "text-white shadow-xs"
+                    ? "bg-stone-900 text-white"
                     : "bg-stone-100 text-stone-700 hover:bg-stone-200"
                 }`}
-                style={activeCategory === c.category ? { backgroundColor: "var(--color-primary)" } : {}}
               >
                 {language === "mm" ? c.category_mm : c.category} ({c.count})
               </button>
             ))}
           </div>
         </div>
-
-        {/* Dietary Filters */}
-        <div className="space-y-1.5 pt-2 border-t border-stone-100">
-          <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">
-            {language === "mm" ? "အစားအသောက် စည်းကမ်း" : "Dietary Preferences"}:
-          </span>
-          <div className="flex flex-wrap gap-2 pt-1">
-            <button
-              type="button"
-              onClick={() => {
-                setActiveDietary("");
-                setPage(1);
-              }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                activeDietary === ""
-                  ? "bg-stone-800 text-white"
-                  : "bg-stone-100 text-stone-700 hover:bg-stone-200"
-              }`}
-            >
-              {t.filter_all_dietary}
-            </button>
-            {dietaryOptions.map((d) => (
-              <button
-                key={d.id}
-                type="button"
-                onClick={() => {
-                  setActiveDietary(activeDietary === d.id ? "" : d.id);
-                  setPage(1);
-                }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  activeDietary === d.id
-                    ? "bg-stone-800 text-white"
-                    : "bg-stone-100 text-stone-700 hover:bg-stone-200"
-                }`}
-              >
-                {d.label}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
-      {/* Results Header */}
-      <div className="flex items-center justify-between text-sm text-stone-500">
+      {/* Results Subheader */}
+      <div className="flex items-center justify-between text-xs sm:text-sm text-stone-500">
         <span>
           {language === "mm"
-            ? `တွေ့ရှိသော ဟင်းချက်နည်း: ${total} မျိုး (${city} ဈေးနှုန်းဖြင့်)`
-            : `Showing ${recipes.length} of ${total} recipes (${city} pricing basis)`}
+            ? `${filteredRecipes.length} မျိုး တွေ့ရှိပါသည်`
+            : `Showing ${paginatedRecipes.length} of ${filteredRecipes.length} recipes`}
         </span>
-        {(search || activeCategory || activeDietary) && (
+        {(search || activeCategory || activeDifficulty !== "all") && (
           <button
             type="button"
             onClick={handleClearFilters}
             className="text-xs font-bold hover:underline"
             style={{ color: "var(--color-primary)" }}
           >
-            {t.clear_filters}
+            {language === "mm" ? "စစ်ထုတ်မှုများ အားလုံးရှင်းမည် ✕" : "Clear filters ✕"}
           </button>
         )}
       </div>
 
-      {/* Recipe Grid */}
+      {/* Recipe Grid (showImage={false} ensures NO PICTURES on Recipe Explorer page) */}
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <div key={i} className="h-72 bg-stone-100 rounded-2xl animate-pulse" />
+            <div key={i} className="h-56 bg-stone-100 rounded-3xl animate-pulse" />
           ))}
         </div>
-      ) : recipes.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-3xl border border-[var(--color-border)] p-8 space-y-4 shadow-sm">
+      ) : paginatedRecipes.length === 0 ? (
+        <div className="text-center py-16 bg-white rounded-3xl border border-stone-200 p-8 space-y-4 shadow-xs">
           <CookingPotIcon className="w-12 h-12 text-stone-400 mx-auto" />
-          <h3 className="text-lg font-bold text-stone-800">{t.no_recipes_found}</h3>
-          <p className="text-sm text-stone-500 max-w-sm mx-auto">
+          <h3 className="text-lg font-bold text-stone-800">
+            {language === "mm" ? "ကိုက်ညီသော ဟင်းချက်နည်း မတွေ့ရှိပါ" : "No recipes found"}
+          </h3>
+          <p className="text-xs sm:text-sm text-stone-500 max-w-sm mx-auto">
             {language === "mm"
-              ? "အခြားအမည် သို့မဟုတ် စစ်ထုတ်မှုများကို ပြောင်းလဲရှာဖွေကြည့်ပါ။"
-              : "Try adjusting your search query or removing category/dietary filters."}
+              ? "အခြားအမည် သို့မဟုတ် ချက်ပြုတ်ချိန် အဆင့်ကို ပြောင်းလဲစစ်ထုတ်ကြည့်ပါ။"
+              : "Try adjusting your search keywords or cooking difficulty filter."}
           </p>
           <button
             type="button"
@@ -248,36 +265,38 @@ function RecipeExplorerContent() {
             className="px-4 py-2 text-white text-xs font-bold rounded-xl shadow-xs"
             style={{ backgroundColor: "var(--color-primary)" }}
           >
-            {t.clear_filters}
+            {language === "mm" ? "မူလအတိုင်း ပြန်ပြမည်" : "Reset Filters"}
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {recipes.map((r) => (
-            <RecipeCard key={r.id} recipe={r} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          {paginatedRecipes.map((r) => (
+            <RecipeCard key={r.id} recipe={r} showImage={false} />
           ))}
         </div>
       )}
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 pt-6">
+        <div className="flex items-center justify-center gap-2 pt-4">
           <button
             type="button"
             disabled={page <= 1}
             onClick={() => setPage(page - 1)}
-            className="px-4 py-2 rounded-lg text-sm font-semibold border border-stone-200 bg-white hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border border-stone-200 bg-white hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
           >
             {language === "mm" ? "← ရှေ့သို့" : "← Previous"}
           </button>
-          <span className="text-sm font-medium text-stone-600 px-3">
-            {language === "mm" ? `စာမျက်နှာ ${page} / ${totalPages}` : `Page ${page} of ${totalPages}`}
+          <span className="text-xs sm:text-sm font-semibold text-stone-600 px-3">
+            {language === "mm"
+              ? `စာမျက်နှာ ${page} / ${totalPages}`
+              : `Page ${page} of ${totalPages}`}
           </span>
           <button
             type="button"
             disabled={page >= totalPages}
             onClick={() => setPage(page + 1)}
-            className="px-4 py-2 rounded-lg text-sm font-semibold border border-stone-200 bg-white hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border border-stone-200 bg-white hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
           >
             {language === "mm" ? "နောက်သို့ →" : "Next →"}
           </button>
@@ -289,7 +308,13 @@ function RecipeExplorerContent() {
 
 export default function RecipeExplorerPage() {
   return (
-    <Suspense fallback={<div className="max-w-7xl mx-auto p-12 text-center text-stone-400">Loading recipe explorer...</div>}>
+    <Suspense
+      fallback={
+        <div className="max-w-7xl mx-auto p-12 text-center text-stone-400">
+          Loading recipes...
+        </div>
+      }
+    >
       <RecipeExplorerContent />
     </Suspense>
   );

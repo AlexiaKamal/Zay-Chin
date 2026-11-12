@@ -21,6 +21,7 @@ import {
   UserIcon,
 } from "@/components/ui/Icons";
 import recipeImagesData from "@/data/recipe_images.json";
+import { computeRecipeDifficulty } from "@/lib/recipe-difficulty";
 
 export default function HomePage() {
   const { language, city, t, userProfile, bmi, bmiCategory } = useApp();
@@ -90,67 +91,62 @@ export default function HomePage() {
     loadFeatured();
   }, [city, verifiedImageIds]);
 
-  // 3. Load Personalized Health Recommendations based on user's height, weight, BMI, and meal preferences
+  // 3. Load Personalized Recommendations based on cooking time, preferences & physical metrics
   useEffect(() => {
     async function loadHealthRecommendations() {
       try {
         setLoadingHealth(true);
-        const data = await getRecipes({ page: 1, pageSize: 60, city });
-        const allVerified = data.recipes.filter((r) => verifiedImageIds.has(r.id));
+        const data = await getRecipes({ page: 1, pageSize: 80, city });
+        let candidates = [...data.recipes];
 
-        // Filter based on BMI category
-        let healthPicks: RecipeSummary[] = [];
-
-        if (bmi >= 25) {
-          // Overweight / Obese: Recommend light soups, salads, and vegetable/fish dishes
-          healthPicks = allVerified.filter(
-            (r) =>
-              r.category.toLowerCase().includes("soup") ||
-              r.category.toLowerCase().includes("salad") ||
-              r.category.toLowerCase().includes("fish") ||
-              r.name_en.toLowerCase().includes("soup") ||
-              r.name_en.toLowerCase().includes("salad")
-          );
-        } else if (bmi < 18.5) {
-          // Underweight: Recommend calorie-rich, protein-dense traditional dishes
-          healthPicks = allVerified.filter(
-            (r) =>
-              r.category.toLowerCase().includes("rice") ||
-              r.category.toLowerCase().includes("poultry") ||
-              r.category.toLowerCase().includes("curry") ||
-              r.name_en.toLowerCase().includes("biryani") ||
-              r.name_en.toLowerCase().includes("butter")
-          );
-        } else {
-          // Normal: Balanced traditional dishes, chicken, fish, and mixed noodles
-          healthPicks = allVerified.filter(
-            (r) =>
-              r.category.toLowerCase().includes("poultry") ||
-              r.category.toLowerCase().includes("curry") ||
-              r.category.toLowerCase().includes("noodle") ||
-              r.category.toLowerCase().includes("rice")
-          );
+        // 1. Filter / prioritize by cooking time preference (easy <= 25m, medium 25-45m, hard 45m+)
+        if (userProfile.cooking_time_preference && userProfile.cooking_time_preference !== "any") {
+          const prefDiff = userProfile.cooking_time_preference;
+          const matchingTime = candidates.filter((r) => {
+            const diff = computeRecipeDifficulty(r);
+            return diff.difficulty === prefDiff;
+          });
+          if (matchingTime.length >= 4) {
+            candidates = matchingTime;
+          }
         }
 
-        // Prioritize by user's preference_meal keyword if present
+        // 2. Filter / rank by BMI health needs
+        if (bmi >= 25) {
+          // Overweight: Prioritize soups, salads, and vegetable/fish dishes
+          candidates.sort((a, b) => {
+            const aLight = (a.category + " " + a.name_en).match(/soup|salad|fish/i) ? 1 : 0;
+            const bLight = (b.category + " " + b.name_en).match(/soup|salad|fish/i) ? 1 : 0;
+            return bLight - aLight;
+          });
+        } else if (bmi < 18.5) {
+          // Underweight: Prioritize calorie and protein-rich curries
+          candidates.sort((a, b) => {
+            const aRich = (a.category + " " + a.name_en).match(/rice|biryani|butter|curry/i) ? 1 : 0;
+            const bRich = (b.category + " " + b.name_en).match(/rice|biryani|butter|curry/i) ? 1 : 0;
+            return bRich - aRich;
+          });
+        }
+
+        // 3. Prioritize by user's preference_meal keyword
         if (userProfile.preference_meal) {
           const pref = userProfile.preference_meal.toLowerCase();
-          healthPicks.sort((a, b) => {
+          candidates.sort((a, b) => {
             const aMatch = (a.name_mm + " " + a.name_en + " " + a.category).toLowerCase().includes(pref) ? 1 : 0;
             const bMatch = (b.name_mm + " " + b.name_en + " " + b.category).toLowerCase().includes(pref) ? 1 : 0;
             return bMatch - aMatch;
           });
         }
 
-        setHealthRecommendedRecipes(healthPicks.slice(0, 4));
+        setHealthRecommendedRecipes(candidates.slice(0, 4));
       } catch (err) {
-        console.error("Error loading health recommendations:", err);
+        console.error("Error loading recommendations:", err);
       } finally {
         setLoadingHealth(false);
       }
     }
     loadHealthRecommendations();
-  }, [bmi, userProfile.preference_meal, city, verifiedImageIds]);
+  }, [bmi, userProfile.preference_meal, userProfile.cooking_time_preference, city]);
 
   const monthName = language === "mm" ? theme.burmeseMonthName : theme.englishMonthName;
   const festivalOrMonthTitle = theme.isFestival
@@ -265,7 +261,7 @@ export default function HomePage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {seasonalRecipes.map((r) => (
-              <RecipeCard key={r.id} recipe={r} />
+              <RecipeCard key={r.id} recipe={r} showImage={true} />
             ))}
           </div>
         )}
@@ -468,7 +464,7 @@ export default function HomePage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredRecipes.map((r) => (
-              <RecipeCard key={r.id} recipe={r} />
+              <RecipeCard key={r.id} recipe={r} showImage={true} />
             ))}
           </div>
         )}

@@ -5,17 +5,18 @@ import Link from "next/link";
 import { RecipeSummary } from "@/types";
 import { useApp } from "@/context/AppContext";
 import {
-  FlameIcon,
   ClockIcon,
   UsersIcon,
   CoinsIcon,
   CheckIcon,
+  PlusIcon,
+  CookingPotIcon,
 } from "@/components/ui/Icons";
 import recipeImagesData from "@/data/recipe_images.json";
+import { computeRecipeDifficulty } from "@/lib/recipe-difficulty";
 
 interface RecipeImageEntry {
   image_url: string;
-  fallback_local?: string;
   source_name?: string;
   license?: string;
   caption?: string;
@@ -23,9 +24,16 @@ interface RecipeImageEntry {
 
 const recipeImages: Record<string, RecipeImageEntry> = recipeImagesData as any;
 
-export function RecipeCard({ recipe }: { recipe: RecipeSummary }) {
+export function RecipeCard({
+  recipe,
+  showImage = false,
+}: {
+  recipe: RecipeSummary;
+  showImage?: boolean;
+}) {
   const { language, t } = useApp();
   const [imgError, setImgError] = useState(false);
+  const [addedToPlan, setAddedToPlan] = useState(false);
 
   const primaryName = language === "mm" ? recipe.name_mm : recipe.name_en;
   const secondaryName = language === "mm" ? recipe.name_en : recipe.name_mm;
@@ -35,16 +43,71 @@ export function RecipeCard({ recipe }: { recipe: RecipeSummary }) {
     ? Math.round(recipe.estimated_cost_mmk).toLocaleString()
     : "—";
 
+  // Difficulty & Cooking Time calculation
+  const diffInfo = computeRecipeDifficulty(recipe);
+
+  // Verified Image
   const imgInfo = recipeImages[recipe.id];
-  const imgSrc = imgInfo
-    ? imgError && imgInfo.fallback_local
-      ? imgInfo.fallback_local
-      : imgInfo.image_url
-    : null;
+  const imgSrc = showImage && imgInfo && !imgError ? imgInfo.image_url : null;
+
+  // Add directly to weekly planner & sync grocery list
+  const handleAddToPlan = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // 1. Update grocery list recipes
+    const savedRecipesRaw = localStorage.getItem("zaychin_grocery_recipes");
+    let currentIds: string[] = [];
+    try {
+      currentIds = savedRecipesRaw ? JSON.parse(savedRecipesRaw) : [];
+      if (!Array.isArray(currentIds)) currentIds = [];
+    } catch {
+      currentIds = [];
+    }
+
+    if (!currentIds.includes(recipe.id)) {
+      currentIds.push(recipe.id);
+      localStorage.setItem("zaychin_grocery_recipes", JSON.stringify(currentIds));
+    }
+
+    // 2. Update weekly plan schedule if stored
+    const savedPlanRaw = localStorage.getItem("zaychin_weekly_plan");
+    if (savedPlanRaw) {
+      try {
+        const parsed = JSON.parse(savedPlanRaw);
+        if (parsed && Array.isArray(parsed.schedule)) {
+          parsed.schedule.push({
+            day_of_week: (parsed.schedule.length % 7) + 1,
+            meal_type: "dinner",
+            recipe_id: recipe.id,
+            recipe_name_en: recipe.name_en,
+            recipe_name_mm: recipe.name_mm,
+            category: recipe.category,
+            estimated_cost_mmk: recipe.estimated_cost_mmk || 2500,
+            calories_kcal: recipe.calories_kcal_per_serving || 280,
+            protein_g: recipe.protein_g_per_serving || 14,
+          });
+          localStorage.setItem("zaychin_weekly_plan", JSON.stringify(parsed));
+        }
+      } catch {}
+    }
+
+    // 3. Dispatch storage event so all pages sync immediately
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("zaychin_recipes_updated", {
+          detail: { recipeIds: currentIds },
+        })
+      );
+    }
+
+    setAddedToPlan(true);
+    setTimeout(() => setAddedToPlan(false), 2200);
+  };
 
   return (
-    <div className="bg-white rounded-3xl border border-[var(--color-border)] shadow-sm hover:shadow-xl hover:border-[var(--color-primary)] transition-all duration-300 flex flex-col justify-between overflow-hidden group hover:-translate-y-1">
-      {/* Authentic Picture (If Available) */}
+    <div className="bg-white rounded-3xl border border-stone-200/90 shadow-xs hover:shadow-lg hover:border-[var(--color-primary)] transition-all duration-300 flex flex-col justify-between overflow-hidden group hover:-translate-y-1">
+      {/* Authentic Picture (Only rendered when showImage is explicitly true) */}
       {imgSrc && (
         <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-100">
           <img
@@ -56,36 +119,35 @@ export function RecipeCard({ recipe }: { recipe: RecipeSummary }) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
           
-          {/* Authentic Photo Verification Pill */}
           <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between text-white pointer-events-none text-[10px]">
-            <span className="bg-black/60 backdrop-blur-xs px-2 py-0.5 rounded-md font-bold flex items-center gap-1">
-              <span>📸</span>
-              <span>{imgInfo?.source_name?.split("/")[0]?.trim() || "Wikimedia Commons"}</span>
+            <span className="bg-black/60 backdrop-blur-xs px-2 py-0.5 rounded-md font-bold">
+              📸 {imgInfo?.source_name?.split("/")[0]?.trim() || "Wikimedia"}
             </span>
             <span className="bg-[var(--color-primary)] px-2 py-0.5 rounded-md font-extrabold shadow-2xs">
-              100% Authentic
+              Authentic
             </span>
           </div>
         </div>
       )}
 
+      {/* Card Body */}
       <div className="p-5 space-y-3.5 flex-1 flex flex-col justify-between">
         <div className="space-y-3">
-          {/* Category & Cost Completeness Header */}
-          <div className="flex items-center justify-between gap-2">
-            <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-[var(--color-muted)] text-[var(--color-primary)] border border-[var(--color-border)]">
+          {/* Category & Difficulty Tier */}
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-stone-100 text-stone-700">
               {recipe.category}
             </span>
-            {recipe.is_cost_complete ? (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200">
-                <CheckIcon className="w-3 h-3 text-teal-700" />
-                {t.badge_complete_price}
+
+            {/* Easy / Medium / Hard Badge with Cooking Time */}
+            <span
+              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${diffInfo.badgeBg} ${diffInfo.badgeColor}`}
+            >
+              <ClockIcon className="w-3 h-3" />
+              <span>
+                {language === "mm" ? diffInfo.label_mm : diffInfo.label_en} ({diffInfo.cookingTimeMinutes}m)
               </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-                {recipe.cost_coverage_percentage}% {t.badge_partial_price}
-              </span>
-            )}
+            </span>
           </div>
 
           {/* Titles */}
@@ -101,52 +163,66 @@ export function RecipeCard({ recipe }: { recipe: RecipeSummary }) {
           </div>
         </div>
 
+        {/* Cost & Servings */}
         <div className="space-y-3 pt-2">
-          {/* Dynamic Estimated Cost */}
-          <div className="p-3 rounded-2xl bg-stone-50 border border-stone-100 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-medium text-stone-600">
+          <div className="p-2.5 rounded-2xl bg-stone-50 border border-stone-100 flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-xs text-stone-600">
               <CoinsIcon className="w-4 h-4 text-[var(--color-primary)]" />
-              <span>{t.est_cost_label}:</span>
+              <span className="font-medium">{t.est_cost_label}:</span>
             </div>
-            <div className="text-right">
-              <span className="text-base font-extrabold text-[var(--color-primary)]">
+            <div>
+              <span className="text-sm sm:text-base font-extrabold text-[var(--color-primary)]">
                 {formattedCost}
               </span>
               <span className="text-xs font-semibold text-stone-500 ml-1">MMK</span>
             </div>
           </div>
 
-          {/* Meta Stats: Servings, Time, Calories */}
-          <div className="grid grid-cols-3 gap-2 pt-1 text-stone-600 text-xs">
-            <div className="flex items-center gap-1.5" title="Servings / လူဦးရေ">
+          <div className="flex items-center justify-between text-xs text-stone-500 px-1">
+            <div className="flex items-center gap-1">
               <UsersIcon className="w-3.5 h-3.5 text-stone-400" />
-              <span>{recipe.servings || 4} {language === "mm" ? "ဦး" : "pax"}</span>
+              <span>{recipe.servings || 4} {language === "mm" ? "ဦးစာ" : "servings"}</span>
             </div>
-            <div className="flex items-center gap-1.5" title="Cooking Time / ချက်ပြုတ်ချိန်">
-              <ClockIcon className="w-3.5 h-3.5 text-stone-400" />
-              <span>
-                {recipe.cooking_time_minutes
-                  ? `${recipe.cooking_time_minutes}m`
-                  : t.badge_time_standard}
+            {recipe.calories_kcal_per_serving && (
+              <span className="text-[11px] font-medium text-stone-500">
+                {Math.round(recipe.calories_kcal_per_serving)} kcal
               </span>
-            </div>
-            <div className="flex items-center gap-1.5" title="Calories per serving">
-              <FlameIcon className="w-3.5 h-3.5 text-orange-500" />
-              <span>
-                {recipe.calories_kcal_per_serving
-                  ? `${Math.round(recipe.calories_kcal_per_serving)} kcal`
-                  : "—"}
-              </span>
-            </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Card Action */}
-      <div className="px-5 py-3 bg-stone-50/70 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-[var(--color-primary)] group-hover:bg-[var(--color-muted)]/30 transition-colors">
-        <Link href={`/recipes/${recipe.id}`} className="w-full text-center py-1 font-bold">
-          {t.btn_view_recipe} →
+      {/* Actions: View Recipe & Add to Weekly Planner */}
+      <div className="p-3 bg-stone-50/80 border-t border-stone-100 grid grid-cols-2 gap-2 text-xs font-bold">
+        <Link
+          href={`/recipes/${recipe.id}`}
+          className="py-2 px-3 rounded-xl text-center border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 transition-colors"
+        >
+          {t.btn_view_recipe}
         </Link>
+
+        <button
+          type="button"
+          onClick={handleAddToPlan}
+          className={`py-2 px-3 rounded-xl text-center flex items-center justify-center gap-1 transition-all ${
+            addedToPlan
+              ? "bg-emerald-600 text-white shadow-xs"
+              : "text-white shadow-xs active:scale-95"
+          }`}
+          style={!addedToPlan ? { backgroundColor: "var(--color-primary)" } : {}}
+        >
+          {addedToPlan ? (
+            <>
+              <CheckIcon className="w-3.5 h-3.5 text-white" />
+              <span>{language === "mm" ? "ထည့်ပြီး ✓" : "Added ✓"}</span>
+            </>
+          ) : (
+            <>
+              <PlusIcon className="w-3.5 h-3.5" />
+              <span>{language === "mm" ? "+ ဇယားသို့" : "+ To Plan"}</span>
+            </>
+          )}
+        </button>
       </div>
     </div>
   );
