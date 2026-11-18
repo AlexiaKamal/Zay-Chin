@@ -29,7 +29,7 @@ export default function LoginPage() {
   const [selectedCity, setSelectedCity] = useState<"Yangon" | "Mandalay">("Yangon");
   const [address, setAddress] = useState("");
   const [cookingTimePref, setCookingTimePref] = useState<"easy" | "medium" | "hard" | "any">("medium");
-  const [mealPref, setMealPref] = useState<string>("curry");
+  const [selectedMealPrefs, setSelectedMealPrefs] = useState<string[]>(["curry"]);
 
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -68,7 +68,7 @@ export default function LoginPage() {
       weight_kg: weight ? Number(weight) : undefined,
       address: address.trim() || undefined,
       cooking_time_preference: cookingTimePref,
-      preference_meal: mealPref,
+      preference_meal: selectedMealPrefs.join(","),
       isLoggedIn: true,
     });
 
@@ -85,6 +85,32 @@ export default function LoginPage() {
     setTimeout(() => {
       router.push("/");
     }, 450);
+  };
+
+  // Toggle meal preference (1 to 3 allowed)
+  const handleToggleMealPref = (id: string) => {
+    setErrorMessage("");
+    if (selectedMealPrefs.includes(id)) {
+      if (selectedMealPrefs.length <= 1) {
+        setErrorMessage(
+          language === "mm"
+            ? "အနည်းဆုံး ဟင်းလျာ ၁ မျိုး ရွေးချယ်ပေးပါရန်။"
+            : "Please select at least 1 meal preference."
+        );
+        return;
+      }
+      setSelectedMealPrefs(selectedMealPrefs.filter((p) => p !== id));
+    } else {
+      if (selectedMealPrefs.length >= 3) {
+        setErrorMessage(
+          language === "mm"
+            ? "အများဆုံး ၃ မျိုးအထိသာ ရွေးချယ်နိုင်ပါသည်။"
+            : "You can select up to 3 meal preferences."
+        );
+        return;
+      }
+      setSelectedMealPrefs([...selectedMealPrefs, id]);
+    }
   };
 
   const handleNextStep = () => {
@@ -110,6 +136,15 @@ export default function LoginPage() {
       if (!name.trim()) {
         setErrorMessage(
           language === "mm" ? "သင့်အမည်ကို ထည့်သွင်းပေးပါ။" : "Please enter your name."
+        );
+        return;
+      }
+    } else if (signupStep === 6) {
+      if (selectedMealPrefs.length === 0) {
+        setErrorMessage(
+          language === "mm"
+            ? "အနည်းဆုံး ဟင်းလျာ ၁ မျိုး ရွေးချယ်ပေးပါရန်။"
+            : "Please select at least 1 meal preference."
         );
         return;
       }
@@ -600,43 +635,63 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* QUESTION 6: MEAL PREFERENCES */}
+          {/* QUESTION 6: MEAL PREFERENCES (1 to 3) */}
           {signupStep === 6 && (
             <div className="space-y-4">
               <div className="space-y-1">
-                <h3 className="text-lg font-black text-stone-900">
-                  {language === "mm"
-                    ? "မည်သည့် အစားအစာအမျိုးအစားကို ပိုမိုနှစ်သက်ပါသလဲ။"
-                    : "What are your meal preferences?"}
-                </h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-black text-stone-900">
+                    {language === "mm"
+                      ? "မည်သည့် အစားအစာအမျိုးအစားကို ပိုမိုနှစ်သက်ပါသလဲ။"
+                      : "What are your meal preferences?"}
+                  </h3>
+                  <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-stone-100 text-[var(--color-primary)]">
+                    {language === "mm"
+                      ? `${selectedMealPrefs.length} / ၃ မျိုး ရွေးချယ်ပြီး`
+                      : `${selectedMealPrefs.length} / 3 selected`}
+                  </span>
+                </div>
                 <p className="text-xs text-stone-500">
                   {language === "mm"
-                    ? "ပင်မစာမျက်နှာတွင် သင့်စိတ်ကြိုက် ဟင်းလျာများကို ဦးစားပေး အကြံပြုပေးပါမည်"
-                    : "We'll feature your favorite dish categories on your personalized home feed"}
+                    ? "အကြိုက်ဆုံး ၁ ခု မှ ၃ ခုအထိ ရွေးချယ်နိုင်ပါသည် (ပင်မစာမျက်နှာတွင် ဦးစားပေး အကြံပြုပေးပါမည်)"
+                    : "Select 1 to 3 favorite categories to personalize your home recipe feed"}
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {mealPrefOptions.map((opt) => (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => setMealPref(opt.id)}
-                    className={`p-3.5 rounded-2xl border-2 text-left transition-all ${
-                      mealPref === opt.id
-                        ? "border-[var(--color-primary)] bg-[var(--color-muted)]/25 shadow-xs"
-                        : "border-stone-200 bg-white hover:border-stone-300"
-                    }`}
-                  >
-                    <div className="text-2xl mb-1.5">{opt.icon}</div>
-                    <h4 className="font-extrabold text-xs sm:text-sm text-stone-900">
-                      {language === "mm" ? opt.label_mm : opt.label_en}
-                    </h4>
-                    <p className="text-[11px] text-stone-500 line-clamp-1 mt-0.5">
-                      {language === "mm" ? opt.desc_mm : opt.desc_en}
-                    </p>
-                  </button>
-                ))}
+                {mealPrefOptions.map((opt) => {
+                  const isSelected = selectedMealPrefs.includes(opt.id);
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => handleToggleMealPref(opt.id)}
+                      className={`p-3.5 rounded-2xl border-2 text-left transition-all relative ${
+                        isSelected
+                          ? "border-[var(--color-primary)] bg-[var(--color-muted)]/25 shadow-xs"
+                          : "border-stone-200 bg-white hover:border-stone-300"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="text-2xl mb-1.5">{opt.icon}</div>
+                        {isSelected && (
+                          <span
+                            className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-xs"
+                            style={{ backgroundColor: "var(--color-primary)" }}
+                          >
+                            ✓
+                          </span>
+                        )}
+                      </div>
+                      <h4 className="font-extrabold text-xs sm:text-sm text-stone-900">
+                        {language === "mm" ? opt.label_mm : opt.label_en}
+                      </h4>
+                      <p className="text-[11px] text-stone-500 line-clamp-1 mt-0.5">
+                        {language === "mm" ? opt.desc_mm : opt.desc_en}
+                      </p>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}

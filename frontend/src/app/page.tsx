@@ -128,13 +128,15 @@ export default function HomePage() {
           });
         }
 
-        // 3. Prioritize by user's preference_meal keyword
+        // 3. Prioritize by user's preference_meal keywords (1 to 3 preferences)
         if (userProfile.preference_meal) {
-          const pref = userProfile.preference_meal.toLowerCase();
+          const prefs = userProfile.preference_meal.toLowerCase().split(",").map((s) => s.trim()).filter(Boolean);
           candidates.sort((a, b) => {
-            const aMatch = (a.name_mm + " " + a.name_en + " " + a.category).toLowerCase().includes(pref) ? 1 : 0;
-            const bMatch = (b.name_mm + " " + b.name_en + " " + b.category).toLowerCase().includes(pref) ? 1 : 0;
-            return bMatch - aMatch;
+            const aText = (a.name_mm + " " + a.name_en + " " + a.category).toLowerCase();
+            const bText = (b.name_mm + " " + b.name_en + " " + b.category).toLowerCase();
+            const aScore = prefs.reduce((sum, p) => sum + (aText.includes(p) ? 1 : 0), 0);
+            const bScore = prefs.reduce((sum, p) => sum + (bText.includes(p) ? 1 : 0), 0);
+            return bScore - aScore;
           });
         }
 
@@ -267,41 +269,7 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* 4. Verified Pricing & Nutrition Metrics Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 sm:p-8 bg-white rounded-3xl border border-[var(--color-border)] shadow-md hover:shadow-lg transition-shadow">
-          <div className="text-center p-3">
-            <div className="text-2xl sm:text-4xl font-black text-[var(--color-primary)]">171</div>
-            <div className="text-xs sm:text-sm text-stone-600 font-bold mt-1">
-              {language === "mm" ? "ဒေါ်စန်းလေး ဟင်းချက်နည်းများ" : "Authentic Myanmar Dishes"}
-            </div>
-            <div className="text-[11px] text-stone-400 mt-0.5">ချက်ပြုတ်အတတ်ပညာ မူရင်း</div>
-          </div>
-          <div className="text-center p-3 border-l border-stone-100">
-            <div className="text-2xl sm:text-4xl font-black text-[var(--color-primary)]">12</div>
-            <div className="text-xs sm:text-sm text-stone-600 font-bold mt-1">
-              {language === "mm" ? "ဆယ့်နှစ်လ ရာသီစက်ဝန်း" : "Myanmar Lunar Seasons"}
-            </div>
-            <div className="text-[11px] text-stone-400 mt-0.5">Living Seasons Architecture</div>
-          </div>
-          <div className="text-center p-3 border-l border-stone-100">
-            <div className="text-2xl sm:text-4xl font-black text-[var(--color-primary)]">134</div>
-            <div className="text-xs sm:text-sm text-stone-600 font-bold mt-1">
-              {language === "mm" ? "၂၀၂၆ ဈေးကွက် စစ်တမ်းမှတ်တမ်း" : "Verified 2026 Price Records"}
-            </div>
-            <div className="text-[11px] text-stone-400 mt-0.5">CSO & Bayintnaung</div>
-          </div>
-          <div className="text-center p-3 border-l border-stone-100">
-            <div className="text-2xl sm:text-4xl font-black text-[var(--color-primary)]">100%</div>
-            <div className="text-xs sm:text-sm text-stone-600 font-bold mt-1">
-              {language === "mm" ? "စစ်မှန်သော ဓာတ်ပုံနှင့် အရောင်များ" : "Legit Visuals & WCAG AA"}
-            </div>
-            <div className="text-[11px] text-stone-400 mt-0.5">Zero AI Hallucination</div>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. How Zay Chin Works (5-Step User Journey) */}
+      {/* 4. How Zay Chin Works (5-Step User Journey) */}
       <section className="bg-[var(--color-muted)] border-y border-[var(--color-border)] py-16 sm:py-20 transition-colors duration-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="text-center max-w-2xl mx-auto space-y-3">

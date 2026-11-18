@@ -24,8 +24,23 @@ export default function ProfilePage() {
   const [cookingTimePref, setCookingTimePref] = useState<"easy" | "medium" | "hard" | "any">(
     userProfile.cooking_time_preference || "medium"
   );
-  const [preferenceMeal, setPreferenceMeal] = useState(userProfile.preference_meal || "curry");
+  const [selectedMealPrefs, setSelectedMealPrefs] = useState<string[]>(() => {
+    if (!userProfile.preference_meal) return ["curry"];
+    const parsed = userProfile.preference_meal.split(",").map((s) => s.trim()).filter(Boolean);
+    return parsed.length > 0 ? parsed : ["curry"];
+  });
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  // Toggle meal preference (1 to 3 allowed)
+  const handleTogglePreference = (id: string) => {
+    if (selectedMealPrefs.includes(id)) {
+      if (selectedMealPrefs.length <= 1) return; // Keep at least 1
+      setSelectedMealPrefs(selectedMealPrefs.filter((p) => p !== id));
+    } else {
+      if (selectedMealPrefs.length >= 3) return; // Max 3
+      setSelectedMealPrefs([...selectedMealPrefs, id]);
+    }
+  };
 
   // Live BMI calculation during edits
   const currentHeightM = (Number(height) || 165) / 100;
@@ -45,7 +60,7 @@ export default function ProfilePage() {
       weight_kg: Number(weight) || 60,
       address,
       cooking_time_preference: cookingTimePref,
-      preference_meal: preferenceMeal,
+      preference_meal: selectedMealPrefs.join(","),
     });
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 2500);
@@ -289,12 +304,24 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Preference Meal */}
+        {/* Preference Meal (1 to 3 selection) */}
         <div className="space-y-2 pt-2">
-          <label className="text-xs font-bold text-stone-700 block uppercase tracking-wider">
-            {language === "mm" ? "နှစ်သက်သော ဟင်းလျာ အမျိုးအစား (Preference Meal)" : "Dietary & Meal Preferences"}
-          </label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-stone-700 block uppercase tracking-wider">
+              {language === "mm" ? "နှစ်သက်သော ဟင်းလျာ အမျိုးအစား (Preference Meal)" : "Dietary & Meal Preferences"}
+            </label>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-stone-100 text-[var(--color-primary)]">
+              {language === "mm"
+                ? `${selectedMealPrefs.length} / ၃ မျိုး ရွေးချယ်ပြီး`
+                : `${selectedMealPrefs.length} / 3 selected`}
+            </span>
+          </div>
+          <p className="text-xs text-stone-500">
+            {language === "mm"
+              ? "အကြိုက်ဆုံး ၁ ခု မှ ၃ ခုအထိ ရွေးချယ်နိုင်ပါသည်"
+              : "Select 1 to 3 favorite dish categories for your home recommendations"}
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
             {[
               { id: "curry", label_mm: "🍲 ဆီပြန်ဟင်းများ", label_en: "🍲 Curries" },
               { id: "soup", label_mm: "🥣 ဟင်းချို / ချဉ်ရည်", label_en: "🥣 Soups" },
@@ -302,20 +329,31 @@ export default function ProfilePage() {
               { id: "fried", label_mm: "🍳 အကြော်အလှော်", label_en: "🍳 Fried Dishes" },
               { id: "healthy", label_mm: "🥦 သက်သတ်လွတ် / ကျန်းမာရေး", label_en: "🥦 Healthy / Veg" },
               { id: "noodles", label_mm: "🍜 ခေါက်ဆွဲ / မုန့်တီ", label_en: "🍜 Noodles" },
-            ].map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => setPreferenceMeal(p.id)}
-                className={`p-3 rounded-2xl text-xs font-bold text-left border transition-all ${
-                  preferenceMeal === p.id
-                    ? "bg-[var(--color-muted)] border-[var(--color-primary)] text-[var(--color-primary)] shadow-xs"
-                    : "bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100"
-                }`}
-              >
-                {language === "mm" ? p.label_mm : p.label_en}
-              </button>
-            ))}
+            ].map((p) => {
+              const isSelected = selectedMealPrefs.includes(p.id);
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => handleTogglePreference(p.id)}
+                  className={`p-3 rounded-2xl text-xs font-bold text-left border transition-all flex items-center justify-between ${
+                    isSelected
+                      ? "bg-[var(--color-muted)] border-[var(--color-primary)] text-[var(--color-primary)] shadow-xs"
+                      : "bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100"
+                  }`}
+                >
+                  <span>{language === "mm" ? p.label_mm : p.label_en}</span>
+                  {isSelected && (
+                    <span
+                      className="w-4 h-4 rounded-full flex items-center justify-center text-white text-[10px] font-bold shrink-0 ml-1"
+                      style={{ backgroundColor: "var(--color-primary)" }}
+                    >
+                      ✓
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTheme } from "./ThemeProvider";
@@ -10,13 +9,11 @@ import {
   CalendarIcon,
   CookingPotIcon,
   SearchIcon,
-  SparklesIcon,
-  ChevronRightIcon,
   CheckIcon,
 } from "./ui/Icons";
 
 export function SeasonalHero() {
-  const { theme, calendar, isOverridden } = useTheme();
+  const { theme } = useTheme();
   const { language, t } = useApp();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,9 +28,7 @@ export function SeasonalHero() {
     }
   };
 
-  const formattedDate = language === "mm" ? calendar.formattedMm : calendar.formattedEn;
   const monthName = language === "mm" ? theme.burmeseMonthName : theme.englishMonthName;
-  const festivalName = language === "mm" ? theme.festivalNameMm : theme.festivalNameEn;
   const greeting = language === "mm" ? theme.greetingMm : theme.greetingEn;
   const description = language === "mm" ? theme.descriptionMm : theme.descriptionEn;
   const altText = language === "mm" ? theme.artworkAltMm : theme.artworkAltEn;
@@ -58,32 +53,6 @@ export function SeasonalHero() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Column: Cultural Calendar context & Content */}
           <div className="lg:col-span-7 space-y-6 text-left">
-            {/* Calendar & Moon Phase Header Tag */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-white shadow-xs"
-                style={{ backgroundColor: "var(--color-primary)" }}
-              >
-                <CalendarIcon className="w-3.5 h-3.5" />
-                <span>{formattedDate}</span>
-              </span>
-
-              {theme.isFestival && (
-                <span
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[var(--color-muted)] text-[var(--color-primary)] border border-[var(--color-border)]"
-                >
-                  <SparklesIcon className="w-3.5 h-3.5 text-amber-500" />
-                  <span>{festivalName}</span>
-                </span>
-              )}
-
-              {calendar.isSabbathDay && (
-                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-200">
-                  {language === "mm" ? "သီတင်းသီလ ဥပုသ်နေ့" : "Sabbath Day"}
-                </span>
-              )}
-            </div>
-
             {/* Cultural Greeting Headline */}
             <div className="space-y-2">
               <span className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[var(--color-primary)]">
@@ -173,7 +142,7 @@ export function SeasonalHero() {
 
           {/* Right Column: Prominent Authentic Seasonal Artwork */}
           <div className="lg:col-span-5">
-            <div className="relative group rounded-3xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)] shadow-md transition-all duration-300 hover:shadow-lg">
+            <div className="relative group rounded-3xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)] shadow-md transition-all duration-300 hover:shadow-xl">
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-100">
                 <img
                   src={artworkSource}
@@ -182,48 +151,6 @@ export function SeasonalHero() {
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   loading="eager"
                 />
-                {/* Subtle gradient at bottom for badge contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-
-                {/* Cultural Artwork Caption Overlay */}
-                <div className="absolute bottom-3 left-3 right-3 text-white pointer-events-none">
-                  <div className="text-xs font-bold leading-snug drop-shadow-md line-clamp-1">
-                    {altText}
-                  </div>
-                  <div className="text-[10px] text-white/80 drop-shadow-xs line-clamp-1 mt-0.5">
-                    {language === "mm" ? "စစ်မှန်သော ရိုးရာဓာတ်ပုံ" : "Authentic Photography"} • {theme.sourceAttribution} ({theme.license})
-                  </div>
-                </div>
-              </div>
-
-              {/* Bottom palette indicator bar */}
-              <div className="p-3 bg-[var(--color-surface)] flex items-center justify-between text-xs text-stone-500 border-t border-[var(--color-border)]">
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-semibold">
-                    {language === "mm" ? "ရာသီအလိုက် အရောင်အသွေး" : "Extracted Palette"}:
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <span
-                      className="w-3.5 h-3.5 rounded-full border border-black/10 shadow-2xs"
-                      style={{ backgroundColor: theme.extractedPalette.primary }}
-                      title={`Primary: ${theme.extractedPalette.primary}`}
-                    />
-                    <span
-                      className="w-3.5 h-3.5 rounded-full border border-black/10 shadow-2xs"
-                      style={{ backgroundColor: theme.extractedPalette.accent }}
-                      title={`Accent: ${theme.extractedPalette.accent}`}
-                    />
-                    <span
-                      className="w-3.5 h-3.5 rounded-full border border-black/10 shadow-2xs"
-                      style={{ backgroundColor: theme.extractedPalette.muted }}
-                      title={`Muted: ${theme.extractedPalette.muted}`}
-                    />
-                  </div>
-                </div>
-
-                <span className="text-[11px] font-medium text-emerald-700">
-                  {theme.extractedPalette.contrastWithBg}:1 WCAG AA
-                </span>
               </div>
             </div>
           </div>

@@ -267,8 +267,8 @@ export function getMyanmarCalendarInfo(inputDate?: Date | string | null): Myanma
   } else if (typeof inputDate === "string" && inputDate.trim() !== "") {
     date = new Date(inputDate);
   } else {
-    // Stable baseline date for SSR/prerender to prevent Next.js hydration mismatch
-    date = new Date("2026-10-20T12:00:00Z");
+    // Current live date
+    date = new Date();
   }
 
   // Adjust for Myanmar timezone (+06:30)

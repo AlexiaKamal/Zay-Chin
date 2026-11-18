@@ -33,10 +33,19 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Typography: Headings modern serif typeface, others Arial with Myanmar Unicode fallback */
+h1, h2, h3, h4, h5, h6, .font-serif, .heading-serif {
+  font-family: "Playfair Display", Georgia, "Times New Roman", "Padauk", "Pyidaungsu", serif;
+  letter-spacing: -0.015em;
+}
+
+body, p, span, div, a, button, input, select, textarea, label, li {
+  font-family: Arial, "Helvetica Neue", Helvetica, "Padauk", "Pyidaungsu", sans-serif;
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-text);
-  font-family: "Inter", "Padauk", "Pyidaungsu", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 

@@ -27,9 +27,11 @@ const recipeImages: Record<string, RecipeImageEntry> = recipeImagesData as any;
 export function RecipeCard({
   recipe,
   showImage = false,
+  showAddToPlan = false,
 }: {
   recipe: RecipeSummary;
   showImage?: boolean;
+  showAddToPlan?: boolean;
 }) {
   const { language, t } = useApp();
   const [imgError, setImgError] = useState(false);
@@ -192,37 +194,48 @@ export function RecipeCard({
         </div>
       </div>
 
-      {/* Actions: View Recipe & Add to Weekly Planner */}
-      <div className="p-3 bg-stone-50/80 border-t border-stone-100 grid grid-cols-2 gap-2 text-xs font-bold">
-        <Link
-          href={`/recipes/${recipe.id}`}
-          className="py-2 px-3 rounded-xl text-center border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 transition-colors"
-        >
-          {t.btn_view_recipe}
-        </Link>
+      {/* Actions: View Recipe */}
+      <div className="p-3 bg-stone-50/80 border-t border-stone-100 text-xs font-bold">
+        {showAddToPlan ? (
+          <div className="grid grid-cols-2 gap-2">
+            <Link
+              href={`/recipes/${recipe.id}`}
+              className="py-2 px-3 rounded-xl text-center border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 transition-colors"
+            >
+              {t.btn_view_recipe}
+            </Link>
 
-        <button
-          type="button"
-          onClick={handleAddToPlan}
-          className={`py-2 px-3 rounded-xl text-center flex items-center justify-center gap-1 transition-all ${
-            addedToPlan
-              ? "bg-emerald-600 text-white shadow-xs"
-              : "text-white shadow-xs active:scale-95"
-          }`}
-          style={!addedToPlan ? { backgroundColor: "var(--color-primary)" } : {}}
-        >
-          {addedToPlan ? (
-            <>
-              <CheckIcon className="w-3.5 h-3.5 text-white" />
-              <span>{language === "mm" ? "ထည့်ပြီး ✓" : "Added ✓"}</span>
-            </>
-          ) : (
-            <>
-              <PlusIcon className="w-3.5 h-3.5" />
-              <span>{language === "mm" ? "+ ဇယားသို့" : "+ To Plan"}</span>
-            </>
-          )}
-        </button>
+            <button
+              type="button"
+              onClick={handleAddToPlan}
+              className={`py-2 px-3 rounded-xl text-center flex items-center justify-center gap-1 transition-all ${
+                addedToPlan
+                  ? "bg-emerald-600 text-white shadow-xs"
+                  : "text-white shadow-xs active:scale-95"
+              }`}
+              style={!addedToPlan ? { backgroundColor: "var(--color-primary)" } : {}}
+            >
+              {addedToPlan ? (
+                <>
+                  <CheckIcon className="w-3.5 h-3.5 text-white" />
+                  <span>{language === "mm" ? "ထည့်ပြီး ✓" : "Added ✓"}</span>
+                </>
+              ) : (
+                <>
+                  <PlusIcon className="w-3.5 h-3.5" />
+                  <span>{language === "mm" ? "+ ဇယားသို့" : "+ To Plan"}</span>
+                </>
+              )}
+            </button>
+          </div>
+        ) : (
+          <Link
+            href={`/recipes/${recipe.id}`}
+            className="w-full block py-2.5 px-4 rounded-xl text-center border border-stone-200 bg-white text-stone-700 hover:bg-[var(--color-muted)] hover:border-[var(--color-primary)] transition-all shadow-2xs"
+          >
+            {t.btn_view_recipe}
+          </Link>
+        )}
       </div>
     </div>
   );

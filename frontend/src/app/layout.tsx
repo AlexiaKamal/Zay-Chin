@@ -25,11 +25,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Padauk:wght@400;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500;1,600;1,700&family=Padauk:wght@400;700&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-[var(--color-background)] text-[var(--color-text)] font-sans antialiased flex flex-col selection:bg-amber-100 selection:text-amber-900">
+      <body className="min-h-screen bg-[var(--color-background)] text-[var(--color-text)] antialiased flex flex-col selection:bg-amber-100 selection:text-amber-900">
         <AppProvider>
           <ThemeProvider>
             <React.Suspense fallback={<div className="h-16 bg-white border-b border-stone-200" />}>

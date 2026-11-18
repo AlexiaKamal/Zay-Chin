@@ -81,9 +81,6 @@ export function Footer() {
 
         <div className="mt-12 pt-8 border-t border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
           <p>© 2026 Zay Chin (ဈေးခြင်း). {t.footer_rights}</p>
-          <p className="text-stone-400">
-            {language === "mm" ? "မြန်မာ ယူနီကုဒ် စံချိန်မီ စနစ်" : "Built with Standard Myanmar Unicode"}
-          </p>
         </div>
       </div>
     </footer>
