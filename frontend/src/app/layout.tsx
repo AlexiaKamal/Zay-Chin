@@ -4,7 +4,6 @@ import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Navbar } from "@/components/layout/Navbar";
-import { FestivalBanner } from "@/components/FestivalBanner";
 import { ThemePreview } from "@/components/ThemePreview";
 import { Footer } from "@/components/layout/Footer";
 
@@ -34,7 +33,6 @@ export default function RootLayout({
           <ThemeProvider>
             <React.Suspense fallback={<div className="h-16 bg-white border-b border-stone-200" />}>
               <Navbar />
-              <FestivalBanner />
             </React.Suspense>
             <main className="flex-grow">
               {children}

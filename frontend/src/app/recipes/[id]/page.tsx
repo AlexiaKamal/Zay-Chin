@@ -183,9 +183,6 @@ function RecipeDetailContent() {
               onError={() => setImgError(true)}
               className="w-full h-full object-cover"
             />
-            <div className="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
-              📸 {imgInfo.source_name} ({imgInfo.license})
-            </div>
           </div>
         )}
 

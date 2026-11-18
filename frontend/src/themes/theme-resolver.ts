@@ -55,20 +55,7 @@ export function resolveActiveTheme(options?: {
     }
   }
 
-  // 2. Active Festival Override (Priority 10)
-  if (calendar.activeFestival) {
-    const festivalTheme = festivalThemes[calendar.activeFestival.id];
-    if (festivalTheme) {
-      return {
-        theme: festivalTheme,
-        calendar,
-        isOverridden: true,
-        reason: "festival_override",
-      };
-    }
-  }
-
-  // 3. Normal Monthly Lunar Theme (Priority 1)
+  // 2. Normal Monthly Lunar Theme (Priority 1: Changes smoothly with each month)
   const monthTheme = monthlyThemes[calendar.normalizedMonth];
   if (monthTheme) {
     return {
@@ -79,7 +66,7 @@ export function resolveActiveTheme(options?: {
     };
   }
 
-  // 4. Safe Default Fallback (Priority 0)
+  // 3. Safe Default Fallback (Priority 0)
   return {
     theme: defaultTheme,
     calendar,

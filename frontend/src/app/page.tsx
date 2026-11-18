@@ -151,9 +151,7 @@ export default function HomePage() {
   }, [bmi, userProfile.preference_meal, userProfile.cooking_time_preference, city]);
 
   const monthName = language === "mm" ? theme.burmeseMonthName : theme.englishMonthName;
-  const festivalOrMonthTitle = theme.isFestival
-    ? (language === "mm" ? theme.festivalNameMm : theme.festivalNameEn)
-    : (language === "mm" ? `${theme.burmeseMonthName} ရာသီခါ` : `${theme.englishMonthName} Season`);
+  const seasonalTitle = language === "mm" ? `${monthName} ရာသီစာ ဟင်းလျာများ` : `Seasonal Dishes for ${monthName}`;
 
   return (
     <div className="space-y-16 sm:space-y-24 pb-20 animate-in fade-in duration-300">
@@ -223,25 +221,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. Seasonal Food Recommendations (Living Season / Lunar Festival) */}
+      {/* 3. Seasonal Food Recommendations */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[var(--color-border)] pb-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-[var(--color-muted)] text-[var(--color-primary)] border border-[var(--color-border)] mb-1.5 shadow-2xs">
-              <SparklesIcon className="w-3.5 h-3.5" />
-              <span>
-                {language === "mm" ? "ရာသီပေါ်နှင့် ပွဲတော်အလိုက် အထူးအကြံပြုချက်" : "Living Season Recommendations"}
-              </span>
-            </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[var(--color-text)]">
-              {language === "mm"
-                ? `${festivalOrMonthTitle} အတွက် အသင့်တော်ဆုံး ဟင်းလျာများ`
-                : `Curated Dishes for ${festivalOrMonthTitle}`}
+              {seasonalTitle}
             </h2>
             <p className="text-xs sm:text-sm text-stone-500 mt-1">
               {language === "mm"
-                ? "စစ်မှန်သော ဓာတ်ပုံများနှင့် ဒေါ်စန်းလေး ဟင်းချက်နည်းများမှ ဤရာသီဥတုနှင့် အကိုက်ညီဆုံး ရွေးချယ်မှုများ"
-                : "Authentic Myanmar dishes with verified photography matched to current weather and seasonal feasts"}
+                ? "ဤရာသီဥတုနှင့် အကိုက်ညီဆုံး ရိုးရာဟင်းလျာများ"
+                : "Traditional dishes best suited for this season"}
             </p>
           </div>
 

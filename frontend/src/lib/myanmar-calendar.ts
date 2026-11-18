@@ -272,16 +272,15 @@ export function getMyanmarCalendarInfo(inputDate?: Date | string | null): Myanma
   }
 
   // Adjust for Myanmar timezone (+06:30)
-  // If running in browser or server, compute UTC + 6.5 hours
-  const utcMillis = date.getTime() + date.getTimezoneOffset() * 60000;
-  const mmtMillis = utcMillis + 6.5 * 3600000;
+  // UTC time + 6.5 hours gives exact Asia/Yangon wall clock time anywhere in the world
+  const mmtMillis = date.getTime() + 6.5 * 3600000;
   const mmtDate = new Date(mmtMillis);
 
-  const year = mmtDate.getFullYear();
-  const month = mmtDate.getMonth() + 1;
-  const day = mmtDate.getDate();
-  const hour = mmtDate.getHours();
-  const minute = mmtDate.getMinutes();
+  const year = mmtDate.getUTCFullYear();
+  const month = mmtDate.getUTCMonth() + 1;
+  const day = mmtDate.getUTCDate();
+  const hour = mmtDate.getUTCHours();
+  const minute = mmtDate.getUTCMinutes();
 
   const jd = w2j(year, month, day, hour, minute, 0, 1);
   const jdn = Math.round(jd);
@@ -380,7 +379,7 @@ export function getMyanmarCalendarInfo(inputDate?: Date | string | null): Myanma
     activeFestival = {
       id: "fest-tazaungdaing-balloons",
       nameMm: "တန်ဆောင်တိုင် ပွဲတော်နှင့် တောင်ကြီး မီးပုံးပျံပွဲတော်",
-      nameEn: "Tazaungdaing Festival & Taunggyi Hot-Air Balloon Festival",
+      nameEn: "Tazaungdaing Festival",
       descriptionMm: "စူဠာမဏိစေတီတော်ကို ရည်မှန်း၍ ကောင်းကင်ယံသို့ မီးပုံးပျံကြီးများ လွှတ်တင်ပူဇော်ပြီး မသိုးသင်္ကန်း ရက်ခတ်လှူဒါန်းသော ပွဲတော်။",
       descriptionEn: "Spectacular nocturnal hot-air balloon launches in Taunggyi and all-night Matho robe-weaving competitions.",
     };

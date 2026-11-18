@@ -242,7 +242,7 @@ export const festivalThemes: Record<string, SeasonalTheme> = {
     festivalId: "tazaungdaing_balloons",
     isFestival: true,
     festivalNameMm: "တန်ဆောင်တိုင် ပွဲတော်နှင့် တောင်ကြီး မီးပုံးပျံပွဲတော်",
-    festivalNameEn: "Tazaungdaing Festival & Taunggyi Sky Balloons",
+    festivalNameEn: "Tazaungdaing Festival",
     greetingMm: "ကောင်းကင်ယံ မီးပုံးပျံလွှတ်တင် တန်ဆောင်တိုင် မင်္ဂလာပါ",
     greetingEn: "Spectacular greetings for the Tazaungdaing Fire Balloon Festival!",
     descriptionMm: "စူဠာမဏိစေတီတော်ကို ရည်မှန်း၍ ကောင်းကင်ယံသို့ မီးရှူးမီးပန်း မီးပုံးပျံကြီးများ လွှတ်တင်ပူဇော်ပြီး မသိုးသင်္ကန်း ရက်ခတ်လှူဒါန်းသော မင်္ဂလာပွဲတော် ဖြစ်ပါသည်။",

@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500;1,600;1,700&family=Padauk:wght@400;700&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -27,19 +28,26 @@
   --color-accent: var(--color-accent);
   --color-muted: var(--color-muted);
   --color-border: var(--color-border);
+  --font-serif: "Playfair Display", Georgia, "Times New Roman", "Padauk", "Pyidaungsu", serif;
+  --font-sans: Arial, "Helvetica Neue", Helvetica, "Padauk", "Pyidaungsu", sans-serif;
 }
 
 html {
   scroll-behavior: smooth;
 }
 
-/* Typography: Headings modern serif typeface, others Arial with Myanmar Unicode fallback */
-h1, h2, h3, h4, h5, h6, .font-serif, .heading-serif {
-  font-family: "Playfair Display", Georgia, "Times New Roman", "Padauk", "Pyidaungsu", serif;
-  letter-spacing: -0.015em;
+/* Typography: Headings modern serif typeface (Playfair Display / Georgia), others Arial with Myanmar Unicode fallback */
+h1, h2, h3, h4, h5, h6,
+h1 *, h2 *, h3 *, h4 *, h5 *, h6 *,
+.font-serif, .font-serif *,
+.heading-serif, .heading-serif *,
+[class*="font-serif"],
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+  font-family: "Playfair Display", Georgia, "Times New Roman", "Padauk", "Pyidaungsu", serif !important;
+  letter-spacing: -0.01em;
 }
 
-body, p, span, div, a, button, input, select, textarea, label, li {
+html, body, p, a, button, input, select, textarea, label, li, td, th {
   font-family: Arial, "Helvetica Neue", Helvetica, "Padauk", "Pyidaungsu", sans-serif;
 }
 

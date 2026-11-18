@@ -119,16 +119,6 @@ export function RecipeCard({
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             loading="lazy"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
-          
-          <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between text-white pointer-events-none text-[10px]">
-            <span className="bg-black/60 backdrop-blur-xs px-2 py-0.5 rounded-md font-bold">
-              📸 {imgInfo?.source_name?.split("/")[0]?.trim() || "Wikimedia"}
-            </span>
-            <span className="bg-[var(--color-primary)] px-2 py-0.5 rounded-md font-extrabold shadow-2xs">
-              Authentic
-            </span>
-          </div>
         </div>
       )}
 
